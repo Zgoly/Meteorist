@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "meteorist",
+  "version": "${version}",
+  "name": "Meteorist",
+  "description": "",
+  "authors": [
+    "Zgoly"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "meteor": [
+      "zgoly.meteorist.Meteorist"
+    ]
+  },
+  "mixins": [
+    "meteorist.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}
