@@ -1,11 +1,23 @@
----
-name: Feature request
-about: Suggest an idea for this project
-title: ''
+name: Suggestion
+description: Suggest a feature for this mod.
+title: '[Suggestion]'
 labels: enhancement
-assignees: ''
-
----
-
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Suggestion description
+      description: Description of what feature you want to see.
+    validations:
+      required: true
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before submitting a suggestion
+      options:
+        - label: |
+            This feature doesn't already exist.
+          required: true
+        - label: |
+            This wasn't already suggested.
+          required: true
