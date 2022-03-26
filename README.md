@@ -15,8 +15,8 @@
 2. Move `meteorist.jar` in `.minecraft/mods` folder
 
 ## Features
-+ `Auto Leave` - Automatically leaves if player in range.
-+ `Auto Login` - Automatically logs in your account.
++ `Auto Leave` - Automatically leaves if player in range. *About Auto Leave: Meteor has Auto Log but my module leaves depending on the reach to the player*
++ `Auto Login` - Automatically logs in your account. *May not work on some servers*
 + `Container Cleaner` - Throw items from container.
 + `New Velocity` - Velocity that can bypass some anti-cheats.
 
