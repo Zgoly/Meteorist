@@ -17,7 +17,9 @@
 ## Features
 + `Auto Leave` - Automatically leaves if player in range. *About Auto Leave: Meteor has Auto Log but my module leaves depending on the reach to the player*
 + `Auto Login` - Automatically logs in your account. *May not work on some servers*
++ `Auto Take` - Automatically takes items from slot.
 + `Container Cleaner` - Throw items from container.
++ `JumpFlight` - Flight that using jumps for fly. *Same as Speed + AirJump, but with ability to change speed using scroll wheel*
 + `New Velocity` - Velocity that can bypass some anti-cheats.
 
 Add more later
