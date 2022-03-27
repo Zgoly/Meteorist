@@ -28,7 +28,7 @@ public class AutoLeave extends Module {
     );
 
     private final Setting<String> command = sgGeneral.add(new StringSetting.Builder()
-            .name("command")
+            .name("command:")
             .description("Send command in chat.")
             .defaultValue("/spawn")
             .visible(() -> mode.get() == Mode.Command)
@@ -36,11 +36,12 @@ public class AutoLeave extends Module {
     );
 
     private final Setting<Integer> range = sgGeneral.add(new IntSetting.Builder()
-            .name("range")
+            .name("range:")
             .description("Disconnects if player in range.")
             .defaultValue(5)
             .min(1)
-            .range(1, 50)
+            .range(1, 25)
+            .sliderRange(1, 25)
             .build()
     );
 
@@ -64,12 +65,10 @@ public class AutoLeave extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        assert mc.world != null;
         for (Entity entity : mc.world.getEntities()) {
             if (entity instanceof PlayerEntity) {
-                assert mc.player != null;
                 if (entity.getUuid() != mc.player.getUuid() && mc.player.distanceTo(entity) < range.get()) {
-                    if (ignoreFriends.get() && !Friends.get().isFriend((PlayerEntity) entity)) return;
+                    if (ignoreFriends.get() && Friends.get().isFriend((PlayerEntity) entity)) return;
                     if (mode.get() == Mode.Logout)
                         mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(new LiteralText("[AutoLeave] Found player in radius.")));
                     else if (mode.get() == Mode.Command && !command.get().isEmpty()) mc.player.sendChatMessage(command.get());

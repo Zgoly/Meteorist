@@ -3,7 +3,7 @@
   "id": "meteorist",
   "version": "${version}",
   "name": "Meteorist",
-  "description": "",
+  "description": "Addon for Meteor Client.",
   "authors": [
     "Zgoly"
   ],
