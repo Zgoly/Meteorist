@@ -17,12 +17,16 @@
 Don't forget to download **[meteor dev build](https://meteorclient.com/download?devBuild=latest)**
 
 ## Modules
++ `Auto Feed` - Writes command in chat when hunger level is low.
++ `Auto Heal` - Writes command in chat when health level is low.
 + `Auto Leave` - Automatically leaves if player in range. *About Auto Leave: Meteor has Auto Log but my module leaves depending on the reach to the player*
 + `Auto Login` - Automatically logs in your account. *May not work on some servers*
-+ `Auto Take` - Automatically takes items from slot.
 + `Container Cleaner` - Throw items from container.
-+ `JumpFlight` - Flight that using jumps for fly. *Same as Speed + AirJump, but with ability to change speed using scroll wheel*
++ `High Jump` - Makes you jump higher than normal. *Uses many jumps to simulate a big jump*
++ `Item Sucker` - Sucks up all items on the ground. *This module uses baritone, so don't forget to stop baritone*
++ `Jump Flight` - Flight that using jumps for fly. *Same as Speed + AirJump, but with ability to change speed using scroll wheel*
 + `New Velocity` - Velocity that can bypass some anti-cheats.
++ `Slot Click` - Automatically clicks on slot.
 ## Commands
 + `.coords` - Copies your coordinates to the clipboard.
 
