@@ -17,18 +17,21 @@
 Don't forget to download **[meteor dev build](https://meteorclient.com/download?devBuild=latest)**
 
 ## Modules
-+ `Auto Feed` - Writes command in chat when hunger level is low.
-+ `Auto Heal` - Writes command in chat when health level is low.
-+ `Auto Leave` - Automatically leaves if player in range. *About Auto Leave: Meteor has Auto Log but my module leaves depending on the reach to the player*
-+ `Auto Login` - Automatically logs in your account. *May not work on some servers*
-+ `Container Cleaner` - Throw items from container.
-+ `High Jump` - Makes you jump higher than normal. *Uses many jumps to simulate a big jump*
-+ `Item Sucker` - Sucks up all items on the ground. *This module uses baritone, so don't forget to stop baritone*
-+ `Jump Flight` - Flight that using jumps for fly. *Same as Speed + AirJump, but with ability to change speed using scroll wheel*
-+ `New Velocity` - Velocity that can bypass some anti-cheats.
-+ `Slot Click` - Automatically clicks on slot.
-+ ~~`ZKillaura`~~ *You can find it in directories, but it's not ready yet.*
-## Commands
-+ `.coords` - Copies your coordinates to the clipboard.
+|№|Module|Function|Info|
+|--|--|--|--|
+|1|`Auto Feed`|Writes command in chat when hunger level is low.||
+|2|`Auto Heal`|Writes command in chat when health level is low.||
+|3|`Auto Leave`|Automatically leaves if player in range.|*Meteor has Auto Log, but this module has different settings.*|
+|4|`Auto Login`|Automatically logs in your account.|*May not work on some servers.*|
+|5|`Container Cleaner`|Throw items from container.|*May not work on some servers.*|
+|6|`High Jump`|Makes you jump higher than normal.|*Uses many jumps to simulate a big jump.*|
+|7|`Item Sucker`|Sucks up all items on the ground.|*This module uses baritone, so don't forget to stop it.*|
+|8|`Jump Flight`|Flight that using jumps for fly.|*Same as Speed + AirJump, but speed can be changed using scroll wheel.*|
+|9|`New Velocity`|Velocity that can bypass some anti-cheats.||
+|10|`Slot Click`|Automatically clicks on slot.||
+||~~`ZKillaura`~~||*You can find it in directories, but it's not ready yet.*|
 
-Add more later
+## Commands
+|Command|Function|Info|
+|--|--|--|
+|`.coords`|Copies your coordinates to the clipboard.||
