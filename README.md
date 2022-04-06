@@ -18,7 +18,7 @@ Don't forget to download **[meteor dev build](https://meteorclient.com/download?
 
 ## Modules
 |№|Module|Function|Info|
-|--|--|--|--|
+|:----:|--|--|--|
 |1|`Auto Feed`|Writes command in chat when hunger level is low.||
 |2|`Auto Heal`|Writes command in chat when health level is low.||
 |3|`Auto Leave`|Automatically leaves if player in range.|*Meteor has Auto Log, but this module has different settings.*|
