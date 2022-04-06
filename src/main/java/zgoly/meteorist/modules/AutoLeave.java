@@ -39,9 +39,8 @@ public class AutoLeave extends Module {
             .name("range:")
             .description("Disconnects if player in range.")
             .defaultValue(5)
-            .min(1)
-            .range(1, 25)
-            .sliderRange(1, 25)
+            .range(1, 128)
+            .sliderRange(1, 10)
             .build()
     );
 

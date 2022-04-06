@@ -51,8 +51,8 @@ public class AutoLogin extends Module {
     private void onTick(TickEvent.Post event) {
         if (serverOnly.get() && mc.getServer() != null && mc.getServer().isSingleplayer()) return;
         if (!(logMsg.get().isEmpty() || password.get().isEmpty()) && work) {
-            mc.player.sendChatMessage(logMsg.get() + " " + password.get());
             work = false;
+            mc.player.sendChatMessage(logMsg.get() + " " + password.get());
         }
     }
     @EventHandler

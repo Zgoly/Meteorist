@@ -2,16 +2,18 @@
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
+import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseScrollEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.systems.modules.render.Freecam;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
-import meteordevelopment.orbit.EventPriority;
 import net.minecraft.util.math.Vec3d;
 import zgoly.meteorist.Meteorist;
 
@@ -22,9 +24,17 @@ public class JumpFlight extends Module {
             .name("speed:")
             .description("Flight speed.")
             .defaultValue(5)
-            .min(1)
-            .range(1, 50)
-            .sliderRange(1, 50)
+            .range(1, 75)
+            .sliderRange(1, 75)
+            .build()
+    );
+
+    private final Setting<Integer> verticalSpeed = sgGeneral.add(new IntSetting.Builder()
+            .name("vertical-speed:")
+            .description("Vertical flight speed.")
+            .defaultValue(1)
+            .range(1, 10)
+            .sliderRange(1, 10)
             .build()
     );
 
@@ -45,9 +55,11 @@ public class JumpFlight extends Module {
             .build()
     );
 
+    boolean work = true;
     private int level;
+
     public JumpFlight() {
-        super(Meteorist.CATEGORY, "jump-flight", "Flight that using jumps for fly. Can bypass some anti-cheats. No fall recommended.");
+        super(Meteorist.CATEGORY, "jump-flight", "Flight that using jumps for fly. No fall recommended.");
     }
 
     @Override
@@ -66,24 +78,33 @@ public class JumpFlight extends Module {
     @EventHandler
     private void onKey(KeyEvent event) {
         if (event.action != KeyAction.Press) return;
+        if (Modules.get().isActive(Freecam.class) || mc.currentScreen != null) return;
         if (mc.options.jumpKey.matchesKey(event.key, 0)) {
-            mc.player.jump();
-            level++;
+            for (int i = 0; i < verticalSpeed.get(); i++) level++;
         } else if (mc.options.sneakKey.matchesKey(event.key, 0)) {
-            level--;
+            for (int i = 0; i < verticalSpeed.get(); i++) level--;
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler
     private void onMouseScroll(MouseScrollEvent event) {
         if (scrollBool.get()) speed.set(speed.get() + event.value * scrollSens.get());
         //Voice в моих ушах — я позабыл все дни недели
     }
 
     @EventHandler
-    private void onTick(TickEvent.Pre event) {
-        if (mc.player.getBlockPos().getY() == level) {
+    private void onTick(TickEvent.Post event) {
+        if (work) {
+            work = false;
+            level = mc.player.getBlockPos().getY();
+        }
+        if (mc.player.getBlockPos().getY() <= level) {
             mc.player.jump();
         }
+    }
+
+    @EventHandler
+    private void onGameLeft(GameLeftEvent event) {
+        work = true;
     }
 }
