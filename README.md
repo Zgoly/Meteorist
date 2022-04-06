@@ -27,6 +27,7 @@ Don't forget to download **[meteor dev build](https://meteorclient.com/download?
 + `Jump Flight` - Flight that using jumps for fly. *Same as Speed + AirJump, but with ability to change speed using scroll wheel*
 + `New Velocity` - Velocity that can bypass some anti-cheats.
 + `Slot Click` - Automatically clicks on slot.
++ ~~`ZKillaura`~~ *You can find it in directories, but it's not ready yet.*
 ## Commands
 + `.coords` - Copies your coordinates to the clipboard.
 
