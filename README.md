@@ -31,8 +31,9 @@ Mod resolution encountered an incompatible mod set!
 ```
 1. Try updating [Meteorist](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar), [Fabric](https://fabricmc.net/use/installer) and [Meteor Client](https://meteorclient.com/download?devBuild=latest) to latest versions.
 2. If a Minecraft update is available, update it.
-3. Try to install the latest version of [Baritone](https://github.com/cabaletta/baritone/actions) (find the latest workflow containing "Artifacts").
-
+3. Try to install the latest version of [Baritone](https://github.com/cabaletta/baritone/actions).
+    1. Find the latest workflow containing "Artifacts" and click on "Artifacts" file.
+    2. After downloading, open it as archive and select version you need.
 
 ## Modules
 |№|Module|Function|Info|
