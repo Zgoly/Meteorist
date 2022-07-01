@@ -36,6 +36,7 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new JumpFlight());
         Modules.get().add(new NewVelocity());
         Modules.get().add(new SlotClick());
+        Modules.get().add(new ZKillaura());
         // Commands
         Commands.get().add(new Coordinates());
     }
