@@ -55,4 +55,4 @@ Mod resolution encountered an incompatible mod set!
 ## Commands
 |№|Command|Function|Info|
 |:----:|--|--|--|
-|1|`.coords`|Copies your coordinates to the clipboard.|Also command `.coords share_in_chat` will share your coordinates in chat.|
+|1|`.coords`|Copies your coordinates to the clipboard.|*Also command `.coords share_in_chat` will share your coordinates in chat.*|
