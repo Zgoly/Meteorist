@@ -29,8 +29,8 @@ public class ItemSucker extends Module {
             .name("range")
             .description("Range.")
             .defaultValue(3.5)
-            .range(1, 10)
-            .sliderRange(1, 128)
+            .range(1, 128)
+            .sliderRange(1, 10)
             .build()
     );
 
@@ -45,9 +45,16 @@ public class ItemSucker extends Module {
             .name("speed:")
             .description("Speed???")
             .defaultValue(20)
-            .range(1, 30)
-            .sliderRange(1, 75)
+            .range(1, 128)
+            .sliderRange(1, 30)
             .visible(boolSpeed::get)
+            .build()
+    );
+
+    private final Setting<Boolean> goBack = sgGeneral.add(new BoolSetting.Builder()
+            .name("go-back")
+            .description("When item is picked up, you will return to start position.")
+            .defaultValue(true)
             .build()
     );
 
@@ -79,13 +86,13 @@ public class ItemSucker extends Module {
         IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
         if (boolSpeed.get() && baritone.getPathingBehavior().isPathing()) changeSpeed = true;
         else if (boolSpeed.get() && !baritone.getPathingBehavior().isPathing()) changeSpeed = false;
-        if (pos != null) {
+        if (goBack.get() && pos != null) {
             baritone.getCustomGoalProcess().setGoalAndPath(new GoalGetToBlock(pos.add(0, -1, 0)));
             if (mc.player.getBlockPos().getX() == pos.getX() && mc.player.getBlockPos().getZ() == pos.getZ()) pos = null;
         }
         for (Entity entity : mc.world.getEntities()) {
             if (Objects.equals(entity.getType().toString(), "entity.minecraft.item") && mc.player.distanceTo(entity) <= range.get()) {
-                if (pos == null) pos = mc.player.getBlockPos();
+                if (goBack.get() && pos == null) pos = mc.player.getBlockPos();
                 if (mc.player == null || mc.world == null) return;
                 baritone.getCustomGoalProcess().setGoalAndPath(new GoalGetToBlock(entity.getBlockPos().add(0, -1, 0)));
             }

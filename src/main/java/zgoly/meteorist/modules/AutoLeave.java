@@ -9,7 +9,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import zgoly.meteorist.Meteorist;
 
 public class AutoLeave extends Module {
@@ -69,7 +69,7 @@ public class AutoLeave extends Module {
                 if (entity.getUuid() != mc.player.getUuid() && mc.player.distanceTo(entity) < range.get()) {
                     if (ignoreFriends.get() && Friends.get().isFriend((PlayerEntity) entity)) return;
                     if (mode.get() == Mode.Logout)
-                        mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(new LiteralText("[AutoLeave] Found player in radius.")));
+                        mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.of("[AutoLeave] Found player in radius.")));
                     else if (mode.get() == Mode.Command && !command.get().isEmpty()) mc.player.sendChatMessage(command.get());
                     if (toggleOff.get()) this.toggle();
                 }
