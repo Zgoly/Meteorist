@@ -31,16 +31,16 @@ Mod resolution encountered an incompatible mod set!
 ```
 1. Try updating [Meteorist](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar), [Fabric](https://fabricmc.net/use/installer) and [Meteor Client](https://meteorclient.com/download?devBuild=latest) to latest versions.
 2. If a Minecraft update is available, update it.
-3. Try to install the latest version of [Baritone](https://github.com/cabaletta/baritone/actions).
-    1. Find the latest workflow containing "Artifacts" and click on "Artifacts" file.
-    2. After downloading, open it as archive and select version you need.
+3. Try install latest version of [Baritone](https://github.com/cabaletta/baritone/actions).
+    1. Find latest workflow containing "Artifacts" and click on "Artifacts" file to download it.
+    2. After downloading, open it as archive and drag and drop version you need to `.minecraft/mods` folder.
 
 ## Modules
 |№|Module|Function|Info|
 |:----:|--|--|--|
 |1|`Auto Feed`|Writes command in chat when hunger level is low.|*Default command is /feed, but you can change it.*|
 |2|`Auto Floor`|Put blocks under you like "scaffold" module, but in range.|*Requires improvement.*|
-|3|`Auto Heal`|Writes command in chat when health level is low.|*Default command is /feed, but you can change it.*|
+|3|`Auto Heal`|Writes command in chat when health level is low.|*Default command is /heal, but you can change it.*|
 |4|`Auto Leave`|Automatically leaves if player in range.|*Meteor has Auto Log, but this module has different settings that are better for non-anarchy servers.*|
 |5|`Auto Light`|Shows best place to place light source block.|*Can also place for you. May not work on some servers.*|
 |6|`Auto Login`|Automatically logs in your account.|*May not work on some servers.*|
