@@ -11,6 +11,14 @@
 </div>
 
 ## Information
+```
+When update to 1.19.x?
+
+Update will be released when useless reporting system and meteor finally released.
+Current version - 1.19
+Sorry.
+```
+
 This addon adds many new features to the [Meteor Client](https://meteorclient.com/). You can find a list of all available features below.
 
 If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+). Also, if you find any bug or have any problem check "Problems" below, and if it doesn't help write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
