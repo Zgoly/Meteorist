@@ -51,7 +51,7 @@ Mod resolution encountered an incompatible mod set!
 |3|`Auto Heal`|Writes command in chat when health level is low.|*Default command is /heal, but you can change it.*|
 |4|`Auto Leave`|Automatically leaves if player in range.|*Meteor has Auto Log, but this module has different settings that are better for non-anarchy servers.*|
 |5|`Auto Light`|Shows best place to place light source block.|*Can also place for you. May not work on some servers.*|
-|6|`Auto Login`|Automatically logs in your account.|*May not work on some servers.*|
+|6|`Auto Login`|Automatically logs in your account.|**[read important info here](https://github.com/Zgoly/Meteorist/wiki/Meteorist-wiki#auto-login)**|
 |7|`Container Cleaner`|Throw items from container.|*May not work on some servers.*|
 |8|`High Jump`|Makes you jump higher than normal.|*Uses many jumps to simulate a big jump.*|
 |9|`Item Sucker`|Sucks up all items on the ground.|*This module uses baritone, so don't forget to stop it if it works.*|
