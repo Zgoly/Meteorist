@@ -2,9 +2,9 @@
   <h1>Meteorist</h1>
   <p>Addon for Meteor Client.</p>
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19-blue">
-  <img alt="Mod" src="https://img.shields.io/badge/Mod-1.3-orange">
-  <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/zgoly/meteorist/total?logo=GitHub&style=flat">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist">
+  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=green&logo=checkmarx&logoColor=white">
+  <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=purple&logo=github">
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist?color=gold">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/zgoly/meteorist?style=flat">
   <img alt="GitHub issues" src="https://img.shields.io/github/issues/zgoly/meteorist?style=flat">
   <img src="https://img.shields.io/badge/Tacos-Tasty-blue">
