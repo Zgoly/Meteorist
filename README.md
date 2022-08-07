@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Meteorist</h1>
-  <p>Addon for Meteor Client.</p>
+  <p>Addon for Meteor Client ☄️.</p>
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19-blue">
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=green&logo=checkmarx&logoColor=white">
   <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=purple&logo=github">
@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/Tacos-Tasty-blue">
 </div>
 
-## Information
+## ℹ️ Information
 ```
 When update to 1.19.x?
 
@@ -23,13 +23,13 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 
 If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+). Also, if you find any bug or have any problem check "Problems" below, and if it doesn't help write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
 
-## Download
-1. Click **[here](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)**
+## ⬇️ Download
+1. Click **[here to download](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)**
 2. Move `meteorist.jar` in `.minecraft/mods` folder
 
 Don't forget to download **[meteor dev build](https://meteorclient.com/download?devBuild=latest)**
 
-## Problems
+## ⁉️ Problems
 >*I can't start minecraft, fabric gives me an error:*
 ```
 Mod resolution encountered an incompatible mod set!
@@ -43,7 +43,7 @@ Mod resolution encountered an incompatible mod set!
     1. Find latest workflow containing "Artifacts" and click on "Artifacts" file to download it.
     2. After downloading, open it as archive and drag and drop version you need to `.minecraft/mods` folder.
 
-## Modules
+## 🤓 Modules
 |№|Module|Function|Info|
 |:----:|--|--|--|
 |1|`Auto Feed`|Writes command in chat when hunger level is low.|*Default command is /feed, but you can change it.*|
@@ -60,7 +60,7 @@ Mod resolution encountered an incompatible mod set!
 |12|`Slot Click`|Automatically clicks on slot.|*This works on any storage that has slots.*|
 |13|`ZKillaura`|Killaura that only attacks when you jump.|*Requires improvement.*|
 
-## Commands
+## 📄 Commands
 |№|Command|Function|Info|
 |:----:|--|--|--|
 |1|`.coords`|Copies your coordinates to the clipboard.|*Also command `.coords share_in_chat` will share your coordinates in chat.*|
