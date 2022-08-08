@@ -19,7 +19,7 @@ Current version - 1.19
 Sorry.
 ```
 
-This addon adds many new features to the [Meteor Client](https://meteorclient.com/). You can find a list of all available features below.
+This addon adds many new features to the [Meteor Client](https://meteorclient.com/). You can find a list of all available features below, and also [read more about each function](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).
 
 If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+). Also, if you find any bug or have any problem check "Problems" below, and if it doesn't help write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
 
