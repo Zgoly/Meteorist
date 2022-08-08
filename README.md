@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Meteorist</h1>
-  <p>Addon for Meteor Client ☄️.</p>
+  <p>Adds additional functionality to Meteor Client ☄️</p>
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19-blue?logo=hackthebox&logoColor=white">
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=green&logo=verizon&logoColor=white">
   <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=purple&logo=github">
