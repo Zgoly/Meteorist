@@ -32,18 +32,7 @@ If you want to add or suggest any feature, then write [here](https://github.com/
 Don't forget to download **[meteor dev build](https://meteorclient.com/download?devBuild=latest)**
 
 ## ⁉️ Problems
->*I can't start minecraft, fabric gives me an error:*
-```
-Mod resolution encountered an incompatible mod set!
-  A potential solution has been determined:
-    Replace mod 'Baritone' (baritone) x.xx-SNAPSHOT with any version that is compatible with:
-      minecraft x.xx`
-```
-1. Try updating [Meteorist](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar), [Fabric](https://fabricmc.net/use/installer) and [Meteor Client](https://meteorclient.com/download?devBuild=latest) to latest versions.
-2. If a Minecraft update is available, update it.
-3. Try install latest version of [Baritone](https://github.com/cabaletta/baritone/actions).
-    1. Find latest workflow containing "Artifacts" and click on "Artifacts" file to download it.
-    2. After downloading, open it as archive and drag and drop version you need to `.minecraft/mods` folder.
+**Nevermind bariton error fixed**
 
 ## 🤓 Modules
 |№|Module|Function|Info|
