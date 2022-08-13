@@ -13,9 +13,7 @@
 ## ℹ️ Information
 This addon adds many new features to the [Meteor Client](https://meteorclient.com/). You can find a list of all available features below.
 
-You can also [read more about each function on Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).
-
-If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+). Also, if you find any bug or have any problem check "Problems" below, and if it doesn't help write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
+If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
 
 ## ⬇️ Download
 1. Click **[here to download](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)**
@@ -24,7 +22,7 @@ If you want to add or suggest any feature, then write [here](https://github.com/
 Don't forget to download **[meteor dev build](https://meteorclient.com/download?devBuild=latest)**
 
 ## ⁉️ Problems
-**Nevermind bariton error fixed**
+If you find any bug or have any problem write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
 
 ## 🤓 Modules
 |№|Module|Description|
@@ -43,6 +41,7 @@ Don't forget to download **[meteor dev build](https://meteorclient.com/download?
 |12|`Slot Click`|Automatically clicks on slot.|
 |13|`ZKillaura`|Killaura that only attacks when you jump.|
 
+**You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
 
 ## 📄 Commands
 |№|Command|Function|
