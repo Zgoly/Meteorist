@@ -25,7 +25,7 @@ public class Coordinates extends Command {
         });
         builder.then(literal("share_in_chat").executes(context -> {
             String s = ", ";
-            mc.player.sendChatMessage("Coordinates: " + mc.player.getBlockPos().getX() + s + mc.player.getBlockPos().getY() + s + mc.player.getBlockPos().getZ());
+            mc.player.sendChatMessage("Coordinates: " + mc.player.getBlockPos().getX() + s + mc.player.getBlockPos().getY() + s + mc.player.getBlockPos().getZ(), Text.of("Coordinates"));
             return SINGLE_SUCCESS;
         }));
     }

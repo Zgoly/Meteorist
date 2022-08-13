@@ -27,7 +27,7 @@ public class ItemSucker extends Module {
 
     private final Setting<Double> range = sgGeneral.add(new DoubleSetting.Builder()
             .name("range")
-            .description("Range.")
+            .description("Range, in which items will be sucked.")
             .defaultValue(3.5)
             .range(1, 128)
             .sliderRange(1, 10)
@@ -42,8 +42,8 @@ public class ItemSucker extends Module {
     );
 
     private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("speed:")
-            .description("Speed???")
+            .name("speed")
+            .description("Player moving speed.")
             .defaultValue(20)
             .range(1, 128)
             .sliderRange(1, 30)
@@ -53,7 +53,7 @@ public class ItemSucker extends Module {
 
     private final Setting<Boolean> goBack = sgGeneral.add(new BoolSetting.Builder()
             .name("go-back")
-            .description("When item is picked up, you will return to start position.")
+            .description("When all items is picked up, you will return to start position.")
             .defaultValue(true)
             .build()
     );

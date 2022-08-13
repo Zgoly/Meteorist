@@ -28,13 +28,13 @@ public class ContainerCleaner extends Module {
             .build()
     );
     private final Setting<Boolean> bThrowAngle = sgGeneral.add(new BoolSetting.Builder()
-            .name("throw-angle")
-            .description("For example, \"-30\" is throw over container, \"90\" is throw under your legs.")
+            .name("change-throw-angle")
+            .description("Change throw angle if you want throw items out of the way you're looking.")
             .defaultValue(true)
             .build()
     );
     private final Setting<Integer> throwAngle = sgGeneral.add(new IntSetting.Builder()
-            .name("throw-angle:")
+            .name("throw-angle")
             .description("For example, \"-30\" is throw over container, \"90\" is throw under your legs.")
             .defaultValue(0)
             .range(-90, 90)

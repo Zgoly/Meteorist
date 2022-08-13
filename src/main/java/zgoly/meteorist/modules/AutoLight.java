@@ -39,9 +39,16 @@ public class AutoLight extends Module {
 
     private final Setting<Boolean> rotate = sgGeneral.add(new BoolSetting.Builder()
             .name("rotate")
-            .description("Rotate camera.")
+            .description("Rotate head when placing a block.")
             .defaultValue(true)
             .visible(place::get)
+            .build()
+    );
+
+    private final Setting<Boolean> dynHeight = sgGeneral.add(new BoolSetting.Builder()
+            .name("dynamic-height")
+            .description("Places light source on the ground.")
+            .defaultValue(true)
             .build()
     );
 
@@ -64,13 +71,6 @@ public class AutoLight extends Module {
     private final Setting<Boolean> show = sgColor.add(new BoolSetting.Builder()
             .name("show")
             .description("Shows overlay of suggested places for light.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> dynHeight = sgColor.add(new BoolSetting.Builder()
-            .name("dynamic-height")
-            .description("Places light source on the ground.")
             .defaultValue(true)
             .build()
     );
@@ -107,16 +107,22 @@ public class AutoLight extends Module {
         super(Meteorist.CATEGORY, "auto-light", "Shows best place to place light source block.");
     }
 
-    boolean work = false;
+    boolean showBox = false;
     BlockPos finalPos = new BlockPos(0,0,0);
     BlockPos xP = new BlockPos(0,0,0);
     BlockPos xM = new BlockPos(0,0,0);
     BlockPos zP = new BlockPos(0,0,0);
     BlockPos zM = new BlockPos(0,0,0);
 
+
+    @Override
+    public void onActivate() {
+        showBox = true;
+    }
+
     @Override
     public void onDeactivate() {
-        work = false;
+        showBox = false;
     }
 
     @EventHandler
@@ -144,7 +150,7 @@ public class AutoLight extends Module {
                             while (mc.world.getBlockState(zM.add(0, -1, 0)).isAir()) zM = zM.add(0, -1, 0);
                         }
 
-                        work = true;
+                        showBox = true;
                     }
                     if (place.get() & mc.world.getBlockState(pos).isAir()) {
                         if (pos.toString().contains(xP.toString()) ||
@@ -164,7 +170,7 @@ public class AutoLight extends Module {
 
     @EventHandler
     private void onRender(Render3DEvent event) {
-        if (work && show.get()) {
+        if (showBox && show.get()) {
             event.renderer.box(finalPos, sC1.get(), lC1.get(), ShapeMode.Both, 0);
             event.renderer.box(xP, sC2.get(), lC2.get(), ShapeMode.Both, 0);
             event.renderer.box(xM, sC2.get(), lC2.get(), ShapeMode.Both, 0);

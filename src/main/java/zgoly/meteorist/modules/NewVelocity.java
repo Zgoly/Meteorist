@@ -18,10 +18,8 @@ public class NewVelocity extends Module {
     private void onPacketReceive(PacketEvent.Receive event) {
         if (event.packet instanceof EntityVelocityUpdateS2CPacket packet && ((EntityVelocityUpdateS2CPacket) event.packet).getId() == mc.player.getId()) {
             double velX = (packet.getVelocityX() / 8000d - mc.player.getVelocity().x) * 0.05;
-            double velY = (packet.getVelocityY() / 8000d - mc.player.getVelocity().y) * 1;
             double velZ = (packet.getVelocityZ() / 8000d - mc.player.getVelocity().z) * 0.05;
             ((EntityVelocityUpdateS2CPacketAccessor) packet).setX((int) (velX * 8000 + mc.player.getVelocity().x * 8000));
-            ((EntityVelocityUpdateS2CPacketAccessor) packet).setY((int) (velY * 8000 + mc.player.getVelocity().y * 8000));
             ((EntityVelocityUpdateS2CPacketAccessor) packet).setZ((int) (velZ * 8000 + mc.player.getVelocity().z * 8000));
         }
     }

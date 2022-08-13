@@ -20,7 +20,7 @@ public class Meteorist extends MeteorAddon {
 
     @Override
     public void onInitialize() {
-        LOG.info("Meteorist successfully stole your IP, credit card information, your residential address and CornHub login/password.");
+        LOG.info("Meteorist joined the game");
         MeteorClient.EVENT_BUS.registerLambdaFactory("zgoly.meteorist", (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
         // Modules
         Modules.get().add(new AutoFeed());
@@ -28,12 +28,11 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new AutoHeal());
         Modules.get().add(new AutoLeave());
         Modules.get().add(new AutoLogin());
-        Modules.get().add(new AutoFloor());
         Modules.get().add(new ContainerCleaner());
         Modules.get().add(new AutoLight());
-        Modules.get().add(new HighJump());
         Modules.get().add(new ItemSucker());
         Modules.get().add(new JumpFlight());
+        Modules.get().add(new JumpJump());
         Modules.get().add(new NewVelocity());
         Modules.get().add(new SlotClick());
         Modules.get().add(new ZKillaura());
@@ -44,5 +43,10 @@ public class Meteorist extends MeteorAddon {
     @Override
     public void onRegisterCategories() {
         Modules.registerCategory(CATEGORY);
+    }
+
+    @Override
+    public String getPackage() {
+        return "zgoly.meteorist";
     }
 }

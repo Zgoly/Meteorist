@@ -27,8 +27,8 @@ public class SlotClick extends Module {
     );
 
     private final Setting<Integer> slot = sgGeneral.add(new IntSetting.Builder()
-            .name("slot:")
-            .description("Slot number to click. For example, in a double chest, \"1\" is the first slot, \"54\" is the last.")
+            .name("slot")
+            .description("Slot number to click. For example, in a double chest, \"1\" is first slot, \"54\" is last.")
             .defaultValue(1)
             .range(1, 90)
             .sliderRange(1, 90)
@@ -36,8 +36,8 @@ public class SlotClick extends Module {
     );
 
     private final Setting<Integer> button = sgGeneral.add(new IntSetting.Builder()
-            .name("button:")
-            .description("\"0\" - left click, \"1\" - right click.")
+            .name("mouse-button")
+            .description("\"0\" - left mouse button, \"1\" - right mouse button.")
             .defaultValue(0)
             .range(0, 1)
             .sliderRange(0, 1)
@@ -45,26 +45,32 @@ public class SlotClick extends Module {
     );
 
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay:")
-            .description("Delay in ticks (1 sec = 20 ticks).")
+            .name("delay")
+            .description("Delay in ticks (20 ticks = 1 sec).")
             .defaultValue(10)
             .range(1, 1200)
             .sliderRange(1, 40)
             .build()
     );
 
-    private int value = 0;
+    private int timer;
 
     public SlotClick() {
         super(Meteorist.CATEGORY, "slot-click", "Automatically clicks on slot.");
     }
 
+    @Override
+    public void onActivate() {
+        timer = 0;
+    }
+
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (value >= delay.get()) { value = 0;
+        if (timer >= delay.get()) {
             if (!(mc.currentScreen instanceof GenericContainerScreen)) return;
             mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, slot.get() - 1, button.get(), SlotActionType.valueOf(mode.get().name()), mc.player);
-        } else value++;
+            timer = 0;
+        } else timer ++;
     }
 
 }

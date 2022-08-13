@@ -21,7 +21,7 @@ public class JumpFlight extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("speed:")
+            .name("speed")
             .description("Flight speed.")
             .defaultValue(5)
             .range(1, 75)
@@ -30,8 +30,8 @@ public class JumpFlight extends Module {
     );
 
     private final Setting<Integer> verticalSpeed = sgGeneral.add(new IntSetting.Builder()
-            .name("vertical-speed:")
-            .description("Vertical flight speed.")
+            .name("change-y-axis-force")
+            .description("Force of change y-axis.")
             .defaultValue(1)
             .range(1, 10)
             .sliderRange(1, 10)
@@ -46,8 +46,8 @@ public class JumpFlight extends Module {
     );
 
     private final Setting<Double> scrollSens = sgGeneral.add(new DoubleSetting.Builder()
-            .name("scroll-sensitivity:")
-            .description("Allows change speed using scroll wheel.")
+            .name("scroll-sensitivity")
+            .description("Change speed using scroll wheel sensitivity.")
             .defaultValue(1)
             .range(0.1, 5)
             .sliderRange(0.1, 5)
