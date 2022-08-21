@@ -47,3 +47,5 @@ If you find any bug or have any problem write [here](https://github.com/Zgoly/Me
 |№|Command|Function|
 |:----:|--|--|
 |1|`.coords`|Copies your coordinates to the clipboard.|
+
+**You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
