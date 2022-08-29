@@ -15,6 +15,8 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 
 If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
 
+### ⭐ Star this repository, to support me!
+
 ## ⬇️ Download
 1. Click **[here](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)** to download
 2. Move `meteorist.jar` in `.minecraft/mods` folder
