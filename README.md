@@ -1,5 +1,6 @@
 <div align="center">
   <h1>Meteorist</h1>
+  <img width="100" alt="Meteorist logo" src="https://github.com/Zgoly/Meteorist/raw/main/src/main/resources/assets/meteorist/icon.png">
   <p>Adds additional functionality to Meteor Client ☄️</p>
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19.2-blue?logo=hackthebox&logoColor=white">
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=green&logo=verizon&logoColor=white">
