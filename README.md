@@ -16,7 +16,9 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 
 If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
 
-### ⭐ Star this repository, to support me!
+⭐ Star this repository, to support me!
+
+## ✅ [Preview](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules)
 
 ## ⬇️ Download
 1. Click **[here](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)** to download
@@ -27,7 +29,7 @@ Don't forget to download **[meteor dev build](https://meteorclient.com/download?
 ## ⁉️ Problems
 If you find any bug or have any problem write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
 
-## 🤓 Modules
+## 🧩 Modules
 |№|Module|Description|
 |:----:|--|--|
 |1|`Auto Feed`|Writes command in chat when hunger level is low.|
