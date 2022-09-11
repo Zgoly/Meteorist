@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "meteorist",
-  "version": "${version}",
+  "version": "1.3.2",
   "name": "Meteorist",
   "description": "Addon for Meteor Client.",
   "authors": [
