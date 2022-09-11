@@ -19,7 +19,7 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 
 If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
 
-⭐ Star this repository, to support me!
+⭐ **Star this repository, to support me!**
 
 ## ✅ [Preview](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules)
 
