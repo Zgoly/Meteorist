@@ -7,7 +7,10 @@
   "authors": [
     "Zgoly"
   ],
-  "contact": {},
+  "contact": {
+
+  },
+  "icon": "assets/meteorist/icon.png",
   "license": "MIT",
   "environment": "client",
   "entrypoints": {
@@ -19,8 +22,7 @@
     "meteorist.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.13.3",
-    "fabric": "*",
+    "fabricloader": ">=0.14.9",
     "minecraft": "*"
   }
 }

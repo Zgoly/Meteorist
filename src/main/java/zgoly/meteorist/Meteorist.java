@@ -1,8 +1,14 @@
 //By Zgoly
 package zgoly.meteorist;
 
+import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.commands.Commands;
+import meteordevelopment.meteorclient.systems.hud.Hud;
+import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
+import meteordevelopment.meteorclient.systems.hud.HudGroup;
+import meteordevelopment.meteorclient.systems.hud.elements.TextHud;
 import zgoly.meteorist.commands.Coordinates;
+import zgoly.meteorist.hud.Presets;
 import zgoly.meteorist.modules.*;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
@@ -17,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 public class Meteorist extends MeteorAddon {
     public static final Logger LOG = LoggerFactory.getLogger("Meteorist");
     public static final Category CATEGORY = new Category("Meteorist", Items.DIRT.getDefaultStack());
+    public static final HudGroup HUD_GROUP = new HudGroup("Meteorist");
 
     @Override
     public void onInitialize() {
@@ -38,6 +45,10 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new ZKillaura());
         // Commands
         Commands.get().add(new Coordinates());
+        // Hud Presets
+        Presets.starscriptAdd();
+        Hud hud = Systems.get(Hud.class);
+        hud.register(Presets.INFO);
     }
 
     @Override

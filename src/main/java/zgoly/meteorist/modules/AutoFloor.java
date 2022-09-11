@@ -89,20 +89,20 @@ public class AutoFloor extends Module {
 
     private final Setting<Boolean> show = sgColor.add(new BoolSetting.Builder()
             .name("show")
-            .description("Shows overlay of suggested places for light.")
+            .description("Shows overlay of the blocks being placed.")
             .defaultValue(true)
             .build()
     );
 
     private final Setting<SettingColor> sC = sgColor.add(new ColorSetting.Builder()
-            .name("main-side-color")
+            .name("side-color")
             .description("The color of the sides of the blocks being rendered.")
             .defaultValue(new SettingColor(0, 200, 200, 40))
             .build()
     );
 
     private final Setting<SettingColor> lC = sgColor.add(new ColorSetting.Builder()
-            .name("main-line-color")
+            .name("line-color")
             .description("The color of the lines of the blocks being rendered.")
             .defaultValue(new SettingColor(0, 200, 200, 100))
             .build()
