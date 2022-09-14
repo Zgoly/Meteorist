@@ -3,8 +3,7 @@
   <kbd>
     <img width="569" alt="Meteorist banner" src="https://repository-images.githubusercontent.com/473465587/c518731b-777d-4af8-9678-155061a286aa">
   </kbd>
-  <br><br>
-  <p>Adds additional functionality to Meteor Client ☄️</p>
+  <h3>Adds additional functionality to Meteor Client ☄️</h3>
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19.2-ff00ff?logo=hackthebox&logoColor=white&style=flat-square">
   <img alt="GitHub release" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=d25eff&include_prereleases&style=flat-square">
   <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=9e81ff&logo=github&style=flat-square">
@@ -15,15 +14,13 @@
 </div>
 
 ## ℹ️ Information
-This addon adds many new features to the [Meteor Client](https://meteorclient.com/). You can find a list of all available features below.
-
-If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
+This addon adds many new features to the [Meteor Client](https://meteorclient.com/). If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
 
 ⭐ **Star this repository, to support me!**
 
-## ✅ [Preview](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules)
-
 ## ⬇️ Download
+You can [see how it looks](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) before downloading.
+
 1. Click **[here](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)** to download
 2. Move `meteorist.jar` in `.minecraft/mods` folder
 
@@ -55,5 +52,13 @@ If you find any bug or have any problem write [here](https://github.com/Zgoly/Me
 |№|Command|Function|
 |:----:|--|--|
 |1|`.coords`|Copies your coordinates to the clipboard.|
+
+**You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
+
+## 🔷 Other
+|№|Type|Name|Description|
+|:----:|--|--|--|
+|1|Hud Element|Fall Distance|Calculates fall distance.
+|2|Hud Element|Fall Damage|Tries to calculate fall damage. Supports armor enchantments.|
 
 **You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
