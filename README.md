@@ -18,6 +18,8 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 
 ⭐ **Star this repository, to support me!**
 
+<img alt="Stargazers" src="https://img.shields.io/badge/dynamic/json?label=%E2%AD%90%20Stargazers&color=gold&style=flat-square&query=$[*].login&url=https%3A%2F%2Fapi.github.com%2Frepos%2FZgoly%2FMeteorist%2Fstargazers">
+
 ## ⬇️ Download
 You can [see how it looks](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) before downloading.
 
