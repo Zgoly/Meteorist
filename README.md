@@ -7,10 +7,10 @@
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19.2-ff00ff?logo=hackthebox&logoColor=white&style=flat-square">
   <img alt="GitHub release" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=d25eff&include_prereleases&style=flat-square">
   <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=9e81ff&logo=github&style=flat-square">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist?color=5f99ff&logo=apachespark&logoColor=white&style=flat-square">
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist?label=%E2%AD%90%20stars&color=5f99ff&style=flat-square">
   <img alt="GitHub code size" src="https://img.shields.io/github/languages/code-size/zgoly/meteorist?color=00aaff&style=flat-square">
   <img alt="GitHub issues" src="https://img.shields.io/github/issues/zgoly/meteorist?color=00b7ff&style=flat-square">
-  <img src="https://img.shields.io/static/v1?label=Tacos&message=Tasty&color=00c8ff&style=flat-square">
+  <img src="https://img.shields.io/static/v1?label=tacos&message=tasty&color=00c8ff&style=flat-square">
 </div>
 
 ## ℹ️ Information
