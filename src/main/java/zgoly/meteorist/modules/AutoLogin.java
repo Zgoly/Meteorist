@@ -11,11 +11,6 @@ import zgoly.meteorist.Meteorist;
 public class AutoLogin extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    public enum Mode {
-        Percentage,
-        Commands
-    }
-
     private final Setting<String> loginCommand = sgGeneral.add(new StringSetting.Builder()
             .name("login-command")
             .description("Command to login.")
