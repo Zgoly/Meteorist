@@ -3,9 +3,9 @@ package zgoly.meteorist.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.systems.commands.Command;
-import net.minecraft.client.toast.SystemToast;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
@@ -16,17 +16,22 @@ public class Coordinates extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.executes(context -> {
-            String s = ", ";
-            String pos = mc.player.getBlockPos().getX() + s + mc.player.getBlockPos().getY() + s + mc.player.getBlockPos().getZ();
-            mc.keyboard.setClipboard(pos);
-            mc.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, Text.of("Coordinates copied"), Text.of("Paste, using Ctrl + V")));
-            return SINGLE_SUCCESS;
-        });
-        builder.then(literal("share_in_chat").executes(context -> {
-            String s = ", ";
-            mc.player.sendChatMessage("Coordinates: " + mc.player.getBlockPos().getX() + s + mc.player.getBlockPos().getY() + s + mc.player.getBlockPos().getZ(), Text.of("Coordinates"));
-            return SINGLE_SUCCESS;
+        builder.executes(context -> CopyPos());
+        builder.then(literal("copy").executes(context -> CopyPos()));
+
+        builder.then(literal("share-in-chat").executes(context -> {
+        mc.player.sendChatMessage("Coordinates: " + getPos(), Text.of("Coordinates"));
+        return SINGLE_SUCCESS;
         }));
+    }
+    private String getPos() {
+        BlockPos pos = mc.player.getBlockPos();
+        return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
+    }
+
+    private int CopyPos() {
+        mc.keyboard.setClipboard(getPos());
+        info("Coordinates successfully copied to the clipboard");
+        return SINGLE_SUCCESS;
     }
 }

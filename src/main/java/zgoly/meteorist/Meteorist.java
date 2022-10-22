@@ -4,10 +4,9 @@ package zgoly.meteorist;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.commands.Commands;
 import meteordevelopment.meteorclient.systems.hud.Hud;
-import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
-import meteordevelopment.meteorclient.systems.hud.elements.TextHud;
 import zgoly.meteorist.commands.Coordinates;
+import zgoly.meteorist.commands.TargetNbt;
 import zgoly.meteorist.hud.Presets;
 import zgoly.meteorist.modules.*;
 import meteordevelopment.meteorclient.MeteorClient;
@@ -31,11 +30,14 @@ public class Meteorist extends MeteorAddon {
         MeteorClient.EVENT_BUS.registerLambdaFactory("zgoly.meteorist", (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
         // Modules
         Modules.get().add(new AutoFeed());
+        Modules.get().add(new AutoFix());
         Modules.get().add(new AutoFloor());
         Modules.get().add(new AutoHeal());
         Modules.get().add(new AutoLeave());
         Modules.get().add(new AutoLogin());
         Modules.get().add(new ContainerCleaner());
+        Modules.get().add(new EntityUse());
+        Modules.get().add(new FastBridge());
         Modules.get().add(new AutoLight());
         Modules.get().add(new ItemSucker());
         Modules.get().add(new JumpFlight());
@@ -45,6 +47,7 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new ZKillaura());
         // Commands
         Commands.get().add(new Coordinates());
+        Commands.get().add(new TargetNbt());
         // Hud Presets
         Presets.starscriptAdd();
         Hud hud = Systems.get(Hud.class);

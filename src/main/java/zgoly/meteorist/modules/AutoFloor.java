@@ -15,6 +15,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import zgoly.meteorist.Meteorist;
+import zgoly.meteorist.utils.Utils;
+
 import java.util.List;
 
 public class AutoFloor extends Module {
@@ -35,21 +37,6 @@ public class AutoFloor extends Module {
             .name("rotate")
             .description("Rotate head when placing a block.")
             .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> skip = sgGeneral.add(new BoolSetting.Builder()
-            .name("skip")
-            .description("Skip block if impossible to place.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> checkEntities = sgGeneral.add(new BoolSetting.Builder()
-            .name("check-entities")
-            .description("Check if any entities interfering with block placement. Example - player.")
-            .defaultValue(true)
-            .visible(skip::get)
             .build()
     );
 
@@ -130,20 +117,16 @@ public class AutoFloor extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        Iterable<BlockPos> BlockPoses = BlockPos.iterateOutwards(mc.player.getBlockPos(), range.get(), 0, range.get());
+        Iterable<BlockPos> BlockPoses = BlockPos.iterateOutwards(mc.player.getBlockPos().down(-offset.get()), range.get(), 0, range.get());
         if (work) {
             int count = 0;
-            blockLoop: for (BlockPos blockPos : BlockPoses) {
-                if (skip.get() && !BlockUtils.canPlace(blockPos, checkEntities.get())) continue;
-                /*
-                for (Entity entity : mc.world.getEntities()) {
-                    if (entity.getBlockPos() == blockPos) continue blockLoop;
-                }
-                */
-                if (count > maxBlocksPerTick.get()) break;
+            for (BlockPos blockPos : BlockPoses) {
+                if (count >= maxBlocksPerTick.get()) break;
+                if (!BlockUtils.canPlace(blockPos) || Utils.isCollidesEntity(blockPos)) continue;
+
                 for (Block block : blocks.get()) {
                     FindItemResult item = InvUtils.findInHotbar(block.asItem());
-                    BlockUtils.place(blockPos.add(0, offset.get(), 0), item, rotate.get(), 0, true);
+                    BlockUtils.place(blockPos, item, rotate.get(), 0);
                 }
                 count++;
             }

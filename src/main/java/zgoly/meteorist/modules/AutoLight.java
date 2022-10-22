@@ -15,7 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import zgoly.meteorist.Meteorist;
-
+import java.util.Arrays;
 import java.util.List;
 
 public class AutoLight extends Module {
@@ -55,7 +55,7 @@ public class AutoLight extends Module {
     private final Setting<Integer> range = sgRange.add(new IntSetting.Builder()
             .name("range")
             .description("Range to light source.")
-            .defaultValue(4)
+            .defaultValue(2)
             .min(1)
             .build()
     );
@@ -109,11 +109,7 @@ public class AutoLight extends Module {
 
     boolean showBox = false;
     BlockPos finalPos = new BlockPos(0,0,0);
-    BlockPos xP = new BlockPos(0,0,0);
-    BlockPos xM = new BlockPos(0,0,0);
-    BlockPos zP = new BlockPos(0,0,0);
-    BlockPos zM = new BlockPos(0,0,0);
-
+    List<BlockPos> sides = Arrays.asList(new BlockPos(0,0,0), new BlockPos(0,0,0), new BlockPos(0,0,0), new BlockPos(0,0,0));
 
     @Override
     public void onActivate() {
@@ -127,41 +123,32 @@ public class AutoLight extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        for (int x = -range.get(); x <= range.get(); x++) {
-            for (int y = -range.get(); y <= range.get(); y++) {
-                for (int z = -range.get(); z <= range.get(); z++) {
-                    BlockPos pos = mc.player.getBlockPos().add(x, y, z);
-                    final Block block = mc.world.getBlockState(pos).getBlock();
-                    if (blocks.get().contains(block)) {
-                        finalPos = pos;
-                        xP = finalPos.add(gRange.get(), 0, 0);
-                        xM = finalPos.add(-gRange.get(), 0, 0);
-                        zP = finalPos.add(0, 0, gRange.get());
-                        zM = finalPos.add(0, 0, -gRange.get());
+        Iterable<BlockPos> BlockPoses = BlockPos.iterateOutwards(mc.player.getBlockPos(), range.get(), range.get(), range.get());
+        for (BlockPos blockPos : BlockPoses) {
+            blockPos = blockPos.toImmutable();
+            if (blocks.get().contains(mc.world.getBlockState(blockPos).getBlock())) {
+                finalPos = blockPos;
 
-                        if (dynHeight.get()) {
-                            while (!mc.world.getBlockState(xP).isAir()) xP = xP.add(0, 1, 0);
-                            while (mc.world.getBlockState(xP.add(0, -1, 0)).isAir()) xP = xP.add(0, -1, 0);
-                            while (!mc.world.getBlockState(xM).isAir()) xM = xM.add(0, 1, 0);
-                            while (mc.world.getBlockState(xM.add(0, -1, 0)).isAir()) xM = xM.add(0, -1, 0);
-                            while (!mc.world.getBlockState(zP).isAir()) zP = zP.add(0, 1, 0);
-                            while (mc.world.getBlockState(zP.add(0, -1, 0)).isAir()) zP = zP.add(0, -1, 0);
-                            while (!mc.world.getBlockState(zM).isAir()) zM = zM.add(0, 1, 0);
-                            while (mc.world.getBlockState(zM.add(0, -1, 0)).isAir()) zM = zM.add(0, -1, 0);
-                        }
+                sides.set(0, finalPos.north(gRange.get()));
+                sides.set(1, finalPos.south(gRange.get()));
+                sides.set(2, finalPos.west(gRange.get()));
+                sides.set(3, finalPos.east(gRange.get()));
 
-                        showBox = true;
+                if (dynHeight.get()) {
+                    for (BlockPos elem : sides) {
+                        while (!mc.world.getBlockState(elem).getMaterial().isReplaceable()) elem = elem.up(1);
+
+                        while (mc.world.getBlockState(elem.down(1)).getMaterial().isReplaceable()) elem = elem.down(1);
                     }
-                    if (place.get() & mc.world.getBlockState(pos).isAir()) {
-                        if (pos.toString().contains(xP.toString()) ||
-                                pos.toString().contains(xM.toString()) ||
-                                pos.toString().contains(zP.toString()) ||
-                                pos.toString().contains(zM.toString())) {
-                            for (Block b : blocks.get()) {
-                                FindItemResult item = InvUtils.findInHotbar(b.asItem());
-                                BlockUtils.place(pos, item, rotate.get(), 0, true);
-                            }
-                        }
+                }
+
+                showBox = true;
+            }
+            if (place.get() & mc.world.getBlockState(blockPos).isAir()) {
+                if (sides.contains(blockPos)) {
+                    for (Block b : blocks.get()) {
+                        FindItemResult item = InvUtils.findInHotbar(b.asItem());
+                        BlockUtils.place(blockPos, item, rotate.get(), 0);
                     }
                 }
             }
@@ -172,10 +159,9 @@ public class AutoLight extends Module {
     private void onRender(Render3DEvent event) {
         if (showBox && show.get()) {
             event.renderer.box(finalPos, sC1.get(), lC1.get(), ShapeMode.Both, 0);
-            event.renderer.box(xP, sC2.get(), lC2.get(), ShapeMode.Both, 0);
-            event.renderer.box(xM, sC2.get(), lC2.get(), ShapeMode.Both, 0);
-            event.renderer.box(zP, sC2.get(), lC2.get(), ShapeMode.Both, 0);
-            event.renderer.box(zM, sC2.get(), lC2.get(), ShapeMode.Both, 0);
+            for (BlockPos elem : sides) {
+                event.renderer.box(elem, sC2.get(), lC2.get(), ShapeMode.Both, 0);
+            }
         } else event.renderer.end();
     }
 }
