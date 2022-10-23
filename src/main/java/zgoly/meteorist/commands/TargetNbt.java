@@ -53,8 +53,9 @@ public class TargetNbt extends Command {
     }
 
     private int getNbt() {
-        if (getTargetNbt() == null) return SINGLE_SUCCESS;
-        mc.player.sendMessage(Text.of(getTargetNbt().toString()));
+        NbtCompound targetNbt = getTargetNbt();
+        if (targetNbt == null) return SINGLE_SUCCESS;
+        mc.player.sendMessage(Text.of(targetNbt.toString()));
         return SINGLE_SUCCESS;
     }
 }
