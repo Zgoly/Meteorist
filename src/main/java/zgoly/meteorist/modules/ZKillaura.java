@@ -68,11 +68,11 @@ public class ZKillaura extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
+        if (mc.player.isDead() || mc.world == null) return;
+        if (onJump.get() && !(mc.player.fallDistance > fallRange.get())) return;
+        if ((int) (mc.player.getAttackCooldownProgress(0.0F) * 17.0F) < 16) return;
         for (Entity entity : mc.world.getEntities()) {
             if (Arrays.asList(targets.get().keySet().toArray()).contains(entity.getType())) {
-                if (mc.player.isDead() || mc.world == null) return;
-                if (onJump.get() && !(mc.player.fallDistance > fallRange.get())) return;
-                if ((int) (mc.player.getAttackCooldownProgress(0.0F) * 17.0F) < 16) return;
                 if (mc.player.distanceTo(entity) <= range.get() && ((LivingEntity)entity).getHealth() > 0 && entity != mc.player) {
                     mc.interactionManager.attackEntity(mc.player, entity);
                     mc.player.swingHand(Hand.MAIN_HAND);
