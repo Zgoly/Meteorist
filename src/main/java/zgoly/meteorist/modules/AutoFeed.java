@@ -31,7 +31,7 @@ public class AutoFeed extends Module {
 
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
             .name("delay")
-            .description("Delay after sending a command in ticks (20 ticks = 1 sec).")
+            .description("Delay before sending a command in ticks (20 ticks = 1 sec).")
             .defaultValue(20)
             .range(1, 1200)
             .sliderRange(1, 40)
@@ -51,9 +51,11 @@ public class AutoFeed extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (timer >= delay.get() && mc.player.getHungerManager().getFoodLevel() <= hungerLevel.get()) {
-            mc.player.sendCommand(feedCommand.get().replace("/", ""));
-            timer = 0;
-        } else timer ++;
+        if (mc.player.getHungerManager().getFoodLevel() <= hungerLevel.get()) {
+            if (timer >= delay.get()) {
+                mc.player.sendCommand(feedCommand.get().replace("/", ""));
+                timer = 0;
+            } else timer++;
+        } else timer = 0;
     }
 }

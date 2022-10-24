@@ -71,17 +71,15 @@ public class AutoFix extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        boolean work = false;
         if (timer >= delay.get()) {
             for (ItemStack item : mc.player.getItemsEquipped()) {
                 if (item.getDamage() > 0 && item.getMaxDamage() > 0) {
                     if ((mode.get() == Mode.Default && item.getMaxDamage() - item.getDamage() >= minDurability.get()) || (mode.get() == Mode.Percentage
-                            && (((item.getMaxDamage() - item.getDamage()) * 100) / item.getMaxDamage()) >= minDurabilityPercentage.get())) work = true;
+                            && (((item.getMaxDamage() - item.getDamage()) * 100) / item.getMaxDamage()) >= minDurabilityPercentage.get())) {
+                        mc.player.sendCommand(fixCommand.get().replace("/", ""));
+                        timer = 0;
+                    }
                 }
-            }
-            if (work) {
-                mc.player.sendCommand(fixCommand.get().replace("/", ""));
-                timer = 0;
             }
         } else timer ++;
     }
