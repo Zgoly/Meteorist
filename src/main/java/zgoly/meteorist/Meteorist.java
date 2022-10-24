@@ -27,7 +27,6 @@ public class Meteorist extends MeteorAddon {
     @Override
     public void onInitialize() {
         LOG.info("Meteorist joined the game");
-        MeteorClient.EVENT_BUS.registerLambdaFactory("zgoly.meteorist", (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
         // Modules
         Modules.get().add(new AutoFeed());
         Modules.get().add(new AutoFix());
