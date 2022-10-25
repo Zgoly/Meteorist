@@ -21,46 +21,41 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 <img alt="Stargazers" src="https://img.shields.io/badge/dynamic/json?label=%E2%AD%90%20Stargazers&color=black&style=flat-square&query=$[*].login&url=https%3A%2F%2Fapi.github.com%2Frepos%2FZgoly%2FMeteorist%2Fstargazers">
 
 ## ⬇️ Download
-You can [see how it looks](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) before downloading.
+*You can [see how it looks](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) before downloading.*
 
-1. Click **[here](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)** to download
-2. Move `meteorist.jar` in `.minecraft/mods` folder
+1. **[Download meteorist.jar](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)**
+2. Move `meteorist.jar` into your `.minecraft/mods` folder
 
-Don't forget to download **[meteor dev build](https://meteorclient.com/download?devBuild=latest)**
+Don't forget to download **[latest meteor dev build](https://meteorclient.com/download?devBuild=latest)**
 
 ## ⁉️ Problems
-If you find any bug or have any problem write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
+If you find bug or have problems, write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
+
+Also, **You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
 
 ## 🧩 Modules
-|№|Module|Description|
-|:----:|--|--|
-|1|`Auto Feed`|Writes command in chat when hunger level is low.|
-|2|`Auto Floor`|Put blocks under you like "scaffold" module, but in range.|
-|3|`Auto Heal`|Writes command in chat when health level is low.|
-|4|`Auto Leave`|Automatically leaves if player in range.|
-|5|`Auto Light`|Shows best place to place light source block.|
-|6|`Auto Login`|Automatically logs in your account. **[Read important info here](https://github.com/Zgoly/Meteorist/wiki/Meteorist-wiki#auto-login)**|
-|7|`Container Cleaner`|Throw items from container.|
-|8|`Item Sucker`|Sucks up all items on the ground.|
-|9|`Jump Flight`|Flight that using jumps for fly.|
-|10|`Jump Jump`|Makes you jump higher than normal using multiple jumps.|
-|11|`New Velocity`|Velocity that can bypass some anti-cheats.|
-|12|`Slot Click`|Automatically clicks on slot.|
-|13|`ZKillaura`|Killaura that only attacks when you jump.|
-
-**You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
+1. `Auto Feed` - Writes command in chat when hunger level is low.
+1. `Auto Fix` - Writes command in chat when item close to break.
+1. `Auto Floor` - Put blocks under you like "scaffold" module, but in range.
+1. `Auto Heal` - Writes command in chat when health level is low.
+1. `Auto Leave` - Automatically leaves if player in range.
+1. `Auto Light` - Shows best place to place light source block.
+1. `Auto Login` - Automatically logs in your account. **[Read important info here](https://github.com/Zgoly/Meteorist/wiki/Meteorist-wiki#auto-login)**.
+1. `Container Cleaner` - Throw items from container.
+1. `Entity Use` - Right clicks on entities with item in your hand.
+1. `Fast Bridge` - Automatically sneaks at block edge *(idea by kokqi)*.
+1. `Item Sucker` - Sucks up all items on the ground.
+1. `Jump Flight` - Flight that using jumps for fly.
+1. `Jump Jump` - Makes you jump higher than normal using multiple jumps.
+1. `New Velocity` - Velocity that can bypass some anti-cheats.
+1. `Slot Click` - Automatically clicks on slot.
+1. `ZKillaura` - Killaura that only attacks when you jump.
 
 ## 📄 Commands
-|№|Command|Function|
-|:----:|--|--|
-|1|`.coords`|Copies your coordinates to the clipboard.|
-
-**You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
+1. `.coordinates` - Copies your coordinates to the clipboard.
+1. `.target-nbt` - Gets NBT of target you're looking at.
 
 ## 🔷 Other
-|№|Type|Name|Description|
-|:----:|--|--|--|
-|1|Hud Element|Fall Distance|Calculates fall distance.
-|2|Hud Element|Fall Damage|Tries to calculate fall damage. Supports armor enchantments.|
-
-**You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
+Hud Elements:
+1. `Fall Distance` - Calculates fall distance.
+1. `Fall Damage` - Tries to calculate fall damage. Supports armor enchantments.
