@@ -14,6 +14,8 @@
 </div>
 
 ## ℹ️ Information
+*Currently newest version of Meteorist is for Minecraft **1.19.2** but it also works for Minecraft **1.19.3***
+
 This addon adds many new features to the [Meteor Client](https://meteorclient.com/). If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
 
 ⭐ **Star this repository to raise addon to top!**
