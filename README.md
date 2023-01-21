@@ -16,7 +16,7 @@
 ## ℹ️ Information
 *Currently newest version of Meteorist is for Minecraft **1.19.2** but it also works for Minecraft **1.19.3***
 
-This addon adds many new features to the [Meteor Client](https://meteorclient.com/). If you want to add or suggest any feature, then write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=feature_request.yml&title=%5BSuggestion%5D+).
+This addon adds many new features to the [Meteor Client](https://meteorclient.com/).
 
 ⭐ **Thanks for the 30 stars!**
 <!-- 
@@ -30,11 +30,6 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 2. Move `meteorist.jar` into your `.minecraft/mods` folder
 
 Don't forget to download **[latest meteor dev build](https://meteorclient.com/download?devBuild=latest)**
-
-## ⁉️ Problems
-If you find bug or have problems, write [here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D+).
-
-Also, **You can read more about each function on [Meteorist Wiki](https://github.com/Zgoly/Meteorist/wiki/Meteorist-Wiki).**
 
 ## 🧩 Modules
 1. `Auto Feed` - Writes command in chat when hunger level is low.
