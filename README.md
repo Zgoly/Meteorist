@@ -18,7 +18,7 @@ This addon adds many new features to the [Meteor Client](https://meteorclient.co
 
 Send suggestion **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=suggestion.yml&title=%5BSuggestion%5D)** & report bug **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D)**.
 
-⭐ **Thanks for the 30 stars!**
+⭐ **Thanks for the 40 stars!**
 <!-- 
 <img alt="Stargazers" src="https://img.shields.io/badge/dynamic/json?label=%E2%AD%90%20Stargazers&color=black&style=flat-square&query=$[*].login&url=https%3A%2F%2Fapi.github.com%2Frepos%2FZgoly%2FMeteorist%2Fstargazers">
 -->
