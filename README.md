@@ -31,6 +31,13 @@ Send your suggestions **[here](https://github.com/Zgoly/Meteorist/issues/new?ass
 
 Don't forget to download **[latest meteor dev build](https://meteorclient.com/download?devBuild=latest)**
 
+## 🔧 Contributing
+If you want to help me, you can always create a [Pull request](https://github.com/Zgoly/Meteorist/pulls).
+
+I will review pull requests and merge them if valid.
+
+At the moment I would not refuse help with **[this](https://github.com/Zgoly/Meteorist/blob/main/src/main/java/zgoly/meteorist/modules/Placer.java#L42)**.
+
 ## 🧩 Modules
 1. `Auto Feed` - Writes command in chat when hunger level is low.
 1. `Auto Fix` - Writes command in chat when item close to break.
