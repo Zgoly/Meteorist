@@ -4,7 +4,7 @@
     <img width="569" alt="Meteorist banner" src="https://repository-images.githubusercontent.com/473465587/c518731b-777d-4af8-9678-155061a286aa">
   </kbd>
   <h3>Adds additional functionality to Meteor Client ☄️</h3>
-  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19.2-ff00ff?logo=hackthebox&logoColor=white&style=flat-square">
+  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.19.3-ff00ff?logo=hackthebox&logoColor=white&style=flat-square">
   <img alt="GitHub release" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=d25eff&include_prereleases&style=flat-square">
   <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=9e81ff&logo=github&style=flat-square">
   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist?label=%E2%AD%90%20stars&color=5f99ff&style=flat-square">
@@ -16,7 +16,7 @@
 ## ℹ️ Information
 This addon adds many new features to the [Meteor Client](https://meteorclient.com/).
 
-Send suggestion **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=suggestion.yml&title=%5BSuggestion%5D)** & report bug **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D)**.
+Send your suggestions **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=suggestion.yml&title=%5BSuggestion%5D)** & report bugs **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D)**.
 
 ⭐ **Thanks for the 40 stars!**
 <!-- 
