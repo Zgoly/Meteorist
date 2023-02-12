@@ -65,7 +65,6 @@ public class ItemSucker extends Module {
         super(Meteorist.CATEGORY, "item-sucker", "Sucks up all items on the ground.");
     }
 
-    //clear pos
     @Override
     public void onActivate() {pos = null;}
     @EventHandler
@@ -98,5 +97,4 @@ public class ItemSucker extends Module {
             }
         }
     }
-    //Вижу цель — иду в атаку, хруст костей, как тако, а
 }

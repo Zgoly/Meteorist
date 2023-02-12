@@ -1,30 +1,22 @@
 //By Zgoly
 package zgoly.meteorist.modules;
 
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import meteordevelopment.meteorclient.events.entity.DamageEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
-import meteordevelopment.meteorclient.settings.*;
+import meteordevelopment.meteorclient.settings.BoolSetting;
+import meteordevelopment.meteorclient.settings.DoubleSetting;
+import meteordevelopment.meteorclient.settings.Setting;
+import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.misc.Vec3;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
 import zgoly.meteorist.Meteorist;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class ZKillaura extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Object2BooleanMap<EntityType<?>>> targets = sgGeneral.add(new EntityTypeListSetting.Builder()
-            .name("targets")
-            .description("Targets to attack.")
-            .defaultValue(EntityType.PLAYER)
-            .onlyAttackable()
-            .build()
-    );
 
     private final Setting<Boolean> onJump = sgGeneral.add(new BoolSetting.Builder()
             .name("on-jump")
@@ -61,9 +53,22 @@ public class ZKillaura extends Module {
             .build()
     );
 
-    private final Vec3 vec3d1 = new Vec3();
     public ZKillaura() {
         super(Meteorist.CATEGORY, "ZKillaura", "Killaura.");
+    }
+
+    ArrayList<LivingEntity> list = new ArrayList<>();
+
+    @Override
+    public void onActivate() {
+        list.clear();
+    }
+
+    @EventHandler
+    private void onDamage(DamageEvent event) {
+        if (!list.contains(event.entity)) {
+            list.add(event.entity);
+        }
     }
 
     @EventHandler
@@ -71,13 +76,12 @@ public class ZKillaura extends Module {
         if (mc.player.isDead() || mc.world == null) return;
         if (onJump.get() && !(mc.player.fallDistance > fallRange.get())) return;
         if ((int) (mc.player.getAttackCooldownProgress(0.0F) * 17.0F) < 16) return;
-        for (Entity entity : mc.world.getEntities()) {
-            if (Arrays.asList(targets.get().keySet().toArray()).contains(entity.getType())) {
-                if (mc.player.distanceTo(entity) <= range.get() && ((LivingEntity)entity).getHealth() > 0 && entity != mc.player) {
-                    mc.interactionManager.attackEntity(mc.player, entity);
-                    mc.player.swingHand(Hand.MAIN_HAND);
-                    return;
-                }
+        for (LivingEntity entity : list) {
+            if (entity != mc.targetedEntity) return;
+            if (mc.player.distanceTo(entity) <= range.get() && entity.getHealth() > 0 && entity != mc.player) {
+                mc.interactionManager.attackEntity(mc.player, entity);
+                mc.player.swingHand(Hand.MAIN_HAND);
+                return;
             }
         }
     }

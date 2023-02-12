@@ -64,7 +64,7 @@ public class EntityUse extends Module {
 
     private final Setting<Boolean> rotate = sgGeneral.add(new BoolSetting.Builder()
             .name("rotate")
-            .description("Sends rotation packets to the server when mining.")
+            .description("Sends rotation packets to the server when clicking on entity.")
             .defaultValue(true)
             .build()
     );

@@ -52,7 +52,7 @@ public class AutoFeed extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (timer >= delay.get() && mc.player.getHungerManager().getFoodLevel() <= hungerLevel.get()) {
-            mc.player.sendCommand(feedCommand.get().replace("/", ""));
+            mc.getNetworkHandler().sendChatCommand(feedCommand.get().replace("/", ""));
             timer = 0;
         } else timer ++;
     }

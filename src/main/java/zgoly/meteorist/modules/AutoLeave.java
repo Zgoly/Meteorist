@@ -92,7 +92,7 @@ public class AutoLeave extends Module {
                         if (mode.get() == Mode.Logout) {
                             mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.of("[Auto Leave] Found player in radius.")));
                         } else if (mode.get() == Mode.Commands && !commands.get().isEmpty()) {
-                            for (String command : commands.get()) mc.player.sendCommand(command.replace("/", ""));
+                            for (String command : commands.get()) mc.getNetworkHandler().sendChatCommand(command.replace("/", ""));
                         }
                         work = !work;
                     }

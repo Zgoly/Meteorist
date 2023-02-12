@@ -89,7 +89,6 @@ public class JumpFlight extends Module {
     @EventHandler
     private void onMouseScroll(MouseScrollEvent event) {
         if (scrollBool.get()) speed.set(speed.get() + event.value * scrollSens.get());
-        //Voice в моих ушах — я позабыл все дни недели
     }
 
     @EventHandler

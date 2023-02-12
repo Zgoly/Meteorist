@@ -20,7 +20,7 @@ public class Coordinates extends Command {
         builder.then(literal("copy").executes(context -> CopyPos()));
 
         builder.then(literal("share-in-chat").executes(context -> {
-        mc.player.sendChatMessage("Coordinates: " + getPos(), Text.of("Coordinates"));
+        mc.getNetworkHandler().sendChatMessage("Coordinates: " + getPos());
         return SINGLE_SUCCESS;
         }));
     }

@@ -52,7 +52,7 @@ public class AutoHeal extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (timer >= delay.get() && mc.player.getHealth() <= healthLevel.get()) {
-            mc.player.sendCommand(healCommand.get().replace("/", ""));
+            mc.getNetworkHandler().sendChatCommand(healCommand.get().replace("/", ""));
             timer = 0;
         } else timer ++;
     }

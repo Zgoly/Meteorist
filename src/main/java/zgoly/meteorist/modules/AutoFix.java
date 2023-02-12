@@ -80,7 +80,7 @@ public class AutoFix extends Module {
                 }
             }
             if (work) {
-                mc.player.sendCommand(fixCommand.get().replace("/", ""));
+                mc.getNetworkHandler().sendChatCommand(fixCommand.get().replace("/", ""));
                 timer = 0;
             }
         } else timer ++;

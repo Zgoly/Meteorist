@@ -52,7 +52,7 @@ public class AutoLogin extends Module {
         if (serverOnly.get() && mc.getServer() != null && mc.getServer().isSingleplayer()) return;
         if (timer >= delay.get() && !loginCommand.get().isEmpty() && work) {
             work = false;
-            mc.player.sendCommand(loginCommand.get().replace("/", ""));
+            mc.getNetworkHandler().sendChatCommand(loginCommand.get().replace("/", ""));
             timer = 0;
         } else timer ++;
     }
