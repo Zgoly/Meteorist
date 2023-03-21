@@ -14,29 +14,27 @@
 </div>
 
 ## ℹ️ Information
-This addon adds many new features to the [Meteor Client](https://meteorclient.com/).
+This addon enhances the functionality of the popular [Meteor Client](https://meteorclient.com/) by adding new features to it. You can [preview the addon](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) to get an idea of what it adds.
 
-Send your suggestions **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=suggestion.yml&title=%5BSuggestion%5D)** & report bugs **[here](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D)**.
+If you have any suggestions for new features or improvements, please feel free to share them with me by [submitting a suggestion](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=suggestion.yml&title=%5BSuggestion%5D). Alternatively, if you encounter any bugs or issues while using this addon, please let me know by [submitting a bug report](https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D).
 
-⭐ **Thanks for the 50 stars!** Thanks also to everyone who promotes Meteorist!
-<!-- 
+⭐ I would like to thank all of my users for their support, and especially those who have given me **50** stars! Your support means a lot to me.
+
+<!--
 <img alt="Stargazers" src="https://img.shields.io/badge/dynamic/json?label=%E2%AD%90%20Stargazers&color=black&style=flat-square&query=$[*].login&url=https%3A%2F%2Fapi.github.com%2Frepos%2FZgoly%2FMeteorist%2Fstargazers">
 -->
 
 ## ⬇️ Download
-*You can [see how it looks](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) before downloading.*
-
+To download the addon, follow these steps:
 1. **[Download meteorist.jar](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)**
-2. Move `meteorist.jar` into your `.minecraft/mods` folder
+2. Move the downloaded `meteorist.jar` file into your `.minecraft/mods` folder
 
-Don't forget to download **[latest meteor dev build](https://meteorclient.com/download?devBuild=latest)**
+Don't forget to download the [latest meteor dev build](https://meteorclient.com/download?devBuild=latest) to ensure that the addon works correctly.
 
 ## 🔧 Contributing
-If you want to help me, you can always create a [Pull request](https://github.com/Zgoly/Meteorist/pulls).
+I welcome contributions from anyone who wants to help me improve this addon. If you have any ideas for new features or improvements, please feel free to create a [pull request](https://github.com/Zgoly/Meteorist/pulls). I will review all pull requests and merge them if they are valid. 
 
-I will review pull requests and merge them if valid.
-
-At the moment I would not refuse help with **[this](https://github.com/Zgoly/Meteorist/blob/main/src/main/java/zgoly/meteorist/modules/Placer.java#L42)**.
+Currently, I could use some help with [this module](https://github.com/Zgoly/Meteorist/blob/main/src/main/java/zgoly/meteorist/modules/Placer.java#L42). If you have the skills and experience required to help me with this, I would be grateful for your assistance.
 
 ## 🧩 Modules
 1. `Auto Feed` - Writes command in chat when hunger level is low.
