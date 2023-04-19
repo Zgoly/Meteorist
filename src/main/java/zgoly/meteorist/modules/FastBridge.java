@@ -14,7 +14,7 @@ public class FastBridge extends Module {
     boolean turn = true;
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        if (mc.world.getBlockState(mc.player.getSteppingPos()).isAir()) {
+        if (mc.player.getSteppingBlockState().isAir()) {
             if (!mc.player.isOnGround()) return;
             turn = true;
             mc.options.sneakKey.setPressed(true);
