@@ -19,6 +19,11 @@
 
 Adds many new useful features for [Meteor Client](https://meteorclient.com/). You can [preview the addon](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) to get an idea of what it adds.
 
+If you need help, want to report a bug, make a suggestion, or just want to chat with other members and addon creator, join our [Discord Server](https://discord.gg/y8fBWPNJFm)!
+<div align="center">
+  <a href="https://discord.gg/y8fBWPNJFm"><img src="https://invidget.switchblade.xyz/y8fBWPNJFm"></a>
+</div>
+
 <!-- Too many stargazers! Thanks!
 <img alt="Stargazers" src="https://img.shields.io/badge/dynamic/json?label=%E2%AD%90%20Stargazers&color=black&style=flat-square&query=$[*].login&url=https%3A%2F%2Fapi.github.com%2Frepos%2FZgoly%2FMeteorist%2Fstargazers">
 -->
