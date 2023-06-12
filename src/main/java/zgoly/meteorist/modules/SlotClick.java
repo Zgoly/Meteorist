@@ -1,4 +1,3 @@
-//By Zgoly
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -13,19 +12,12 @@ import net.minecraft.screen.slot.SlotActionType;
 import zgoly.meteorist.Meteorist;
 
 public class SlotClick extends Module {
-    public enum SlotActionTypes {
-        THROW,
-        QUICK_MOVE,
-        SWAP,
-        PICKUP
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<SlotActionTypes> mode = sgGeneral.add(new EnumSetting.Builder<SlotActionTypes>()
+    private final Setting<SlotActionType> mode = sgGeneral.add(new EnumSetting.Builder<SlotActionType>()
             .name("mode")
             .description("The mode used.")
-            .defaultValue(SlotActionTypes.THROW)
+            .defaultValue(SlotActionType.PICKUP)
             .build()
     );
 
@@ -71,7 +63,7 @@ public class SlotClick extends Module {
     private void onTick(TickEvent.Post event) {
         if (timer >= delay.get()) {
             if (!(mc.currentScreen instanceof GenericContainerScreen)) return;
-            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, slot.get() - 1, button.get(), SlotActionType.valueOf(mode.get().name()), mc.player);
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, slot.get() - 1, button.get(), mode.get(), mc.player);
             timer = 0;
         } else timer ++;
     }

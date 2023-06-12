@@ -1,4 +1,3 @@
-//By Zgoly
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -16,7 +15,7 @@ public class AutoHeal extends Module {
     private final Setting<String> healCommand = sgGeneral.add(new StringSetting.Builder()
             .name("heal-command")
             .description("Command to refill health bar.")
-            .defaultValue("/heal")
+            .defaultValue("heal")
             .build()
     );
 

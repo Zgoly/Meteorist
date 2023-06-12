@@ -1,13 +1,12 @@
-//By Zgoly
 package zgoly.meteorist.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import meteordevelopment.meteorclient.systems.commands.Command;
+import meteordevelopment.meteorclient.commands.Command;
 import net.minecraft.command.CommandSource;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class Coordinates extends Command {
     public Coordinates() {
@@ -18,7 +17,6 @@ public class Coordinates extends Command {
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.executes(context -> CopyPos());
         builder.then(literal("copy").executes(context -> CopyPos()));
-
         builder.then(literal("share-in-chat").executes(context -> {
         mc.getNetworkHandler().sendChatMessage("Coordinates: " + getPos());
         return SINGLE_SUCCESS;

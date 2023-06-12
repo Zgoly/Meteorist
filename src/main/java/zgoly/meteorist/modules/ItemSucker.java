@@ -1,4 +1,3 @@
-//By Zgoly
 package zgoly.meteorist.modules;
 
 import baritone.api.BaritoneAPI;
@@ -66,9 +65,14 @@ public class ItemSucker extends Module {
     }
 
     @Override
-    public void onActivate() {pos = null;}
+    public void onActivate() {
+        pos = null;
+    }
+
     @EventHandler
-    private void onGameLeft(GameLeftEvent event) {pos = null;}
+    private void onGameLeft(GameLeftEvent event) {
+        pos = null;
+    }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {

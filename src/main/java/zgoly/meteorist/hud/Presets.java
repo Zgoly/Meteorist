@@ -4,13 +4,19 @@ import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.elements.TextHud;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.starscript.value.Value;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import zgoly.meteorist.Meteorist;
-
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -20,11 +26,9 @@ public class Presets {
     public static final HudElementInfo<TextHud>.Preset FALL_DISTANCE;
     public static final HudElementInfo<TextHud>.Preset FALL_DAMAGE;
 
-
-
     static {
         FALL_DISTANCE = addPreset("Fall Distance", "Fall distance: #1{fall_distance}");
-        FALL_DAMAGE = addPreset("Fall Damage", "Fall damage: #1{ceil((((fall_distance - 3) / 2) - (((fall_distance - 3) / 2) * (fall_damage_reduce_strength / 100))) * 2) / 2} ❤");
+        FALL_DAMAGE = addPreset("Fall Damage", "Fall damage: #1{ceil((((fall_distance - 3) * (1 - fall_damage_reduce_strength / 100) / 2 > 0) ? (ceil(fall_distance - 3) * (1 - fall_damage_reduce_strength / 100) / 2) : 0) * 2) / 2} ❤");
     }
 
     private static TextHud create() {
@@ -36,61 +40,53 @@ public class Presets {
             if (text != null) textHud.text.set(text);
         });
     }
-    static int Y = -255;
+
+    static int maxDistance = 1024;
+    static double fallDistance = 0;
+    static Block block = Blocks.AIR;
+
     public static void starscriptAdd() {
         MeteorStarscript.ss.set("fall_distance", () -> {
-            if (mc.player == null || mc.world == null) return Value.number(0);
-
-            BlockPos pos = mc.player.getBlockPos();
-            if (Y < pos.getY()) Y = pos.getY();
-            else if (!mc.world.isAir(pos.down(1))) {
-                Y = -255;
-                return Value.number(0);
+            if (mc.player == null || mc.world == null) return Value.number(fallDistance);
+            if (!mc.world.getBlockState(BlockPos.ofFloored(mc.player.getPos().subtract(0, 0.01, 0))).isReplaceable()) {
+                fallDistance = 0;
+            } else {
+                Vec3d pos = mc.player.getPos();
+                double step = 1;
+                Vec3d start = pos.add(0, 0, 0);
+                Vec3d end = pos.subtract(0, maxDistance, 0);
+                BlockHitResult result = mc.world.raycast(new RaycastContext(start, end, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.WATER, mc.player));
+                if (result != null) {
+                    block = mc.world.getBlockState(result.getBlockPos()).getBlock();
+                    double distance = start.distanceTo(result.getPos()) - step;
+                    fallDistance = Math.max(fallDistance, distance);
+                    return Value.number(fallDistance);
+                }
             }
-
-            pos = new BlockPos(pos.getX(), Y, pos.getZ());
-            int distance = 0;
-
-            while (true) {
-                assert mc.world != null;
-                if (!mc.world.isAir(pos.down(1))) break;
-                distance += 1;
-                pos = pos.add(0, -1, 0);
-            }
-
-            return Value.number(distance);
+            return Value.number(fallDistance);
         });
 
         MeteorStarscript.ss.set("fall_damage_reduce_strength", () -> {
             if (mc.player == null || mc.world == null) return Value.number(0);
-            AtomicReference<Double> reduce = new AtomicReference<>((double) 0);
+            double reduce = 0;
 
-            mc.player.getArmorItems().forEach(item -> item.getEnchantments().forEach(enchantment -> {
-                Pattern id = Pattern.compile("id:\"(.*)\"");
-                Matcher matcherId = id.matcher(enchantment.toString());
-
-                Pattern lvl = Pattern.compile("lvl:(.*)s");
-                Matcher matcherLvl = lvl.matcher(enchantment.toString());
-
-                if (matcherId.find()) {
-                    if (Objects.equals(matcherId.group(1), "minecraft:protection")) {
-                        if (matcherLvl.find()) {
-                            reduce.updateAndGet(v -> v + 4 * Integer.parseInt(matcherLvl.group(1)));
-                        }
+            for (ItemStack item : mc.player.getArmorItems()) {
+                for (NbtElement enchantment : item.getEnchantments()) {
+                    NbtCompound nbt = (NbtCompound) enchantment;
+                    int lvl = nbt.getInt("lvl");
+                    String id = nbt.getString("id");
+                    if (Registries.ENCHANTMENT.get(Identifier.tryParse(id)) == Enchantments.PROTECTION) {
+                        reduce = reduce + 4 * lvl;
                     }
-                    if (Objects.equals(matcherId.group(1), "minecraft:feather_falling")) {
-                        if (matcherLvl.find()) {
-                            reduce.updateAndGet(v -> v + 12 * Integer.parseInt(matcherLvl.group(1)));
-                        }
+                    if (Registries.ENCHANTMENT.get(Identifier.tryParse(id)) == Enchantments.FEATHER_FALLING) {
+                        reduce = reduce + 12 * lvl;
                     }
                 }
-            }));
-
-            if (reduce.get() <= 80) {
-                return Value.number(reduce.get());
-            } else {
-                return Value.number(80);
             }
+            reduce = Math.min(reduce, 80);
+
+            if (block.equals(Blocks.WATER) || (block.equals(Blocks.SLIME_BLOCK) && !mc.player.isSneaking())) reduce = 100;
+            return Value.number(Math.min(reduce, 100));
         });
     }
 }

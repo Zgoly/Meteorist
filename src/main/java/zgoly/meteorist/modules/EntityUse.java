@@ -1,6 +1,5 @@
 package zgoly.meteorist.modules;
 
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -14,11 +13,12 @@ import zgoly.meteorist.Meteorist;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class EntityUse extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Object2BooleanMap<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder()
+    private final Setting<Set<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder()
             .name("entities")
             .description("Entities to use item on.")
             .defaultValue(EntityType.SHEEP)
@@ -84,7 +84,7 @@ public class EntityUse extends Module {
     private void onTick(TickEvent.Pre event) {
         for (Entity entity : mc.world.getEntities()) {
             if (!(entity instanceof LivingEntity)
-                    || !(entities.get().containsKey(entity.getType()))
+                    || !(entities.get().contains(entity.getType()))
                     || mc.player.getMainHandStack().isEmpty()
                     || oneTime.get() && used.contains(entity)
                     || mc.player.distanceTo(entity) > range.get()

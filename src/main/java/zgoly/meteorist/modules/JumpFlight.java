@@ -1,4 +1,3 @@
-//By Zgoly
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
@@ -19,7 +18,6 @@ import zgoly.meteorist.Meteorist;
 
 public class JumpFlight extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
     private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
             .name("speed")
             .description("Flight speed.")

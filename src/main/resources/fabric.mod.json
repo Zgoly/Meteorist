@@ -3,12 +3,13 @@
   "id": "meteorist",
   "version": "${version}",
   "name": "Meteorist",
-  "description": "Addon for Meteor Client.",
+  "description": "Adds additional functionality to Meteor Client.",
   "authors": [
     "Zgoly"
   ],
   "contact": {
-
+    "homepage": "https://github.com/Zgoly/Meteorist",
+    "sources": "https://github.com/Zgoly/Meteorist"
   },
   "icon": "assets/meteorist/icon.png",
   "license": "MIT",
@@ -22,7 +23,7 @@
     "meteorist.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.9",
+    "fabricloader": "*",
     "minecraft": "*"
   }
 }

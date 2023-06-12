@@ -1,4 +1,3 @@
-//By Zgoly
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
@@ -20,9 +19,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AutoLight extends Module {
+    public enum Mode {
+        Plus,
+        Cross
+    }
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgRange = settings.createGroup("Range");
     private final SettingGroup sgColor = settings.createGroup("Render");
+
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
+            .name("mode")
+            .description("Mode to use.")
+            .defaultValue(Mode.Plus)
+            .build()
+    );
 
     private final Setting<List<Block>> blocks = sgGeneral.add(new BlockListSetting.Builder()
             .name("blocks")
@@ -113,13 +123,10 @@ public class AutoLight extends Module {
     List<BlockPos> sides = Arrays.asList(new BlockPos(0,0,0), new BlockPos(0,0,0), new BlockPos(0,0,0), new BlockPos(0,0,0));
 
     @Override
-    public void onActivate() {
-        showBox = true;
-    }
-
-    @Override
     public void onDeactivate() {
         showBox = false;
+        finalPos = new BlockPos(0,0,0);
+        sides = Arrays.asList(new BlockPos(0,0,0), new BlockPos(0,0,0), new BlockPos(0,0,0), new BlockPos(0,0,0));
     }
 
     @EventHandler
@@ -130,16 +137,22 @@ public class AutoLight extends Module {
             if (blocks.get().contains(mc.world.getBlockState(blockPos).getBlock())) {
                 finalPos = blockPos;
 
-                sides.set(0, finalPos.north(gRange.get()));
+                sides.set(0, finalPos.east(gRange.get()));
                 sides.set(1, finalPos.south(gRange.get()));
                 sides.set(2, finalPos.west(gRange.get()));
-                sides.set(3, finalPos.east(gRange.get()));
+                sides.set(3, finalPos.north(gRange.get()));
+
+                if (mode.get() == Mode.Cross) {
+                    sides.set(0, sides.get(0).south(gRange.get()));
+                    sides.set(1, sides.get(1).west(gRange.get()));
+                    sides.set(2, sides.get(2).north(gRange.get()));
+                    sides.set(3, sides.get(3).east(gRange.get()));
+                }
 
                 if (dynHeight.get()) {
                     for (BlockPos elem : sides) {
-                        while (!mc.world.getBlockState(elem).getMaterial().isReplaceable()) elem = elem.up(1);
-
-                        while (mc.world.getBlockState(elem.down(1)).getMaterial().isReplaceable()) elem = elem.down(1);
+                        while (!mc.world.getBlockState(elem).isReplaceable()) elem = elem.up(1);
+                        while (mc.world.getBlockState(elem.down(1)).isReplaceable()) elem = elem.down(1);
                     }
                 }
 
@@ -163,6 +176,6 @@ public class AutoLight extends Module {
             for (BlockPos elem : sides) {
                 event.renderer.box(elem, sC2.get(), lC2.get(), ShapeMode.Both, 0);
             }
-        } else event.renderer.end();
+        }
     }
 }

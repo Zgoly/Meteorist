@@ -1,4 +1,3 @@
-//By Zgoly
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -18,7 +17,7 @@ public class AutoFix extends Module {
     private final Setting<String> fixCommand = sgGeneral.add(new StringSetting.Builder()
             .name("fix-command")
             .description("Command to fix item.")
-            .defaultValue("/fix all")
+            .defaultValue("fix all")
             .build()
     );
 

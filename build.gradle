@@ -1,18 +1,18 @@
 plugins {
-    id 'fabric-loom' version '0.12.9'
-    id 'maven-publish'
+    id "fabric-loom" version "1.2-SNAPSHOT"
+    id "maven-publish"
 }
 
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 version = project.mod_version
-group = project.maven_group
 
 repositories {
     maven {
-        name = "meteor-maven"
+        name = "Meteor Dev Releases"
         url = "https://maven.meteordev.org/releases"
     }
     maven {
-        name = "meteor-maven-snapshots"
+        name = "Meteor Dev Snapshots"
         url = "https://maven.meteordev.org/snapshots"
     }
 }
@@ -20,11 +20,14 @@ repositories {
 dependencies {
     // Fabric
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+    // Baritone
+    modImplementation "baritone:fabric:${project.baritone_version}"
+
     // Meteor
-    modImplementation("meteordevelopment:meteor-client:${project.meteor_version}")
+    modImplementation "meteordevelopment:meteor-client:${project.meteor_version}"
 }
 
 processResources {

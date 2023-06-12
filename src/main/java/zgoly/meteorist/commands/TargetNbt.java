@@ -1,8 +1,7 @@
-//By Zgoly
 package zgoly.meteorist.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import meteordevelopment.meteorclient.systems.commands.Command;
+import meteordevelopment.meteorclient.commands.Command;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
@@ -12,6 +11,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class TargetNbt extends Command {
     public TargetNbt() {
@@ -47,7 +47,6 @@ public class TargetNbt extends Command {
             case ENTITY -> {
                 return ((EntityHitResult) mc.crosshairTarget).getEntity().writeNbt(new NbtCompound());
             }
-
         }
         return null;
     }

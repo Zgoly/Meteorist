@@ -1,4 +1,3 @@
-//By Zgoly
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -14,7 +13,7 @@ public class FastBridge extends Module {
     boolean turn = true;
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        if (mc.world.getBlockState(mc.player.getSteppingPos()).isAir()) {
+        if (mc.player.getSteppingBlockState().isReplaceable()) {
             if (!mc.player.isOnGround()) return;
             turn = true;
             mc.options.sneakKey.setPressed(true);
