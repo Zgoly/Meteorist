@@ -4,6 +4,7 @@ import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import zgoly.meteorist.Meteorist;
 
@@ -13,7 +14,7 @@ public class AutoLogin extends Module {
     private final Setting<String> loginCommand = sgGeneral.add(new StringSetting.Builder()
             .name("login-command")
             .description("Command to login.")
-            .defaultValue("login 1234")
+            .defaultValue("/login 1234")
             .build()
     );
 
@@ -28,7 +29,7 @@ public class AutoLogin extends Module {
             .name("delay")
             .description("Delay before send command in ticks (20 ticks = 1 sec).")
             .defaultValue(20)
-            .range(1, 120)
+            .min(1)
             .sliderRange(1, 40)
             .build()
     );
@@ -51,7 +52,7 @@ public class AutoLogin extends Module {
         if (serverOnly.get() && mc.getServer() != null && mc.getServer().isSingleplayer()) return;
         if (timer >= delay.get() && !loginCommand.get().isEmpty() && work) {
             work = false;
-            mc.getNetworkHandler().sendChatCommand(loginCommand.get().replace("/", ""));
+            ChatUtils.sendPlayerMsg(loginCommand.get());
             timer = 0;
         } else timer ++;
     }

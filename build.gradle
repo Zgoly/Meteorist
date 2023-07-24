@@ -23,11 +23,11 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // Baritone
-    modImplementation "baritone:fabric:${project.baritone_version}"
-
     // Meteor
     modImplementation "meteordevelopment:meteor-client:${project.meteor_version}"
+
+    // Baritone
+    modImplementation "baritone:fabric:${project.baritone_version}"
 }
 
 processResources {

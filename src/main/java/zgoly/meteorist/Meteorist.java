@@ -38,16 +38,15 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new AutoFix());
         Modules.get().add(new AutoHeal());
         Modules.get().add(new AutoLeave());
+        Modules.get().add(new AutoLight());
         Modules.get().add(new AutoLogin());
+        Modules.get().add(new AutoSneak());
         Modules.get().add(new ContainerCleaner());
         Modules.get().add(new DmSpam());
         Modules.get().add(new EntityUse());
-        Modules.get().add(new FastBridge());
-        Modules.get().add(new AutoLight());
         Modules.get().add(new ItemSucker());
         Modules.get().add(new JumpFlight());
         Modules.get().add(new JumpJump());
-        Modules.get().add(new NewVelocity());
         Modules.get().add(new Placer());
         Modules.get().add(new SlotClick());
         Modules.get().add(new ZKillaura());

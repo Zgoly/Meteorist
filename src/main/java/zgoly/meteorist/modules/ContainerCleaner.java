@@ -88,8 +88,8 @@ public class ContainerCleaner extends Module {
     private final Setting<Integer> waitDouble = sgDelay.add(new IntSetting.Builder()
             .name("wait-(laggy)")
             .description("Wait in milliseconds between throws.")
+            .min(1)
             .defaultValue(100)
-            .sliderRange(1, 100)
             .visible(() -> delayMode.get() == DelayMode.Wait)
             .build()
     );

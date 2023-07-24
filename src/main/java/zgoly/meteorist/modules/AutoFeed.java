@@ -6,6 +6,7 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.StringSetting;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import zgoly.meteorist.Meteorist;
 
@@ -13,17 +14,17 @@ public class AutoFeed extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<String> feedCommand = sgGeneral.add(new StringSetting.Builder()
-            .name("feed-command:")
+            .name("feed-command")
             .description("Command to refill hunger bar.")
-            .defaultValue("feed")
+            .defaultValue("/feed")
             .build()
     );
 
     private final Setting<Integer> hungerLevel = sgGeneral.add(new IntSetting.Builder()
-            .name("hunger-level:")
+            .name("hunger-level")
             .description("Hunger level at which to send the command.")
             .defaultValue(12)
-            .range(1, 1024)
+            .min(1)
             .sliderRange(1, 20)
             .build()
     );
@@ -32,7 +33,7 @@ public class AutoFeed extends Module {
             .name("delay")
             .description("Delay after sending a command in ticks (20 ticks = 1 sec).")
             .defaultValue(20)
-            .range(1, 1200)
+            .min(1)
             .sliderRange(1, 40)
             .build()
     );
@@ -51,7 +52,7 @@ public class AutoFeed extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (timer >= delay.get() && mc.player.getHungerManager().getFoodLevel() <= hungerLevel.get()) {
-            mc.getNetworkHandler().sendChatCommand(feedCommand.get().replace("/", ""));
+            ChatUtils.sendPlayerMsg(feedCommand.get());
             timer = 0;
         } else timer ++;
     }

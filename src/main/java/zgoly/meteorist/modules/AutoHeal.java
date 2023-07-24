@@ -6,6 +6,7 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.StringSetting;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import zgoly.meteorist.Meteorist;
 
@@ -15,7 +16,7 @@ public class AutoHeal extends Module {
     private final Setting<String> healCommand = sgGeneral.add(new StringSetting.Builder()
             .name("heal-command")
             .description("Command to refill health bar.")
-            .defaultValue("heal")
+            .defaultValue("/heal")
             .build()
     );
 
@@ -23,7 +24,7 @@ public class AutoHeal extends Module {
             .name("health-level")
             .description("Health level at which to send the command.")
             .defaultValue(10)
-            .range(1, 1024)
+            .min(1)
             .sliderRange(1, 20)
             .build()
     );
@@ -32,7 +33,7 @@ public class AutoHeal extends Module {
             .name("delay")
             .description("Delay after sending a command in ticks (20 ticks = 1 sec).")
             .defaultValue(20)
-            .range(1, 1200)
+            .min(1)
             .sliderRange(1, 40)
             .build()
     );
@@ -51,7 +52,7 @@ public class AutoHeal extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (timer >= delay.get() && mc.player.getHealth() <= healthLevel.get()) {
-            mc.getNetworkHandler().sendChatCommand(healCommand.get().replace("/", ""));
+            ChatUtils.sendPlayerMsg(healCommand.get());
             timer = 0;
         } else timer ++;
     }

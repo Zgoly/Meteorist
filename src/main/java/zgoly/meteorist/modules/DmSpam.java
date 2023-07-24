@@ -5,21 +5,30 @@ import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.text.Text;
 import org.apache.commons.lang3.RandomStringUtils;
 import zgoly.meteorist.Meteorist;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class DmSpam extends Module {
-    public enum Mode {
-        Same,
+    public enum MessageMode {
         Next,
         Random
+    }
+
+    public enum PlayerMode {
+        Next,
+        Random
+    }
+
+    public enum DisableOn {
+        None,
+        MessagesEnd,
+        PlayersEnd
     }
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -27,7 +36,7 @@ public class DmSpam extends Module {
     private final Setting<String> command = sgGeneral.add(new StringSetting.Builder()
             .name("command")
             .description("The command to send in direct messages.")
-            .defaultValue("/msg")
+            .defaultValue("/msg {player} {message}")
             .build()
     );
 
@@ -38,24 +47,31 @@ public class DmSpam extends Module {
             .build()
     );
 
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
+    private final Setting<MessageMode> messageMode = sgGeneral.add(new EnumSetting.Builder<MessageMode>()
             .name("mode")
             .description("\"Same\" - send same message; \"Next\" - send next message; \"Random\" - send random message.")
-            .defaultValue(Mode.Next)
+            .defaultValue(MessageMode.Next)
+            .build()
+    );
+
+    private final Setting<PlayerMode> playerMode = sgGeneral.add(new EnumSetting.Builder<PlayerMode>()
+            .name("mode")
+            .description("\"Next\" - send to next player; \"Random\" - send to random player.")
+            .defaultValue(PlayerMode.Next)
             .build()
     );
 
     private final Setting<Integer> messageDelay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
+            .name("message-delay")
             .description("Delay between specified messages in ticks.")
-            .defaultValue(10)
+            .defaultValue(20)
             .min(1)
             .sliderMax(1200)
             .build()
     );
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("Delay after sending all messages in ticks.")
+    private final Setting<Integer> playerDelay = sgGeneral.add(new IntSetting.Builder()
+            .name("player-delay")
+            .description("Delay after sending messages to all players, in ticks.")
             .defaultValue(100)
             .min(1)
             .sliderMax(1200)
@@ -66,6 +82,12 @@ public class DmSpam extends Module {
             .name("ignore-self")
             .description("If true, don't send messages to yourself.")
             .defaultValue(true)
+            .build()
+    );
+
+    private final Setting<DisableOn> disableOn = sgGeneral.add(new EnumSetting.Builder<DisableOn>()
+            .name("disable-on")
+            .defaultValue(DisableOn.None)
             .build()
     );
 
@@ -100,6 +122,13 @@ public class DmSpam extends Module {
             .build()
     );
 
+    private final Setting<Boolean> log = sgGeneral.add(new BoolSetting.Builder()
+            .name("debug-info")
+            .description("Log debug info in chat.")
+            .defaultValue(false)
+            .build()
+    );
+
     public DmSpam() {
         super(Meteorist.CATEGORY, "dm-spam", "Spams messages in players direct messages.");
     }
@@ -116,58 +145,85 @@ public class DmSpam extends Module {
         if (disableOnLeave.get()) toggle();
     }
 
-    private int playerIndex, messageIndex, messageTick, delayTick;
-    private boolean delayActive;
+    private long currentTick;
+
+    private List<String> usedPlayers = new ArrayList<>();
+    private List<String> usedMessages = new ArrayList<>();
 
     @Override
     public void onActivate() {
-        playerIndex = 0;
-        messageIndex = 0;
-        messageTick = 0;
-        delayTick = 0;
-        delayActive = true;
+        currentTick = mc.world.getTime();
     }
 
+    public void onDeactivate() {
+        usedPlayers.clear();
+        usedMessages.clear();
+    }
+
+    // I'm not sure if this is the best way to do it, but it seems to work like a charm
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        List<String> msgs = messages.get();
-        List<String> players = new ArrayList<>(Arrays.asList(mc.getServer().getPlayerNames()));
-        if (ignoreSelf.get()) players.remove(mc.player.getName().getString());
-        if (msgs.size() > 0 && players.size() > 0) {
-            if (delayActive && playerIndex < players.size()) {
-                delayActive = false;
+        List<String> players = Arrays.asList(mc.getServer().getPlayerNames());
+        if (mc.getServer() == null || players.isEmpty() || messages.get().isEmpty()) return;
 
-                if (messageIndex >= msgs.size()) messageIndex = 0;
+        List<String> remainPlayers = new ArrayList<>(players);
+        remainPlayers.removeAll(usedPlayers);
 
-                String text = msgs.get(messageIndex);
-                if (bypass.get()) {
-                    text += " " + RandomStringUtils.randomAlphabetic(length.get()).toLowerCase();
+        if (ignoreSelf.get()) remainPlayers.remove(mc.player.getName().getString());
+
+        if (!remainPlayers.isEmpty()) {
+            if (currentTick <= mc.world.getTime()) {
+
+                String selectedPlayer;
+                if (playerMode.get() == PlayerMode.Next) {
+                    selectedPlayer = remainPlayers.get(0);
+                } else {
+                    Random random = new Random();
+                    selectedPlayer = remainPlayers.get(random.nextInt(remainPlayers.size()));
                 }
-                mc.getNetworkHandler().sendChatCommand(command + " " + players.get(playerIndex) + " " + text);
-                playerIndex++;
 
-                if (mode.get() == Mode.Next) {
-                    messageIndex++;
-                } else if (mode.get() == Mode.Random) {
-                    messageIndex = new Random().nextInt(msgs.size());
+                List<String> remainMessages = new ArrayList<>(messages.get());
+                remainMessages.removeAll(usedMessages);
+
+                if (remainMessages.isEmpty()) {
+                    if (disableOn.get() == DisableOn.MessagesEnd) {
+                        toggle();
+                        return;
+                    }
+                    usedMessages.clear();
+                    remainMessages = new ArrayList<>(messages.get());
+                }
+
+                String selectedMessage;
+
+                if (messageMode.get() == MessageMode.Next) {
+                    selectedMessage = remainMessages.get(0);
+                } else {
+                    Random random = new Random();
+                    selectedMessage = remainMessages.get(random.nextInt(remainMessages.size()));
+                }
+
+                usedMessages.add(selectedMessage);
+
+                if (bypass.get()) selectedMessage += " " + RandomStringUtils.randomAlphabetic(length.get()).toLowerCase();
+                ChatUtils.sendPlayerMsg(command.get().replace("{player}", selectedPlayer).replace("{message}", selectedMessage));
+                if (log.get()) info("Sent \"" + selectedMessage + "\" to \"" + selectedPlayer + "\". Handling a delay of " + messageDelay.get() + " ticks.");
+
+                usedPlayers.add(selectedPlayer);
+
+                if (remainPlayers.size() > 1) {
+                    currentTick = mc.world.getTime() + messageDelay.get();
                 }
             }
-
-            if (!delayActive) {
-                messageTick++;
-                if (messageTick > messageDelay.get()) {
-                    messageTick = 0;
-                    delayActive = true;
-                }
+        } else {
+            if (disableOn.get() == DisableOn.PlayersEnd) {
+                toggle();
+                return;
             }
-
-            if (playerIndex >= players.size()) {
-                delayTick++;
-                if (delayTick > delay.get()) {
-                    if (mode.get() == Mode.Same) messageIndex++;
-                    delayTick = 0;
-                    playerIndex = 0;
-                }
+            if (currentTick <= mc.world.getTime()) {
+                currentTick = mc.world.getTime() + playerDelay.get();
+                if (log.get()) info("The players ended, handling a delay of " + playerDelay.get() + " ticks.");
+                usedPlayers.clear();
             }
         }
     }

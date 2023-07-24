@@ -96,7 +96,6 @@ public class Placer extends Module {
             .build()
     );
 
-
     private static GuiTexture ARROW_UP;
     private static GuiTexture ARROW_DOWN;
     private static GuiTexture COPY;

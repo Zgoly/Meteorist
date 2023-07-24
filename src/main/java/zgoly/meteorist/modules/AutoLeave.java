@@ -4,6 +4,7 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +32,7 @@ public class AutoLeave extends Module {
     private final Setting<List<String>> commands = sgGeneral.add(new StringListSetting.Builder()
             .name("commands")
             .description("Commands to send.")
-            .defaultValue("spawn")
+            .defaultValue("/spawn")
             .visible(() -> mode.get() == Mode.Commands)
             .build()
     );
@@ -40,7 +41,7 @@ public class AutoLeave extends Module {
             .name("range")
             .description("Leaves if player in range.")
             .defaultValue(5)
-            .range(1, 128)
+            .min(1)
             .sliderRange(1, 10)
             .build()
     );
@@ -63,7 +64,7 @@ public class AutoLeave extends Module {
             .name("delay")
             .description("Delay after sending a commands in ticks (20 ticks = 1 sec).")
             .defaultValue(20)
-            .range(1, 120)
+            .min(1)
             .sliderRange(1, 40)
             .build()
     );
@@ -91,7 +92,7 @@ public class AutoLeave extends Module {
                         if (mode.get() == Mode.Logout) {
                             mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.of("[Auto Leave] Found player in radius.")));
                         } else if (mode.get() == Mode.Commands && !commands.get().isEmpty()) {
-                            for (String command : commands.get()) mc.getNetworkHandler().sendChatCommand(command.replace("/", ""));
+                            for (String command : commands.get()) ChatUtils.sendPlayerMsg(command);
                         }
                         work = !work;
                     }
