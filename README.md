@@ -30,7 +30,7 @@ Adds many new useful features for [Meteor Client](https://meteorclient.com/). Yo
 
 ## ⬇️ Download
 To download the addon, follow these steps:
-1. **[Download meteorist.jar](https://github.com/zgoly/meteorist/releases/latest/download/meteorist.jar)**
+1. **[Download meteorist.jar](https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar)**
 2. Move the downloaded `meteorist.jar` file into your `.minecraft/mods` folder
 
 Don't forget to download the [latest meteor dev build](https://meteorclient.com/download?devBuild=latest).
