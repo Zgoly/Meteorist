@@ -111,7 +111,6 @@ public class Placer extends Module {
         ARROW_UP = GuiRenderer.addTexture(new Identifier("meteorist", "textures/icons/gui/arrow_up.png"));
         ARROW_DOWN = GuiRenderer.addTexture(new Identifier("meteorist", "textures/icons/gui/arrow_down.png"));
         COPY = GuiRenderer.addTexture(new Identifier("meteorist", "textures/icons/gui/copy.png"));
-        GuiRenderer.init();
     }
 
     /*
