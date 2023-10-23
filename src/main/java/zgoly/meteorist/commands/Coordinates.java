@@ -18,8 +18,8 @@ public class Coordinates extends Command {
         builder.executes(context -> CopyPos());
         builder.then(literal("copy").executes(context -> CopyPos()));
         builder.then(literal("share-in-chat").executes(context -> {
-        mc.getNetworkHandler().sendChatMessage("Coordinates: " + getPos());
-        return SINGLE_SUCCESS;
+            mc.getNetworkHandler().sendChatMessage("Coordinates: " + getPos());
+            return SINGLE_SUCCESS;
         }));
     }
     private String getPos() {

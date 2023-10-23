@@ -1,8 +1,8 @@
 package zgoly.meteorist;
 
 import meteordevelopment.meteorclient.addons.MeteorAddon;
-import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.commands.Commands;
+import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
@@ -40,8 +40,8 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new AutoLeave());
         Modules.get().add(new AutoLight());
         Modules.get().add(new AutoLogin());
+        Modules.get().add(new AutoSleep());
         Modules.get().add(new AutoSneak());
-        Modules.get().add(new ContainerCleaner());
         Modules.get().add(new DmSpam());
         Modules.get().add(new EntityUse());
         Modules.get().add(new ItemSucker());
@@ -49,6 +49,7 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new JumpJump());
         Modules.get().add(new Placer());
         Modules.get().add(new SlotClick());
+        Modules.get().add(new ZAimbot());
         Modules.get().add(new ZKillaura());
 
         // Commands

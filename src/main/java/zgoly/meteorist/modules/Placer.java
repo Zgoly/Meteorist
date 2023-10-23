@@ -53,7 +53,7 @@ import java.util.Random;
 
 public class Placer extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    private final SettingGroup sgTiming = settings.getDefaultGroup();
+    private final SettingGroup sgTiming = settings.createGroup("Timing");
 
     private final Setting<Boolean> rotateHead = sgGeneral.add(new BoolSetting.Builder()
             .name("rotate-head")

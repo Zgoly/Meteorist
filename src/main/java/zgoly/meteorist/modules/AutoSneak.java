@@ -1,6 +1,5 @@
 package zgoly.meteorist.modules;
 
-import meteordevelopment.meteorclient.events.entity.player.ClipAtLedgeEvent;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
@@ -42,7 +41,7 @@ public class AutoSneak extends Module {
 
     private final Setting<Boolean> safeWalk = sgGeneral.add(new BoolSetting.Builder()
             .name(safeWalkModule.name)
-            .description("Also enable \"" + safeWalkModule.name + "\" module to avoid falling.")
+            .description("Also enable '" + safeWalkModule.name + "' module to avoid falling.")
             .defaultValue(true)
             .build()
     );

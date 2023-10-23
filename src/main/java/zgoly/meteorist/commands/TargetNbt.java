@@ -5,10 +5,13 @@ import meteordevelopment.meteorclient.commands.Command;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import zgoly.meteorist.utils.Utils;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -20,41 +23,45 @@ public class TargetNbt extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.executes(context -> getNbt());
-        builder.then(literal("get").executes(context -> getNbt()));
+        builder.executes(context -> performAction(false));
+        builder.then(literal("get").executes(context -> performAction(false)));
+        builder.then(literal("copy").executes(context -> performAction(true)));
+    }
 
-        builder.then(literal("copy").executes(context -> {
-            if (getTargetNbt() == null) return SINGLE_SUCCESS;
-            mc.keyboard.setClipboard(getTargetNbt().toString());
-            info("NBT successfully copied to your clipboard");
-            return SINGLE_SUCCESS;
-        }));
+    private int performAction(boolean copyToClipboard) {
+        NbtCompound targetNbt = getTargetNbt();
+        if (targetNbt != null) {
+            if (copyToClipboard) {
+                mc.keyboard.setClipboard(targetNbt.asString());
+                info("NBT successfully copied to your clipboard");
+            } else {
+                info(Text.literal("Target NBT: ").append(NbtHelper.toPrettyPrintedText(targetNbt)));
+            }
+        }
+        return SINGLE_SUCCESS;
     }
 
     private NbtCompound getTargetNbt() {
-        switch (mc.crosshairTarget.getType()) {
-            case MISS -> info("There is no target for your cursor");
+        HitResult hitResult = Utils.getCrosshairTarget(mc.player, 512, false, (e -> !e.isSpectator()));
+        if (hitResult == null || hitResult.getType() == null) return null;
+
+        switch (hitResult.getType()) {
+            case MISS -> warning("There is no target for your cursor");
             case BLOCK -> {
-                BlockPos pos = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
+                BlockPos pos = ((BlockHitResult) hitResult).getBlockPos();
                 BlockEntity blockEntity = mc.world.getBlockEntity(pos);
 
                 if (blockEntity != null) {
                     return blockEntity.createNbt();
                 } else {
-                    info("Block you're targeting doesn't have NBT");
+                    warning("Block you're targeting doesn't have NBT");
                 }
             }
             case ENTITY -> {
-                return ((EntityHitResult) mc.crosshairTarget).getEntity().writeNbt(new NbtCompound());
+                return ((EntityHitResult) hitResult).getEntity().writeNbt(new NbtCompound());
             }
         }
-        return null;
-    }
 
-    private int getNbt() {
-        NbtCompound targetNbt = getTargetNbt();
-        if (targetNbt == null) return SINGLE_SUCCESS;
-        mc.player.sendMessage(Text.of(targetNbt.toString()));
-        return SINGLE_SUCCESS;
+        return null;
     }
 }

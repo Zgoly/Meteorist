@@ -19,9 +19,6 @@
       "zgoly.meteorist.Meteorist"
     ]
   },
-  "mixins": [
-    "meteorist.mixins.json"
-  ],
   "depends": {
     "fabricloader": "*",
     "minecraft": "*"
