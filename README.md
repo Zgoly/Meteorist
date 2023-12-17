@@ -33,7 +33,7 @@ To download the addon, follow these steps:
 1. <a href="https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar"><b>Download meteorist-xx.jar</b><br><img height="150" alt="Download button" src="https://www.vhv.rs/dpng/d/406-4062388_download-now-button-png-free-download-download-transparent.png"></a>
 3. Move the downloaded `meteorist-xx.jar` file into your `.minecraft/mods` folder
 
-Don't forget to download the [latest meteor dev build](https://meteorclient.com/download?devBuild=latest).
+Don't forget to download the [latest Meteor dev build](https://meteorclient.com/download?devBuild=latest) and [Baritone](https://meteorclient.com/api/downloadBaritone).
 
 
 ## 🧩 Modules
