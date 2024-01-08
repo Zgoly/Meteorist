@@ -37,22 +37,26 @@ Don't forget to download the [latest Meteor dev build](https://meteorclient.com/
 
 
 ## 🧩 Modules
-1. `Auto Feed` - Writes command in chat when hunger level is low.
-1. `Auto Fix` - Writes command in chat when item close to break.
-1. `Auto Heal` - Writes command in chat when health level is low.
-1. `Auto Leave` - Automatically leaves if player in range.
-1. `Auto Light` - Shows best place to place light source block.
-1. `Auto Login` - Automatically logs in your account. **[Read important info here](https://github.com/Zgoly/Meteorist/wiki/Meteorist-wiki#auto-login)**.
-1. `Container Cleaner` - Throw items from container.
-1. `Dm Spam` - Spams messages in players direct messages.
-1. `Entity Use` - Right clicks on entities with item in your hand.
-1. `Fast Bridge` - Automatically sneaks at block edge *(idea by kokqi)*.
-1. `Item Sucker` - Sucks up all items on the ground.
-1. `Jump Flight` - Flight that using jumps for fly.
-1. `Jump Jump` - Makes you jump higher than normal using multiple jumps.
-1. `Placer` - Places blocks in range.
-1. `Slot Click` - Automatically clicks on slot.
-1. `ZKillaura` - Killaura that only attacks when you jump.
+# Meteorist
+| № | Module | Description |
+| --- | --- | --- |
+| 1 | [Auto Feed](../../wiki/generated#auto-feed) | Writes command in chat when hunger level is low. |
+| 2 | [Auto Fix](../../wiki/generated#auto-fix) | Writes command in chat when item close to break. |
+| 3 | [Auto Heal](../../wiki/generated#auto-heal) | Writes command in chat when health level is low. |
+| 4 | [Auto Leave](../../wiki/generated#auto-leave) | Automatically leaves if player in range. |
+| 5 | [Auto Light](../../wiki/generated#auto-light) | Shows best place to place light source block. |
+| 6 | [Auto Login](../../wiki/generated#auto-login) | Automatically logs in your account. |
+| 7 | [Auto Sleep](../../wiki/generated#auto-sleep) | Gets into bed automatically for you. |
+| 8 | [Auto Sneak](../../wiki/generated#auto-sneak) | Automatically sneaks at block edge (idea by kokqi). |
+| 9 | [Dm Spam](../../wiki/generated#dm-spam) | Spams messages in players direct messages. |
+| 10 | [Entity Use](../../wiki/generated#entity-use) | Right clicks on entities with item in your hand. |
+| 11 | [Item Sucker](../../wiki/generated#item-sucker) | Automatically collects items on the ground, with various customizable behaviors. |
+| 12 | [Jump Flight](../../wiki/generated#jump-flight) | Flight that using jumps for fly. No fall recommended. |
+| 13 | [Jump Jump](../../wiki/generated#jump-jump) | Makes you jump higher than normal using multiple jumps. |
+| 14 | [Placer](../../wiki/generated#placer) | Places blocks in range. |
+| 15 | [Slot Click](../../wiki/generated#slot-click) | Module that automates clicking on slots. |
+| 16 | [Z Aimbot](../../wiki/generated#z-aimbot) | Smart aimbot that takes many settings into account when targeting. |
+| 17 | [Z Kill Aura](../../wiki/generated#z-kill-aura) | Killaura which only attacks target if you aim at it. |
 
 ## 📄 Commands
 1. `.coordinates` - Copies your coordinates to the clipboard.
