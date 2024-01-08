@@ -37,7 +37,6 @@ Don't forget to download the [latest Meteor dev build](https://meteorclient.com/
 
 
 ## 🧩 Modules
-# Meteorist
 | № | Module | Description |
 | --- | --- | --- |
 | 1 | [Auto Feed](../../wiki/generated#auto-feed) | Writes command in chat when hunger level is low. |
