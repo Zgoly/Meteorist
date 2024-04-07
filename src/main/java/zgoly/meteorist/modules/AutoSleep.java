@@ -111,7 +111,7 @@ public class AutoSleep extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (mc.world == null) return;
-        if (dimensionRestrict.get() && !mc.world.getDimension().comp_645()) return;
+        if (dimensionRestrict.get() && !mc.world.getDimension().natural()) return;
 
         if (mc.player.isSleeping()) {
             if (useMaxSleepTime.get()) {
@@ -160,7 +160,7 @@ public class AutoSleep extends Module {
     @EventHandler
     public void onReceiveMessage(PacketEvent.Receive event) {
         if (sleepMode.get() == SleepMode.WhenPlayerLiesOnBed && event.packet instanceof GameMessageS2CPacket packet) {
-            if (packet.comp_763().getContent() instanceof TranslatableTextContent translatableText) {
+            if (packet.content().getContent() instanceof TranslatableTextContent translatableText) {
                 if (Objects.equals(translatableText.getKey(), "sleep.players_sleeping")) {
                     sleepInNearestBed(bedSearchRadius.get());
                 }
