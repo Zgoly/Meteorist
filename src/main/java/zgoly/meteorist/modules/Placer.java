@@ -46,6 +46,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -445,7 +446,7 @@ public class Placer extends Module {
                         NbtIo.writeCompressed(data, outputStream);
                         outputStream.close();
                     } catch (IOException e) {
-                        mc.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, Text.of("Failed to save config"), Text.of(e.getMessage())));
+                        mc.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.of("Failed to save config"), Text.of(e.getMessage())));
                         e.printStackTrace();
                     }
                 }
@@ -461,14 +462,16 @@ public class Placer extends Module {
                 String result = TinyFileDialogs.tinyfd_openFileDialog("Load from file", null, filterBuffer, "NBT File (*.nbt)", false);
                 if (result != null) {
                     try {
-                        NbtCompound data = NbtIo.readCompressed(new File(result));
+                        Path path = new File(result).toPath();
+                        NbtTagSizeTracker tagSizeTracker = new NbtTagSizeTracker(512, 512);
+                        NbtCompound data = NbtIo.readCompressed(path, tagSizeTracker);
                         fromTag(data);
                         list.clear();
                         fillWidget(theme, list);
                     } catch (Exception e) {
                         String text = e.getMessage();
                         if (e instanceof EOFException) text = "Config is empty";
-                        mc.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, Text.of("Failed to load config"), Text.of(text)));
+                        mc.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.of("Failed to load config"), Text.of(text)));
                         e.printStackTrace();
                     }
                 }
