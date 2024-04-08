@@ -85,24 +85,25 @@ public class AutoLeave extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         for (Entity entity : mc.world.getEntities()) {
-            if (entity instanceof PlayerEntity) {
-                if (entity.getUuid() != mc.player.getUuid() && mc.player.distanceTo(entity) < range.get()) {
-                    if (ignoreFriends.get() && Friends.get().isFriend((PlayerEntity) entity)) return;
-                    if (work) {
-                        if (mode.get() == Mode.Logout) {
-                            mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.of("[Auto Leave] Found player in radius.")));
-                        } else if (mode.get() == Mode.Commands && !commands.get().isEmpty()) {
-                            for (String command : commands.get()) ChatUtils.sendPlayerMsg(command);
-                        }
-                        work = !work;
-                    }
-                    if (!work && timer >= delay.get()) {
-                        work = true;
-                        timer = 0;
-                    } else if (!work) timer ++;
-                    if (toggleOff.get()) this.toggle();
+            if (!(entity instanceof PlayerEntity)) continue;
+            if (entity.getUuid() == mc.player.getUuid() || mc.player.distanceTo(entity) >= range.get()) continue;
+            if (ignoreFriends.get() && Friends.get().isFriend((PlayerEntity) entity)) continue;
+
+            if (work) {
+                if (mode.get() == Mode.Logout) {
+                    mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.of("[Auto Leave] Found player in radius.")));
+                } else if (mode.get() == Mode.Commands && !commands.get().isEmpty()) {
+                    for (String command : commands.get()) ChatUtils.sendPlayerMsg(command);
                 }
+                work = !work;
             }
+            if (!work && timer >= delay.get()) {
+                work = true;
+                timer = 0;
+            } else if (!work) timer ++;
+            if (toggleOff.get()) this.toggle();
+
+
         }
     }
 }
