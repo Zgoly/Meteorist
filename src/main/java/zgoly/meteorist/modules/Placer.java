@@ -463,7 +463,7 @@ public class Placer extends Module {
                 if (result != null) {
                     try {
                         Path path = new File(result).toPath();
-                        NbtTagSizeTracker tagSizeTracker = new NbtTagSizeTracker(512, 512);
+                        NbtTagSizeTracker tagSizeTracker = new NbtTagSizeTracker(65536, 512); // 64KiB
                         NbtCompound data = NbtIo.readCompressed(path, tagSizeTracker);
                         fromTag(data);
                         list.clear();
