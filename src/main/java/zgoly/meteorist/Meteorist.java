@@ -7,6 +7,7 @@ import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.pathing.BaritoneUtils;
 import net.minecraft.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +45,17 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new AutoSneak());
         Modules.get().add(new DmSpam());
         Modules.get().add(new EntityUse());
-        Modules.get().add(new ItemSucker());
         Modules.get().add(new JumpFlight());
         Modules.get().add(new JumpJump());
         Modules.get().add(new Placer());
         Modules.get().add(new SlotClick());
         Modules.get().add(new ZAimbot());
         Modules.get().add(new ZKillaura());
+
+        // Modules (requires Baritone)
+        if (BaritoneUtils.IS_AVAILABLE) {
+            Modules.get().add(new ItemSucker());
+        }
 
         // Commands
         Commands.add(new Coordinates());
