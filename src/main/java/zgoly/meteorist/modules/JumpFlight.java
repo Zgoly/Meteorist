@@ -53,7 +53,7 @@ public class JumpFlight extends Module {
             .build()
     );
 
-    boolean work = true;
+    private boolean work = true;
     private int level;
 
     public JumpFlight() {

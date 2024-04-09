@@ -154,6 +154,9 @@ public class DmSpam extends Module {
         currentTick = mc.world.getTime();
     }
 
+    @EventHandler
+
+
     public void onDeactivate() {
         usedPlayerUUIDs.clear();
         usedMessageIds.clear();

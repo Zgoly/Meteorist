@@ -11,7 +11,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import zgoly.meteorist.utils.Utils;
+import zgoly.meteorist.utils.MeteoristUtils;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -42,7 +42,7 @@ public class TargetNbt extends Command {
     }
 
     private NbtCompound getTargetNbt() {
-        HitResult hitResult = Utils.getCrosshairTarget(mc.player, 512, false, (e -> !e.isSpectator()));
+        HitResult hitResult = MeteoristUtils.getCrosshairTarget(mc.player, 512, false, (e -> !e.isSpectator()));
         if (hitResult == null || hitResult.getType() == null) return null;
 
         switch (hitResult.getType()) {

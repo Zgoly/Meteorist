@@ -19,7 +19,6 @@ import zgoly.meteorist.Meteorist;
 
 import java.util.Objects;
 
-
 public class AutoSleep extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 

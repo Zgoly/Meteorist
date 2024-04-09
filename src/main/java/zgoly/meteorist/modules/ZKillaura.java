@@ -4,7 +4,6 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,7 +15,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import zgoly.meteorist.Meteorist;
-import zgoly.meteorist.utils.Utils;
+import zgoly.meteorist.utils.MeteoristUtils;
 
 import java.util.Set;
 
@@ -195,7 +194,7 @@ public class ZKillaura extends Module {
         float hitSpeed = currHitSpeedMode == HitSpeedMode.Value ? hitSpeedValue.get().floatValue() : randomHitSpeedFloat;
         if (currHitSpeedMode != HitSpeedMode.None && (mc.player.getAttackCooldownProgress(hitSpeed) * 17.0F) < 16) return;
 
-        HitResult hitResult = Utils.getCrosshairTarget(mc.player, range.get(), ignoreWalls.get(), (e -> !e.isSpectator()
+        HitResult hitResult = MeteoristUtils.getCrosshairTarget(mc.player, range.get(), ignoreWalls.get(), (e -> !e.isSpectator()
                 && e.canHit()
                 && entities.get().contains(e.getType())
                 && !(ignoreBabies.get() && (e instanceof AnimalEntity && (((AnimalEntity) e).isBaby())))

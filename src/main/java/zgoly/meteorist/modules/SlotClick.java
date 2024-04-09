@@ -162,7 +162,6 @@ public class SlotClick extends Module {
         if (handler.getType() == null || !containers.get().contains(handler.getType()) || event.packet.getSyncId() != handler.syncId) return;
 
         MeteorExecutor.execute(() -> {
-            boolean ser = true;
             while (mc.currentScreen != null && Utils.canUpdate()) {
                 List<Integer> slotsList = slotMode.get() == SlotMode.Default ? slotsToList(slotsToClick.get())
                         : IntStream.range(0, SlotUtils.indexToId(slotLimitation.get().getValue())).boxed().toList();

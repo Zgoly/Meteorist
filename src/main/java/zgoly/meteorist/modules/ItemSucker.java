@@ -1,43 +1,58 @@
 package zgoly.meteorist.modules;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.IBaritone;
-import baritone.api.pathing.goals.GoalGetToBlock;
-import meteordevelopment.meteorclient.commands.commands.SettingCommand;
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.mixininterface.IVec3d;
+import meteordevelopment.meteorclient.pathing.BaritoneUtils;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.entity.SortPriority;
+import meteordevelopment.meteorclient.utils.entity.TargetUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
+import meteordevelopment.meteorclient.utils.render.prompts.OkPrompt;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import zgoly.meteorist.Meteorist;
+import zgoly.meteorist.utils.MeteoristBaritoneUtils;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 public class ItemSucker extends Module {
+    private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+
     public enum OperationMode {
         Whitelist,
         Blacklist
     }
 
-    private final Setting<OperationMode> itemFilteringMode = sgGeneral.add(new EnumSetting.Builder<OperationMode>()
+    public enum MoveMode {
+        TP,
+        Baritone
+    }
+
+    private final Setting<Boolean> onlyPickupable = sgFilter.add(new BoolSetting.Builder()
+            .name("only-pickupable")
+            .description("Only pickup items that can be picked up.")
+            .defaultValue(true)
+            .build()
+    );
+
+    private final Setting<OperationMode> itemFilteringMode = sgFilter.add(new EnumSetting.Builder<OperationMode>()
             .name("item-filtering-mode")
             .description("Defines how items will be filtered when using the item sucker.")
             .defaultValue(OperationMode.Blacklist)
             .build()
     );
 
-    private final Setting<List<Item>> itemWhitelist = sgGeneral.add(new ItemListSetting.Builder()
+    private final Setting<List<Item>> itemWhitelist = sgFilter.add(new ItemListSetting.Builder()
             .name("item-whitelist")
             .description("Items to be exclusively collected by the item sucker.")
             .defaultValue(Items.DIAMOND)
@@ -45,7 +60,7 @@ public class ItemSucker extends Module {
             .build()
     );
 
-    private final Setting<List<Item>> itemBlacklist = sgGeneral.add(new ItemListSetting.Builder()
+    private final Setting<List<Item>> itemBlacklist = sgFilter.add(new ItemListSetting.Builder()
             .name("item-blacklist")
             .description("Items which the item sucker should ignore.")
             .defaultValue(Items.POISONOUS_POTATO)
@@ -53,108 +68,181 @@ public class ItemSucker extends Module {
             .build()
     );
 
-    private final Setting<Double> suckingRange = sgGeneral.add(new DoubleSetting.Builder()
+    private final Setting<Double> suckingRange = sgFilter.add(new DoubleSetting.Builder()
             .name("sucking-range")
-            .description("Range within which the item sucker can collect items, measured in blocks.")
+            .description("Range within which the Baritone can collect items.")
             .defaultValue(5)
             .min(1)
             .sliderRange(1, 25)
             .build()
     );
 
-    private final Setting<Boolean> modifySpeed = sgGeneral.add(new BoolSetting.Builder()
-            .name("modify-speed")
-            .description("Whether or not the speed of the player should be altered when using the item sucker.")
+    private final Setting<Boolean> onlyOnGround = sgFilter.add(new BoolSetting.Builder()
+            .name("only-on-ground")
+            .description("Only collect items that are on the floor.")
             .defaultValue(true)
             .build()
     );
 
-    private final Setting<Double> movementSpeed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("movement-speed")
-            .description("Modifies the player's movement speed when 'Modify Speed' is enabled.")
-            .defaultValue(20)
-            .min(1)
-            .sliderRange(1, 30)
-            .visible(modifySpeed::get)
+    private final Setting<MoveMode> moveMode = sgGeneral.add(new EnumSetting.Builder<MoveMode>()
+            .name("move-mode")
+            .description("Set the move mode of the item sucker.")
+            .defaultValue(MoveMode.TP)
+            .build()
+    );
+
+    private final Setting<Integer> itemRange = sgGeneral.add(new IntSetting.Builder()
+            .name("item-range")
+            .description("Range to which Baritone will go to collect items.")
+            .defaultValue(0)
+            .min(0)
+            .visible(() -> moveMode.get() == MoveMode.Baritone)
+            .build()
+    );
+
+    private final Setting<Boolean> tpToOrigin = sgGeneral.add(new BoolSetting.Builder()
+            .name("tp-to-origin")
+            .description("Automatically teleport player to initial position once all items have been collected.")
+            .defaultValue(true)
+            .visible(() -> moveMode.get() == MoveMode.TP)
             .build()
     );
 
     private final Setting<Boolean> returnToOrigin = sgGeneral.add(new BoolSetting.Builder()
             .name("return-to-origin")
-            .description("Automatically return the player to their initial position once all items have been collected.")
+            .description("Automatically return player to initial position once all items have been collected.")
             .defaultValue(true)
+            .visible(() -> moveMode.get() == MoveMode.Baritone)
             .build()
     );
 
-    private final Setting<Boolean> radiusWarning = sgGeneral.add(new BoolSetting.Builder()
-            .name("radius-warning")
-            .description("Receive warning when your follow radius (in BaritoneAPI's settings) is not set to 0.")
+    private final Setting<Integer> returnRange = sgGeneral.add(new IntSetting.Builder()
+            .name("return-range")
+            .description("Range within which the Baritone will return to its initial position.")
+            .defaultValue(0)
+            .min(0)
+            .visible(() -> moveMode.get() == MoveMode.Baritone && returnToOrigin.get())
+            .build()
+    );
+
+    private final Setting<Integer> maxWaitTime = sgGeneral.add(new IntSetting.Builder()
+            .name("max-wait-time")
+            .description("Maximum time after teleport to wait.")
+            .min(1)
+            .sliderMin(1)
+            .defaultValue(10)
+            .visible(() -> moveMode.get() == MoveMode.TP && tpToOrigin.get())
+            .build()
+    );
+
+    private final Setting<Boolean> resetTimeAfterTp = sgGeneral.add(new BoolSetting.Builder()
+            .name("reset-time-after-tp")
+            .description("Reset wait time after teleport.")
             .defaultValue(true)
+            .visible(() -> moveMode.get() == MoveMode.TP && tpToOrigin.get())
+            .build()
+    );
+
+    private final Setting<Boolean> modifySpeed = sgGeneral.add(new BoolSetting.Builder()
+            .name("modify-speed")
+            .description("Whether or not the speed of the player should be altered when using Baritone.")
+            .defaultValue(true)
+            .visible(() -> moveMode.get() == MoveMode.Baritone)
+            .build()
+    );
+
+    private final Setting<Double> moveSpeed = sgGeneral.add(new DoubleSetting.Builder()
+            .name("move-speed")
+            .description("Modifies the player's movement speed when 'Modify Speed' is enabled.")
+            .defaultValue(10)
+            .min(1)
+            .sliderRange(1, 30)
+            .visible(() -> moveMode.get() == MoveMode.Baritone && modifySpeed.get())
             .build()
     );
 
     public ItemSucker() {
-        super(Meteorist.CATEGORY, "item-sucker", "Automatically collects items on the ground, with various customizable behaviors.");
+        super(Meteorist.CATEGORY, "item-sucker", "Automatically collects items on the ground");
     }
 
-    BlockPos startPos = null;
-    IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
+    int timer = 0;
+    Vec3d startPos = null;
+    MeteoristBaritoneUtils baritoneUtils = new MeteoristBaritoneUtils();
+
+    private boolean filter(Entity entity) {
+        if (entity instanceof ItemEntity itemEntity) {
+            return (!onlyPickupable.get() || !itemEntity.cannotPickup())
+                    && ((itemFilteringMode.get() == OperationMode.Blacklist && !itemBlacklist.get().contains((itemEntity.getStack().getItem())))
+                    || (itemFilteringMode.get() == OperationMode.Whitelist && itemWhitelist.get().contains((itemEntity.getStack().getItem()))))
+                    && (PlayerUtils.distanceTo(entity) <= suckingRange.get())
+                    && (!onlyOnGround.get() || entity.isOnGround());
+        }
+        return false;
+    }
 
     @Override
     public void onActivate() {
-        if (radiusWarning.get() && BaritoneAPI.getSettings().followRadius.value != 0) {
-            info(Text.empty().append(Text.literal("ItemSucker uses baritone following process, and better to set ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
-                    .append(Text.literal(BaritoneAPI.getSettings().followRadius.getName()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)))
-                    .append(Text.literal(" to ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
-                    .append(Text.literal("0").setStyle(Style.EMPTY.withColor(Formatting.AQUA)))
-                    .append(Text.literal(".\n\n").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
-                    .append(Text.literal("[Set " + BaritoneAPI.getSettings().followRadius.getName() + " to 0]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Set " + BaritoneAPI.getSettings().followRadius.getName() + " to 0.")))
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, BaritoneAPI.getSettings().prefix.value + BaritoneAPI.getSettings().followRadius.getName() + " 0")))
-                    )
-                    .append(Text.literal(" | ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
-                    .append(Text.literal("[Suppress warning]").setStyle(Style.EMPTY.withColor(Formatting.RED)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Suppress warning.")))
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, new SettingCommand() + " " + name + " " + radiusWarning.name + " " + false)))
-                    )
-                    .append(Text.literal("."))
-            );
-        }
-
-        baritone.getFollowProcess().cancel();
-        baritone.getFollowProcess().follow(entity -> entity instanceof ItemEntity
-                && !((ItemEntity) entity).cannotPickup()
-                && ((itemFilteringMode.get() == OperationMode.Blacklist && !itemBlacklist.get().contains((((ItemEntity) entity).getStack().getItem())))
-                || (itemFilteringMode.get() == OperationMode.Whitelist && itemWhitelist.get().contains((((ItemEntity) entity).getStack().getItem()))))
-                && (PlayerUtils.distanceTo(entity) <= suckingRange.get())
-        );
+        timer = 0;
+        startPos = null;
+        baritoneUtils.cancelEverything();
     }
 
     @Override
     public void onDeactivate() {
-        baritone.getFollowProcess().cancel();
+        baritoneUtils.cancelEverything();
     }
 
     @EventHandler
     private void onGameLeft(GameLeftEvent event) {
+        timer = 0;
         startPos = null;
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if (modifySpeed.get() && (baritone.getPathingBehavior().isPathing())) {
-            Vec3d vel = PlayerUtils.getHorizontalVelocity(movementSpeed.get());
+        if (modifySpeed.get() && baritoneUtils.isPathing()) {
+            Vec3d vel = PlayerUtils.getHorizontalVelocity(moveSpeed.get());
             ((IVec3d) event.movement).set(vel.getX(), event.movement.y, vel.getZ());
         }
     }
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        if (baritone.getFollowProcess().isActive() && startPos == null) {
-            startPos = mc.player.getBlockPos();
-        } else if (!baritone.getFollowProcess().isActive() && startPos != null) {
-            if (returnToOrigin.get()) baritone.getCustomGoalProcess().setGoalAndPath(new GoalGetToBlock(startPos));
-            startPos = null;
+        if (moveMode.get() == MoveMode.TP) {
+            Entity target = TargetUtils.get(this::filter, SortPriority.LowestDistance);
+
+            if (timer > 0) timer -= 1;
+
+            if (target != null) {
+                if (!tpToOrigin.get()) {
+                    mc.player.setPosition(target.getX(), target.getY(), target.getZ());
+                } else {
+                    if (resetTimeAfterTp.get()) timer = maxWaitTime.get();
+                    if (startPos == null) startPos = mc.player.getPos();
+                    mc.player.setPosition(target.getX(), target.getY(), target.getZ());
+                }
+            }
+
+            if (timer <= 0 && tpToOrigin.get() && startPos != null) {
+                mc.player.setPosition(startPos.getX(), startPos.getY(), startPos.getZ());
+                startPos = null;
+                timer = maxWaitTime.get();
+            }
+        } else {
+            if (BaritoneUtils.IS_AVAILABLE) {
+                List<Entity> entities = StreamSupport.stream(mc.world.getEntities().spliterator(), false).filter(this::filter).toList();
+
+                if (!entities.isEmpty()) {
+                    baritoneUtils.setGoalNear(entities, itemRange.get());
+                    if (returnToOrigin.get() && startPos == null) startPos = mc.player.getBlockPos().toCenterPos();
+                } else if (returnToOrigin.get() && startPos != null) {
+                    baritoneUtils.setGoalNear(BlockPos.ofFloored(startPos), returnRange.get());
+                    startPos = null;
+                }
+            } else {
+                OkPrompt.create().title("Baritone is not available").message("Looks like Baritone is not installed. Install Baritone to use this move mode.").show();
+                moveMode.set(MoveMode.TP);
+            }
         }
     }
 }

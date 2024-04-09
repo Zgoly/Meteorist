@@ -3,7 +3,7 @@
   "id": "meteorist",
   "version": "${version}",
   "name": "Meteorist",
-  "description": "Adds additional functionality to Meteor Client.",
+  "description": "Add-on for Meteor that adds useful utilities for non-vanilla anarchy servers.",
   "authors": [
     "Zgoly"
   ],
@@ -19,8 +19,11 @@
       "zgoly.meteorist.Meteorist"
     ]
   },
+  "custom": {
+    "meteor-client:color": "90,120,255"
+  },
   "depends": {
-    "fabricloader": "*",
-    "minecraft": "*"
+    "minecraft": "*",
+    "meteor-client": "*"
   }
 }
