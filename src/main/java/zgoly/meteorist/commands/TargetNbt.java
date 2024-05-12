@@ -13,9 +13,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import zgoly.meteorist.utils.MeteoristUtils;
 
-import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
-import static meteordevelopment.meteorclient.MeteorClient.mc;
-
 public class TargetNbt extends Command {
     public TargetNbt() {
         super("target-nbt", "Gets NBT of target you're looking at.", "nbt-target", "target");
@@ -52,7 +49,7 @@ public class TargetNbt extends Command {
                 BlockEntity blockEntity = mc.world.getBlockEntity(pos);
 
                 if (blockEntity != null) {
-                    return blockEntity.createNbt();
+                    return blockEntity.createNbtWithIdentifyingData(mc.world.getRegistryManager());
                 } else {
                     warning("Block you're targeting doesn't have NBT");
                 }
