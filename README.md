@@ -26,10 +26,10 @@ Adds many new useful features for [Meteor Client](https://meteorclient.com/).
 
 ## ⬇️ Download
 To download the addon, follow these steps:
-1. <a href="https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar"><b>Download meteorist-xx.jar</b><br><img height="150" alt="Download button" src="https://www.vhv.rs/dpng/d/406-4062388_download-now-button-png-free-download-download-transparent.png"></a>
-3. Move the downloaded `meteorist-xx.jar` file into your `.minecraft/mods` folder
-
-Don't forget to download the [latest Meteor dev build](https://meteorclient.com/download?devBuild) and [Baritone](https://meteorclient.com/api/downloadBaritone).
+1. If you still haven't downloaded latest Meteor dev build, [download it first](https://meteorclient.com/download?devBuild).
+2. **[Download latest meteorist-xx.jar](https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar).**
+3. You can also [download Baritone](https://meteorclient.com/api/downloadBaritone) to unlock baritone related features.
+4. Move the downloaded `.jar` files into your `.minecraft/mods` folder.
 
 
 ## 🧩 Modules
