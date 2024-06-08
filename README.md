@@ -4,7 +4,7 @@
     <img width="569" alt="Meteorist banner" src="https://repository-images.githubusercontent.com/473465587/c518731b-777d-4af8-9678-155061a286aa">
   </kbd>
   <h3>Adds additional functionality to Meteor Client ☄️</h3>
-  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.20.4-c800c8?logo=hackthebox&logoColor=white&style=flat-square">
+  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.20.6-c800c8?logo=hackthebox&logoColor=white&style=flat-square">
   <img alt="GitHub release" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=9851e3&include_prereleases&style=flat-square">
   <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=5f6fed&logo=github&style=flat-square">
   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist?label=%E2%AD%90%20stars&color=0782ea&style=flat-square">
@@ -43,26 +43,33 @@ Don't forget to download the [latest Meteor dev build](https://meteorclient.com/
 | 2 | [Auto Fix](../../wiki/generated#auto-fix) | Writes command in chat when item close to break. |
 | 3 | [Auto Heal](../../wiki/generated#auto-heal) | Writes command in chat when health level is low. |
 | 4 | [Auto Leave](../../wiki/generated#auto-leave) | Automatically leaves if entity in range. |
-| 5 | [Auto Light](../../wiki/generated#auto-light) | Shows best place to place light source block. |
-| 6 | [Auto Login](../../wiki/generated#auto-login) | Automatically logs in your account using /login. |
-| 7 | [Auto Sleep](../../wiki/generated#auto-sleep) | Gets into bed automatically for you. |
-| 8 | [Auto Sneak](../../wiki/generated#auto-sneak) | Automatically sneaks at block edge (idea by kokqi). |
+| 5 | [Auto Login](../../wiki/generated#auto-login) | Automatically logs in your account using /login. |
+| 6 | [Auto Sleep](../../wiki/generated#auto-sleep) | Gets into bed automatically for you. |
+| 7 | [Auto Sneak](../../wiki/generated#auto-sneak) | Automatically sneaks at block edge (idea by kokqi). |
+| 8 | [Boat Control](../../wiki/generated#boat-control) | Automatically controls the boat for you. |
 | 9 | [Dm Spam](../../wiki/generated#dm-spam) | Spams messages in players direct messages. |
 | 10 | [Entity Use](../../wiki/generated#entity-use) | Right clicks on entities with item in your hand. |
-| 11 | [Instructions](../../wiki/generated#instructions) | Runs commands one by one with different delays and number of cycles. |
-| 12 | [Item Sucker](../../wiki/generated#item-sucker) | Automatically collects items on the ground |
-| 13 | [Jump Flight](../../wiki/generated#jump-flight) | Flight that using jumps for fly. No fall recommended. |
-| 14 | [Jump Jump](../../wiki/generated#jump-jump) | Makes you jump higher than normal using multiple jumps. |
-| 15 | [Placer](../../wiki/generated#placer) | Places blocks in range. |
-| 16 | [Slot Click](../../wiki/generated#slot-click) | Module that automates clicking on slots. |
-| 17 | [Z Aimbot](../../wiki/generated#z-aimbot) | Smart aimbot that takes many settings into account when targeting. |
-| 18 | [Z Kill Aura](../../wiki/generated#z-kill-aura) | Killaura which only attacks target if you aim at it. |
+| 11 | [Grid](../../wiki/generated#grid) | Allows you to place blocks on a grid. |
+| 12 | [Instructions](../../wiki/generated#instructions) | Runs commands one by one with different delays and number of cycles. |
+| 13 | [Item Sucker](../../wiki/generated#item-sucker) | Automatically collects items on the ground |
+| 14 | [Jump Flight](../../wiki/generated#jump-flight) | Flight that using jumps for fly. No fall recommended. |
+| 15 | [Jump Jump](../../wiki/generated#jump-jump) | Makes you jump higher than normal using multiple jumps. |
+| 16 | [Placer](../../wiki/generated#placer) | Places blocks in range. |
+| 17 | [Slot Click](../../wiki/generated#slot-click) | Module that automates clicking on slots. |
+| 18 | [Z Aimbot](../../wiki/generated#z-aimbot) | Smart aimbot that takes many settings into account when targeting. |
+| 19 | [Z Kill Aura](../../wiki/generated#z-kill-aura) | Killaura which only attacks target if you aim at it. |
 
 ## 📄 Commands
-1. `.coordinates` - Copies your coordinates to the clipboard.
-1. `.target-nbt` - Gets NBT of target you're looking at.
+| № | Command | Description |
+| --- | --- | --- |
+| 1 | `coordinates` | Copies your coordinates to the clipboard. |
+| 2 | `data` | Gets NBT data of entities or blocks. |
 
-## 🔷 Other
-Hud Elements:
-1. `Fall Distance` - Calculates fall distance.
-1. `Fall Damage` - Tries to calculate fall damage. Supports armor enchantments.
+## 🔷 Presets
+## Meteorist
+| Preset | Text |
+| --- | --- |
+| Fall Damage | `Fall damage: #1{round(meteorist.fall_damage) / 2} ❤` |
+| Fall Distance | `Fall distance: #1{round(meteorist.fall_distance, 1)}` |
+| Max Fall Damage | `Max fall damage: #1{round(meteorist.max_fall_damage) / 2} ❤` |
+| Max Fall Distance | `Max fall distance: #1{round(meteorist.max_fall_distance, 1)}` |
