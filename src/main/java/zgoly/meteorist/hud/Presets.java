@@ -6,12 +6,9 @@ import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.starscript.value.Value;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -71,16 +68,11 @@ public class Presets {
             double reduce = 0;
 
             for (ItemStack item : mc.player.getArmorItems()) {
-                for (NbtElement enchantment : item.getEnchantments()) {
-                    NbtCompound nbt = (NbtCompound) enchantment;
-                    int lvl = nbt.getInt("lvl");
-                    String id = nbt.getString("id");
-                    if (Registries.ENCHANTMENT.get(Identifier.tryParse(id)) == Enchantments.PROTECTION) {
-                        reduce = reduce + 4 * lvl;
-                    }
-                    if (Registries.ENCHANTMENT.get(Identifier.tryParse(id)) == Enchantments.FEATHER_FALLING) {
-                        reduce = reduce + 12 * lvl;
-                    }
+                if (EnchantmentHelper.getLevel(Enchantments.PROTECTION, item) > 0) {
+                    reduce = reduce + 4 * EnchantmentHelper.getLevel(Enchantments.PROTECTION, item);
+                }
+                if (EnchantmentHelper.getLevel(Enchantments.FEATHER_FALLING, item) > 0) {
+                    reduce = reduce + 12 * EnchantmentHelper.getLevel(Enchantments.FEATHER_FALLING, item);
                 }
             }
             reduce = Math.min(reduce, 80);

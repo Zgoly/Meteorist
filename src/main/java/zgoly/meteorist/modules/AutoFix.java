@@ -74,7 +74,7 @@ public class AutoFix extends Module {
         boolean work = false;
 
         if (timer >= delay.get()) {
-            for (ItemStack item : mc.player.getItemsEquipped()) {
+            for (ItemStack item : mc.player.getArmorItems()) {
                 if (item.getDamage() > 0 && item.getMaxDamage() > 0) {
                     if ((mode.get() == Mode.Default && item.getMaxDamage() - item.getDamage() >= minDurability.get()) ||
                             (mode.get() == Mode.Percentage && (((item.getMaxDamage() - item.getDamage()) * 100) / item.getMaxDamage()) >= minDurabilityPercentage.get())) {
