@@ -1,9 +1,5 @@
 <div align="center">
-  <h1>Meteorist</h1>
-  <kbd>
-    <img width="569" alt="Meteorist banner" src="https://repository-images.githubusercontent.com/473465587/c518731b-777d-4af8-9678-155061a286aa">
-  </kbd>
-  <h3>Adds additional functionality to Meteor Client ☄️</h3>
+  <a href="#️-download"><img alt="Meteorist banner" src="https://raw.githubusercontent.com/Zgoly/hosts/main/meteorist_banner.svg" /></a>
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.20.6-c800c8?logo=hackthebox&logoColor=white&style=flat-square">
   <img alt="GitHub release" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=9851e3&include_prereleases&style=flat-square">
   <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=5f6fed&logo=github&style=flat-square">
@@ -17,7 +13,7 @@
 <a alt="Report a Bug" href="https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D"><img src="https://img.shields.io/badge/Report%20a%20Bug-c83232?style=flat-square"/></a>
 <a alt="Contribute" href="https://github.com/Zgoly/Meteorist/pulls"><img src="https://img.shields.io/badge/Contribute-00967d?style=flat-square"/></a>
 
-Adds many new useful features for [Meteor Client](https://meteorclient.com/). You can [preview the addon](https://zgoly.github.io/addonview/generate?user=Zgoly&repo=Meteorist&path=src/main/java/zgoly/meteorist/modules) to get an idea of what it adds.
+Adds many new useful features for [Meteor Client](https://meteorclient.com/).
 
 ### You can find help on the modules and answers to a questions in our [Discord Server](https://discord.gg/y8fBWPNJFm)!
 <div align="center">
