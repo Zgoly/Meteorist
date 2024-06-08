@@ -164,6 +164,7 @@ public class ZAimbot extends Module {
     private float calculateFov(LivingEntity player, Entity target) {
         Vec3d lookDirection = player.getRotationVec(1.0F);
         Vec3d targetDirection = target.getPos().subtract(player.getPos()).normalize();
+
         return (float) Math.toDegrees(Math.acos(lookDirection.dotProduct(targetDirection)));
     }
 

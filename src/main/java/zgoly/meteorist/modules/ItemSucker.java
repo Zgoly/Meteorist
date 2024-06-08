@@ -136,6 +136,7 @@ public class ItemSucker extends Module {
             .visible(() -> moveMode.get() == MoveMode.Baritone && modifySpeed.get())
             .build()
     );
+
     int timer = 0;
     Vec3d startPos = null;
     MeteoristBaritoneUtils baritoneUtils = new MeteoristBaritoneUtils();
