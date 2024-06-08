@@ -26,14 +26,6 @@ import java.util.Set;
 public class ZAimbot extends Module {
     private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgAim = settings.createGroup("Aim");
-    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
-            .name("target-movement-prediction")
-            .description("Amount to predict the target's movement when aiming.")
-            .min(0.0F)
-            .sliderMax(20.0F)
-            .defaultValue(0.0F)
-            .build()
-    );
     private final SettingGroup sgVisibility = settings.createGroup("Visibility");
     private final Setting<Set<EntityType<?>>> entities = sgFilter.add(new EntityTypeListSetting.Builder()
             .name("entities")
@@ -113,13 +105,20 @@ public class ZAimbot extends Module {
             .visible(() -> !instantAim.get())
             .build()
     );
+    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
+            .name("target-movement-prediction")
+            .description("Amount to predict the target's movement when aiming.")
+            .min(0.0F)
+            .sliderMax(20.0F)
+            .defaultValue(0.0F)
+            .build()
+    );
     private final Setting<Boolean> useFovRange = sgVisibility.add(new BoolSetting.Builder()
             .name("use-fov-range")
             .description("Restrict aiming to entities within the specified FOV.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Double> fovRange = sgVisibility.add(new DoubleSetting.Builder()
             .name("fov-range")
             .description("Maximum Field of View (FOV) range for targeting entities.")
@@ -128,7 +127,6 @@ public class ZAimbot extends Module {
             .visible(useFovRange::get)
             .build()
     );
-
     private final Setting<Boolean> ignoreWalls = sgVisibility.add(new BoolSetting.Builder()
             .name("ignore-walls")
             .description("Allow aiming through walls.")
