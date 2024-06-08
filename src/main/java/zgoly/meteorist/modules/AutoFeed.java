@@ -54,6 +54,6 @@ public class AutoFeed extends Module {
         if (timer >= delay.get() && mc.player.getHungerManager().getFoodLevel() <= hungerLevel.get()) {
             ChatUtils.sendPlayerMsg(feedCommand.get());
             timer = 0;
-        } else timer ++;
+        } else timer++;
     }
 }

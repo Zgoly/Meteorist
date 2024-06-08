@@ -26,8 +26,15 @@ import java.util.Set;
 public class ZAimbot extends Module {
     private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgAim = settings.createGroup("Aim");
+    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
+            .name("target-movement-prediction")
+            .description("Amount to predict the target's movement when aiming.")
+            .min(0.0F)
+            .sliderMax(20.0F)
+            .defaultValue(0.0F)
+            .build()
+    );
     private final SettingGroup sgVisibility = settings.createGroup("Visibility");
-
     private final Setting<Set<EntityType<?>>> entities = sgFilter.add(new EntityTypeListSetting.Builder()
             .name("entities")
             .description("Specifies the entity types to aim at.")
@@ -35,7 +42,6 @@ public class ZAimbot extends Module {
             .defaultValue(EntityType.PLAYER)
             .build()
     );
-
     private final Setting<Double> range = sgFilter.add(new DoubleSetting.Builder()
             .name("range")
             .description("Maximum distance to target entities.")
@@ -43,63 +49,54 @@ public class ZAimbot extends Module {
             .defaultValue(4.5)
             .build()
     );
-
     private final Setting<SortPriority> priority = sgFilter.add(new EnumSetting.Builder<SortPriority>()
             .name("priority")
             .description("Sorting method to prioritize targets within range.")
             .defaultValue(SortPriority.ClosestAngle)
             .build()
     );
-
     private final Setting<Boolean> ignoreBabies = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-babies")
             .description("Prevents aiming at baby variants of mobs.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-named")
             .description("Prevents aiming at named mobs.")
             .defaultValue(false)
             .build()
     );
-
     private final Setting<Boolean> ignorePassive = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-passive")
             .description("Allows aiming at passive mobs only if they target you.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> ignoreTamed = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-tamed")
             .description("Prevents aiming at tamed mobs.")
             .defaultValue(false)
             .build()
     );
-
     private final Setting<Boolean> ignoreFriends = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-friends")
             .description("Prevents aiming at players on your friends list.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Target> bodyTarget = sgAim.add(new EnumSetting.Builder<Target>()
             .name("aim-target")
             .description("Part of the target entity's body to aim at.")
             .defaultValue(Target.Head)
             .build()
     );
-
     private final Setting<Boolean> instantAim = sgAim.add(new BoolSetting.Builder()
             .name("instant-aim")
             .description("Aim at the target entity instantly.")
             .defaultValue(false)
             .build()
     );
-
     private final Setting<Boolean> syncSpeedWithCooldown = sgAim.add(new BoolSetting.Builder()
             .name("sync-speed-with-cooldown")
             .description("Synchronize aim speed with attack cooldown progress.")
@@ -107,7 +104,6 @@ public class ZAimbot extends Module {
             .visible(() -> !instantAim.get())
             .build()
     );
-
     private final Setting<Double> speed = sgAim.add(new DoubleSetting.Builder()
             .name("speed")
             .description("Speed at which to adjust aim.")
@@ -117,16 +113,6 @@ public class ZAimbot extends Module {
             .visible(() -> !instantAim.get())
             .build()
     );
-
-    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
-            .name("target-movement-prediction")
-            .description("Amount to predict the target's movement when aiming.")
-            .min(0.0F)
-            .sliderMax(20.0F)
-            .defaultValue(0.0F)
-            .build()
-    );
-
     private final Setting<Boolean> useFovRange = sgVisibility.add(new BoolSetting.Builder()
             .name("use-fov-range")
             .description("Restrict aiming to entities within the specified FOV.")

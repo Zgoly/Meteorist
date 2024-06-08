@@ -21,12 +21,6 @@ import java.util.Objects;
 
 public class AutoSleep extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    public enum SleepMode {
-        Default,
-        WhenPlayerLiesOnBed
-    }
-
     private final Setting<Integer> bedSearchRadius = sgGeneral.add(new IntSetting.Builder()
             .name("bed-search-radius")
             .description("Radius to search for beds.")
@@ -35,15 +29,12 @@ public class AutoSleep extends Module {
             .sliderRange(1, 4)
             .build()
     );
-
     private final Setting<SleepMode> sleepMode = sgGeneral.add(new EnumSetting.Builder<SleepMode>()
             .name("sleep-mode")
             .description("'Default' - sleep every amount of ticks; 'WhenPlayerLiesOnBed' - sleep when other player lies down on bed.")
             .defaultValue(SleepMode.Default)
             .build()
     );
-
-
     private final Setting<Integer> sleepDelay = sgGeneral.add(new IntSetting.Builder()
             .name("sleep-delay")
             .description("Delay between tries to sleep in ticks (20 ticks = 1 sec).")
@@ -53,7 +44,6 @@ public class AutoSleep extends Module {
             .visible(() -> sleepMode.get() == SleepMode.Default)
             .build()
     );
-
     private final Setting<Boolean> atNight = sgGeneral.add(new BoolSetting.Builder()
             .name("at-night")
             .description("Sleep only at night.")
@@ -61,7 +51,6 @@ public class AutoSleep extends Module {
             .visible(() -> sleepMode.get() == SleepMode.Default)
             .build()
     );
-
     private final Setting<Boolean> atThunderstorm = sgGeneral.add(new BoolSetting.Builder()
             .name("at-thunderstorm")
             .description("Sleep only at thunderstorm.")
@@ -69,14 +58,12 @@ public class AutoSleep extends Module {
             .visible(() -> sleepMode.get() == SleepMode.Default)
             .build()
     );
-
     private final Setting<Boolean> useMaxSleepTime = sgGeneral.add(new BoolSetting.Builder()
             .name("use-max-sleep-time")
             .description("Use maximum sleep time.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Integer> maxSleepTime = sgGeneral.add(new IntSetting.Builder()
             .name("max-sleep-time")
             .description("Maximum time to sleep in ticks (20 ticks = 1 sec).")
@@ -86,14 +73,12 @@ public class AutoSleep extends Module {
             .visible(useMaxSleepTime::get)
             .build()
     );
-
     private final Setting<Boolean> dimensionRestrict = sgGeneral.add(new BoolSetting.Builder()
             .name("dimension-restrict")
             .description("Don't go to bed if you're in a dimension like nether/end.")
             .defaultValue(true)
             .build()
     );
-
     private int sleepDelayTimer;
     private int sleepTimer;
 
@@ -165,5 +150,10 @@ public class AutoSleep extends Module {
                 }
             }
         }
+    }
+
+    public enum SleepMode {
+        Default,
+        WhenPlayerLiesOnBed
     }
 }

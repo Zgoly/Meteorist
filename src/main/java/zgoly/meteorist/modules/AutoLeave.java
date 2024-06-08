@@ -17,13 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 public class AutoLeave extends Module {
-    public enum Mode {
-        Logout,
-        Commands
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
     private final Setting<Set<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder()
             .name("entities")
             .description("Entity types to react on.")
@@ -31,14 +25,12 @@ public class AutoLeave extends Module {
             .defaultValue(EntityType.PLAYER)
             .build()
     );
-
     private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
             .name("mode")
             .description("The mode used.")
             .defaultValue(Mode.Logout)
             .build()
     );
-
     private final Setting<String> message = sgGeneral.add(new StringSetting.Builder()
             .name("message")
             .description("Message to show after logging out.")
@@ -46,7 +38,6 @@ public class AutoLeave extends Module {
             .visible(() -> mode.get() == Mode.Logout)
             .build()
     );
-
     private final Setting<List<String>> commands = sgGeneral.add(new StringListSetting.Builder()
             .name("commands")
             .description("Commands to send.")
@@ -54,7 +45,6 @@ public class AutoLeave extends Module {
             .visible(() -> mode.get() == Mode.Commands)
             .build()
     );
-
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
             .name("delay")
             .description("Delay after sending a commands in ticks (20 ticks = 1 sec).")
@@ -64,7 +54,6 @@ public class AutoLeave extends Module {
             .visible(() -> mode.get() == Mode.Commands)
             .build()
     );
-
     private final Setting<Double> range = sgGeneral.add(new DoubleSetting.Builder()
             .name("range")
             .description("Range in which to react.")
@@ -73,21 +62,18 @@ public class AutoLeave extends Module {
             .sliderRange(1, 10)
             .build()
     );
-
     private final Setting<Boolean> ignoreFriends = sgGeneral.add(new BoolSetting.Builder()
             .name("ignore-friends")
             .description("Don't react to players added as friends.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> toggleOff = sgGeneral.add(new BoolSetting.Builder()
             .name("toggle-off")
             .description("Disables Auto Leave after usage.")
             .defaultValue(false)
             .build()
     );
-
     private int timer;
     private boolean work;
 
@@ -120,8 +106,13 @@ public class AutoLeave extends Module {
             if (!work && timer >= delay.get()) {
                 work = true;
                 timer = 0;
-            } else if (!work) timer ++;
+            } else if (!work) timer++;
             if (toggleOff.get()) this.toggle();
         }
+    }
+
+    public enum Mode {
+        Logout,
+        Commands
     }
 }

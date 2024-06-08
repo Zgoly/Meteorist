@@ -17,7 +17,6 @@ import java.util.Set;
 
 public class EntityUse extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
     private final Setting<Set<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder()
             .name("entities")
             .description("Entities to use item on.")
@@ -25,7 +24,6 @@ public class EntityUse extends Module {
             .onlyAttackable()
             .build()
     );
-
     private final Setting<Double> range = sgGeneral.add(new DoubleSetting.Builder()
             .name("range")
             .description("Range.")
@@ -33,47 +31,41 @@ public class EntityUse extends Module {
             .defaultValue(4.5)
             .build()
     );
-
     private final Setting<Hand> hand = sgGeneral.add(new EnumSetting.Builder<Hand>()
             .name("hand")
             .description("The hand to use.")
             .defaultValue(Hand.MAIN_HAND)
             .build()
     );
-
     private final Setting<Boolean> swingHand = sgGeneral.add(new BoolSetting.Builder()
             .name("swing-hand")
             .description("Swing hand client-side.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> ignoreBabies = sgGeneral.add(new BoolSetting.Builder()
             .name("ignore-babies")
             .description("Ignore baby entities.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> oneTime = sgGeneral.add(new BoolSetting.Builder()
             .name("one-time")
             .description("Use item on every entity only one time.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> rotate = sgGeneral.add(new BoolSetting.Builder()
             .name("rotate")
             .description("Sends rotation packets to the server when clicking on entity.")
             .defaultValue(true)
             .build()
     );
+    private final List<Entity> used = new ArrayList<>();
 
     public EntityUse() {
         super(Meteorist.CATEGORY, "entity-use", "Right clicks on entities with item in your hand.");
     }
-
-    private final List<Entity> used = new ArrayList<>();
 
     @Override
     public void onActivate() {

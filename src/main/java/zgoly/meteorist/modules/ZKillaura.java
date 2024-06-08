@@ -20,22 +20,9 @@ import zgoly.meteorist.utils.MeteoristUtils;
 import java.util.Set;
 
 public class ZKillaura extends Module {
-    public enum OnFallMode {
-        None,
-        Value,
-        RandomValue
-    }
-
-    public enum HitSpeedMode {
-        None,
-        Value,
-        RandomValue
-    }
-
     private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgAttack = settings.createGroup("Attack");
     private final SettingGroup sgVisual = settings.createGroup("Visual");
-
     private final Setting<Set<EntityType<?>>> entities = sgFilter.add(new EntityTypeListSetting.Builder()
             .name("entities")
             .description("Specifies the entity types to target for attack.")
@@ -43,7 +30,6 @@ public class ZKillaura extends Module {
             .defaultValue(EntityType.PLAYER)
             .build()
     );
-
     private final Setting<Double> range = sgFilter.add(new DoubleSetting.Builder()
             .name("range")
             .description("Defines the maximum range for attacking a target entity.")
@@ -52,56 +38,48 @@ public class ZKillaura extends Module {
             .sliderMax(6)
             .build()
     );
-
     private final Setting<Boolean> ignoreBabies = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-babies")
             .description("Prevents attacking baby variants of mobs.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-named")
             .description("Prevents attacking named mobs.")
             .defaultValue(false)
             .build()
     );
-
     private final Setting<Boolean> ignorePassive = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-passive")
             .description("Allows attacking passive mobs only if they target you.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> ignoreTamed = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-tamed")
             .description("Prevents attacking tamed mobs.")
             .defaultValue(false)
             .build()
     );
-
     private final Setting<Boolean> ignoreFriends = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-friends")
             .description("Prevents attacking players on your friends list.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> ignoreWalls = sgFilter.add(new BoolSetting.Builder()
             .name("ignore-walls")
             .description("Allows attacking through walls.")
             .defaultValue(false)
             .build()
     );
-
     private final Setting<OnFallMode> onFallMode = sgAttack.add(new EnumSetting.Builder<OnFallMode>()
             .name("on-fall-mode")
             .description("Chooses an attack strategy when falling to maximize critical damage.")
             .defaultValue(OnFallMode.Value)
             .build()
     );
-
     private final Setting<Double> onFallValue = sgAttack.add(new DoubleSetting.Builder()
             .name("on-fall-value")
             .description("Defines a specific value for attacking while falling.")
@@ -111,7 +89,6 @@ public class ZKillaura extends Module {
             .visible(() -> onFallMode.get() == OnFallMode.Value)
             .build()
     );
-
     private final Setting<Double> onFallMinRandomValue = sgAttack.add(new DoubleSetting.Builder()
             .name("on-fall-min-random-value")
             .description("Specifies the minimum randomized value for attacking while falling.")
@@ -121,7 +98,6 @@ public class ZKillaura extends Module {
             .visible(() -> onFallMode.get() == OnFallMode.RandomValue)
             .build()
     );
-
     private final Setting<Double> onFallMaxRandomValue = sgAttack.add(new DoubleSetting.Builder()
             .name("on-fall-max-random-value")
             .description("Specifies the maximum randomized value for attacking while falling.")
@@ -131,14 +107,12 @@ public class ZKillaura extends Module {
             .visible(() -> onFallMode.get() == OnFallMode.RandomValue)
             .build()
     );
-
     private final Setting<HitSpeedMode> hitSpeedMode = sgAttack.add(new EnumSetting.Builder<HitSpeedMode>()
             .name("hit-speed-mode")
             .description("Selects a hit speed mode for attacking.")
             .defaultValue(HitSpeedMode.Value)
             .build()
     );
-
     private final Setting<Double> hitSpeedValue = sgAttack.add(new DoubleSetting.Builder()
             .name("hit-speed-value")
             .description("Defines a specific hit speed value for attacking.")
@@ -147,7 +121,6 @@ public class ZKillaura extends Module {
             .visible(() -> hitSpeedMode.get() == HitSpeedMode.Value)
             .build()
     );
-
     private final Setting<Double> hitSpeedMinRandomValue = sgAttack.add(new DoubleSetting.Builder()
             .name("hit-speed-min-random-value")
             .description("Specifies the minimum randomized hit speed value.")
@@ -156,7 +129,6 @@ public class ZKillaura extends Module {
             .visible(() -> hitSpeedMode.get() == HitSpeedMode.RandomValue)
             .build()
     );
-
     private final Setting<Double> hitSpeedMaxRandomValue = sgAttack.add(new DoubleSetting.Builder()
             .name("hit-speed-max-random-value")
             .description("Specifies the maximum randomized hit speed value.")
@@ -165,20 +137,18 @@ public class ZKillaura extends Module {
             .visible(() -> hitSpeedMode.get() == HitSpeedMode.RandomValue)
             .build()
     );
-
     private final Setting<Boolean> swingHand = sgVisual.add(new BoolSetting.Builder()
             .name("swing-hand")
             .description("Makes hand swing visible client-side.")
             .defaultValue(true)
             .build()
     );
+    float randomOnFallFloat = 0;
+    float randomHitSpeedFloat = 0;
 
     public ZKillaura() {
         super(Meteorist.CATEGORY, "z-kill-aura", "Killaura which only attacks target if you aim at it.");
     }
-
-    float randomOnFallFloat = 0;
-    float randomHitSpeedFloat = 0;
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
@@ -192,7 +162,8 @@ public class ZKillaura extends Module {
 
         HitSpeedMode currHitSpeedMode = hitSpeedMode.get();
         float hitSpeed = currHitSpeedMode == HitSpeedMode.Value ? hitSpeedValue.get().floatValue() : randomHitSpeedFloat;
-        if (currHitSpeedMode != HitSpeedMode.None && (mc.player.getAttackCooldownProgress(hitSpeed) * 17.0F) < 16) return;
+        if (currHitSpeedMode != HitSpeedMode.None && (mc.player.getAttackCooldownProgress(hitSpeed) * 17.0F) < 16)
+            return;
 
         HitResult hitResult = MeteoristUtils.getCrosshairTarget(mc.player, range.get(), ignoreWalls.get(), (e -> !e.isSpectator()
                 && e.canHit()
@@ -225,5 +196,17 @@ public class ZKillaura extends Module {
                 randomHitSpeedFloat = min + mc.world.random.nextFloat() * (max - min);
             }
         }
+    }
+
+    public enum OnFallMode {
+        None,
+        Value,
+        RandomValue
+    }
+
+    public enum HitSpeedMode {
+        None,
+        Value,
+        RandomValue
     }
 }

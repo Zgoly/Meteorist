@@ -18,8 +18,8 @@ public class MeteoristUtils {
     /**
      * Determines if the given box collides with any entities.
      *
-     * @param  box  the box to check for collisions
-     * @return      true if the box collides with any entities, false otherwise
+     * @param box the box to check for collisions
+     * @return true if the box collides with any entities, false otherwise
      */
     public static boolean isCollidesEntity(Box box) {
         if (mc.world == null) return false;
@@ -33,8 +33,8 @@ public class MeteoristUtils {
     /**
      * Check if the given block position collides with any entities.
      *
-     * @param  blockPos  the block position to check for collisions
-     * @return           true if the block position collides with an entity, false otherwise
+     * @param blockPos the block position to check for collisions
+     * @return true if the block position collides with an entity, false otherwise
      */
     public static boolean isCollidesEntity(BlockPos blockPos) {
         return isCollidesEntity(new Box(blockPos));
@@ -43,11 +43,11 @@ public class MeteoristUtils {
     /**
      * Retrieves the target that the crosshair is currently pointing at within a given range.
      *
-     * @param  entity       the entity from which the crosshair originates
-     * @param  range        the maximum range to the target
-     * @param  ignoreBlocks determines whether blocks should be ignored when checking for targets
-     * @param  filter       a predicate used to filter potential targets
-     * @return              the hit result representing the target that the crosshair is pointing at, or null if no target is found
+     * @param entity       the entity from which the crosshair originates
+     * @param range        the maximum range to the target
+     * @param ignoreBlocks determines whether blocks should be ignored when checking for targets
+     * @param filter       a predicate used to filter potential targets
+     * @return the hit result representing the target that the crosshair is pointing at, or null if no target is found
      */
     public static HitResult getCrosshairTarget(Entity entity, double range, boolean ignoreBlocks, Predicate<Entity> filter) {
         if (entity == null || mc.world == null) return null;

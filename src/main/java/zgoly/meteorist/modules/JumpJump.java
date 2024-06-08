@@ -12,7 +12,14 @@ import zgoly.meteorist.Meteorist;
 
 public class JumpJump extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
+    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
+            .name("delay")
+            .description("Delay between jumps in ticks (20 ticks = 1 sec).")
+            .defaultValue(3)
+            .range(1, 1200)
+            .sliderRange(1, 10)
+            .build()
+    );
     private final Setting<Integer> multiplier = sgGeneral.add(new IntSetting.Builder()
             .name("jumps-number")
             .description("Number of jumps to be made.")
@@ -22,16 +29,6 @@ public class JumpJump extends Module {
             .onChanged(a -> onActivate())
             .build()
     );
-
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("Delay between jumps in ticks (20 ticks = 1 sec).")
-            .defaultValue(3)
-            .range(1, 1200)
-            .sliderRange(1, 10)
-            .build()
-    );
-
     int mult;
     int timer;
 
@@ -55,11 +52,11 @@ public class JumpJump extends Module {
     private void onTick(TickEvent.Post event) {
         if (mult < multiplier.get()) {
             if (timer >= delay.get()) {
-                mult ++;
+                mult++;
                 mc.player.fallDistance = 0;
                 mc.player.jump();
                 timer = 0;
-            } else timer ++;
+            } else timer++;
         }
     }
 }

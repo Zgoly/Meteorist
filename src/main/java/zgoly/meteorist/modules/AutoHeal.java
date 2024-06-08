@@ -12,14 +12,12 @@ import zgoly.meteorist.Meteorist;
 
 public class AutoHeal extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
     private final Setting<String> healCommand = sgGeneral.add(new StringSetting.Builder()
             .name("heal-command")
             .description("Command to refill health bar.")
             .defaultValue("/heal")
             .build()
     );
-
     private final Setting<Integer> healthLevel = sgGeneral.add(new IntSetting.Builder()
             .name("health-level")
             .description("Health level at which to send the command.")
@@ -28,7 +26,6 @@ public class AutoHeal extends Module {
             .sliderRange(1, 20)
             .build()
     );
-
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
             .name("delay")
             .description("Delay after sending a command in ticks (20 ticks = 1 sec).")
@@ -37,7 +34,6 @@ public class AutoHeal extends Module {
             .sliderRange(1, 40)
             .build()
     );
-
     private int timer;
 
     public AutoHeal() {
@@ -54,6 +50,6 @@ public class AutoHeal extends Module {
         if (timer >= delay.get() && mc.player.getHealth() <= healthLevel.get()) {
             ChatUtils.sendPlayerMsg(healCommand.get());
             timer = 0;
-        } else timer ++;
+        } else timer++;
     }
 }
