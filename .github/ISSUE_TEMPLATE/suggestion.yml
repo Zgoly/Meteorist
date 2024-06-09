@@ -1,13 +1,12 @@
 name: Suggestion
 description: Suggest a feature for this mod.
-title: '[Suggestion] '
-labels: enhancement
+labels: [ enhancement ]
 body:
   - type: textarea
     id: description
     attributes:
-      label: Description
-      description: Description of what feature you want to see.
+      label: Describe the feature
+      description: A clear and concise description of what the feature/change is.
     validations:
       required: true
   - type: checkboxes
@@ -16,8 +15,8 @@ body:
       label: Before submitting a suggestion
       options:
         - label: |
-            This feature doesn't already exist.
+            This feature doesn't already exist in the Meteor and Meteorist. (I have checked every module and their settings for the latest Meteor dev build and Meteorist latest version)
           required: true
         - label: |
-            This wasn't already suggested.
+            This wasn't already suggested. (I have searched suggestions on GitHub)
           required: true
