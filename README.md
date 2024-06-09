@@ -1,17 +1,19 @@
 <div align="center">
   <a href="#️-download"><img alt="Meteorist banner" src="https://raw.githubusercontent.com/Zgoly/hosts/main/meteorist_banner.svg" /></a>
-  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.20.6-c800c8?logo=hackthebox&logoColor=white&style=flat-square">
-  <img alt="GitHub release" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=9851e3&include_prereleases&style=flat-square">
-  <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=5f6fed&logo=github&style=flat-square">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist?label=%E2%AD%90%20stars&color=0782ea&style=flat-square">
-  <img alt="GitHub code size" src="https://img.shields.io/github/languages/code-size/zgoly/meteorist?color=008edc&style=flat-square">
-  <img alt="GitHub issues" src="https://img.shields.io/github/issues/zgoly/meteorist?color=0096c8&style=flat-square">
+  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.20.6-c800c8?logo=hackthebox&logoColor=white">
+  <img alt="GitHub release" src="https://img.shields.io/github/v/release/Zgoly/Meteorist?color=9851e3&include_prereleases">
+  <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/Zgoly/Meteorist/total?color=5f6fed&logo=github">
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zgoly/meteorist?label=%E2%AD%90%20stars&color=0782ea&style=flat">
+  <img alt="GitHub code size" src="https://img.shields.io/github/languages/code-size/zgoly/meteorist?color=008edc">
+  <img alt="GitHub issues" src="https://img.shields.io/github/issues/zgoly/meteorist?color=0096c8">
+  <br>
+  <img alt="Available for fabric" src="https://raw.githubusercontent.com/intergrav/devins-badges/v3/assets/cozy/supported/fabric_vector.svg">
 </div>
 
 ## ℹ️ Information
-<a alt="Suggest a Feature" href="https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=suggestion.yml&title=%5BSuggestion%5D"><img src="https://img.shields.io/badge/Suggest%20a%20Feature-3200c8?style=flat-square"/></a>
-<a alt="Report a Bug" href="https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D"><img src="https://img.shields.io/badge/Report%20a%20Bug-c83232?style=flat-square"/></a>
-<a alt="Contribute" href="https://github.com/Zgoly/Meteorist/pulls"><img src="https://img.shields.io/badge/Contribute-00967d?style=flat-square"/></a>
+<a alt="Suggest a Feature" href="https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&template=suggestion.yml&title=%5BSuggestion%5D"><img src="https://img.shields.io/badge/Suggest%20a%20Feature-3200c8"/></a>
+<a alt="Report a Bug" href="https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBug%5D"><img src="https://img.shields.io/badge/Report%20a%20Bug-c83232"/></a>
+<a alt="Contribute" href="https://github.com/Zgoly/Meteorist/pulls"><img src="https://img.shields.io/badge/Contribute-00967d"/></a>
 
 Adds many new useful features for [Meteor Client](https://meteorclient.com/).
 
