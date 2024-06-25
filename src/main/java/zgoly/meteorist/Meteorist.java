@@ -89,10 +89,10 @@ public class Meteorist extends MeteorAddon {
         Hud.get().register(TextPresets.INFO);
 
         // Icons
-        ARROW_UP = GuiRenderer.addTexture(new Identifier(MOD_ID, "textures/icons/gui/arrow_up.png"));
-        ARROW_DOWN = GuiRenderer.addTexture(new Identifier(MOD_ID, "textures/icons/gui/arrow_down.png"));
-        COPY = GuiRenderer.addTexture(new Identifier(MOD_ID, "textures/icons/gui/copy.png"));
-        EYE = GuiRenderer.addTexture(new Identifier(MOD_ID, "textures/icons/gui/eye.png"));
+        ARROW_UP = GuiRenderer.addTexture(Identifier.of(MOD_ID, "textures/icons/gui/arrow_up.png"));
+        ARROW_DOWN = GuiRenderer.addTexture(Identifier.of(MOD_ID, "textures/icons/gui/arrow_down.png"));
+        COPY = GuiRenderer.addTexture(Identifier.of(MOD_ID, "textures/icons/gui/copy.png"));
+        EYE = GuiRenderer.addTexture(Identifier.of(MOD_ID, "textures/icons/gui/eye.png"));
     }
 
     @Override
