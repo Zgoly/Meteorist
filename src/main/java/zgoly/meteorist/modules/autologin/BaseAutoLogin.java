@@ -6,22 +6,22 @@ import net.minecraft.nbt.NbtCompound;
 
 public class BaseAutoLogin implements ISerializable<BaseAutoLogin> {
     Settings settings = new Settings();
-    SettingGroup sgGeneral = settings.createGroup("Auto Login");
+    SettingGroup sgAutoLogin = settings.createGroup("Auto Login");
 
-    public final Setting<String> passwordCommand = sgGeneral.add(new StringSetting.Builder()
+    public final Setting<String> passwordCommand = sgAutoLogin.add(new StringSetting.Builder()
             .name("login-command")
             .description("Command to login.")
             .build()
     );
 
-    public final Setting<ExecutionMode> executionMode = sgGeneral.add(new EnumSetting.Builder<ExecutionMode>()
+    public final Setting<ExecutionMode> executionMode = sgAutoLogin.add(new EnumSetting.Builder<ExecutionMode>()
             .name("execution-mode")
             .description("Execution mode.")
             .defaultValue(ExecutionMode.Multiplayer)
             .build()
     );
 
-    public final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
+    public final Setting<Integer> delay = sgAutoLogin.add(new IntSetting.Builder()
             .name("delay")
             .description("Delay in ticks before logging in.")
             .defaultValue(20)
@@ -30,19 +30,19 @@ public class BaseAutoLogin implements ISerializable<BaseAutoLogin> {
             .build()
     );
 
-    public final Setting<String> usernameFilter = sgGeneral.add(new StringSetting.Builder()
+    public final Setting<String> usernameFilter = sgAutoLogin.add(new StringSetting.Builder()
             .name("username-filter")
             .description("Username to check when logging in. Leave it empty if you don't need it.")
             .build()
     );
 
-    public final Setting<String> serverIpFilter = sgGeneral.add(new StringSetting.Builder()
+    public final Setting<String> serverIpFilter = sgAutoLogin.add(new StringSetting.Builder()
             .name("server-ip-filter")
             .description("Server IP to check when logging in. Leave it empty if you don't need it.")
             .build()
     );
 
-    public final Setting<Boolean> lastLogin = sgGeneral.add(new BoolSetting.Builder()
+    public final Setting<Boolean> lastLogin = sgAutoLogin.add(new BoolSetting.Builder()
             .name("last-login")
             .description("Enable if this password is the last Auto Login to use.")
             .build()

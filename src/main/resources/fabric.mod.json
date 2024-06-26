@@ -19,6 +19,10 @@
       "zgoly.meteorist.Meteorist"
     ]
   },
+  "mixins": [
+    "meteorist.mixins.json"
+  ],
+  "accessWidener": "meteorist.accessWidener",
   "custom": {
     "meteor-client:color": "90,120,255"
   },

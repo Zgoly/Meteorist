@@ -112,9 +112,9 @@ public class AutoSleep extends Module {
             sleepDelayTimer = sleepDelay.get();
 
             if (atNight.get() && atThunderstorm.get()) {
-                if (!isNight() && !mc.world.isThundering()) return;
+                if (isDay() && !mc.world.isThundering()) return;
             } else if (atNight.get()) {
-                if (!isNight()) return;
+                if (isDay()) return;
             } else if (atThunderstorm.get()) {
                 if (!mc.world.isThundering()) return;
             }
@@ -124,10 +124,10 @@ public class AutoSleep extends Module {
     }
 
     // Yeah, hacky, but looks like `world.isDay()` and `world.isNight()` doesn't work on the client
-    private boolean isNight() {
-        if (mc.world == null) return false;
+    private boolean isDay() {
+        if (mc.world == null) return true;
         float time = mc.world.getTimeOfDay() % 24000;
-        return mc.world.isRaining() ? (time > 12010 && time < 23991) : (time > 12542 && time < 23459);
+        return mc.world.isRaining() ? (!(time > 12010) || !(time < 23991)) : (!(time > 12542) || !(time < 23459));
     }
 
     private boolean sleepInNearestBed(int radius) {

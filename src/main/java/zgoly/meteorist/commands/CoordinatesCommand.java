@@ -13,8 +13,8 @@ public class CoordinatesCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.executes(context -> CopyPos());
-        builder.then(literal("copy").executes(context -> CopyPos()));
+        builder.executes(context -> copyPos());
+        builder.then(literal("copy").executes(context -> copyPos()));
         builder.then(literal("share-in-chat").executes(context -> {
             ChatUtils.sendPlayerMsg("Coordinates: " + getPos());
             return SINGLE_SUCCESS;
@@ -26,7 +26,7 @@ public class CoordinatesCommand extends Command {
         return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
     }
 
-    private int CopyPos() {
+    private int copyPos() {
         mc.keyboard.setClipboard(getPos());
         info("Coordinates were copied to your clipboard");
         return SINGLE_SUCCESS;

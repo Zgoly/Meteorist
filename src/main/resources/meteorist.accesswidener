@@ -1,0 +1,3 @@
+accessWidener v1 named
+
+accessible method net/minecraft/block/TrapdoorBlock getBlockSetType ()Lnet/minecraft/block/BlockSetType;

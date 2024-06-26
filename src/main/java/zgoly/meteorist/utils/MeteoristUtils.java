@@ -10,6 +10,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.util.function.Predicate;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -71,5 +73,25 @@ public class MeteoristUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Removes invalid characters from the given string. Not fast, but cross-platform.
+     *
+     * @param text the string to remove invalid characters from
+     * @return the string with invalid characters removed
+     */
+    public static String removeInvalidChars(final String text) {
+        try {
+            Paths.get(text);
+            return text;
+        } catch (final InvalidPathException e) {
+            if (e.getInput() != null && !e.getInput().isEmpty() && e.getIndex() >= 0) {
+                final StringBuilder stringBuilder = new StringBuilder(e.getInput());
+                stringBuilder.deleteCharAt(e.getIndex());
+                return removeInvalidChars(stringBuilder.toString());
+            }
+            throw e;
+        }
     }
 }

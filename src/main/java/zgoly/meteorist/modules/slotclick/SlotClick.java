@@ -336,36 +336,40 @@ public class SlotClick extends Module {
                                 }
                             }
 
-                            ItemStack itemStack = screenHandler.getSlot(slot).getStack();
-                            if (!itemStack.isEmpty()) {
-                                NbtElement element = itemStack.encode(mc.player.getRegistryManager());
-                                printInfo("Item data: " + element.asString());
+                            try {
+                                ItemStack itemStack = screenHandler.getSlot(slot).getStack();
+                                if (!itemStack.isEmpty()) {
+                                    NbtElement element = itemStack.encode(mc.player.getRegistryManager());
+                                    printInfo("Item data: " + element.asString());
 
-                                boolean matchedAny = false;
-                                boolean matchedAll = true;
+                                    boolean matchedAny = false;
+                                    boolean matchedAll = true;
 
-                                for (Pair<String, String> pair : defaultSlotSelection.slotItemData.get()) {
-                                    try {
-                                        String value = NbtPathArgumentType.NbtPath.parse(pair.getLeft()).get(element).getFirst().asString();
-                                        Pattern pattern = Pattern.compile(pair.getRight());
-                                        printInfo("Element: " + value);
-                                        printInfo("Pattern: " + pattern.pattern());
-                                        if (pattern.matcher(value).find()) {
-                                            matchedAny = true;
-                                            printInfo("Matched!");
-                                        } else {
-                                            matchedAll = false;
-                                            printWarning("Not matched!");
+                                    for (Pair<String, String> pair : defaultSlotSelection.slotItemData.get()) {
+                                        try {
+                                            String value = NbtPathArgumentType.NbtPath.parse(pair.getLeft()).get(element).getFirst().asString();
+                                            Pattern pattern = Pattern.compile(pair.getRight());
+                                            printInfo("Element: " + value);
+                                            printInfo("Pattern: " + pattern.pattern());
+                                            if (pattern.matcher(value).find()) {
+                                                matchedAny = true;
+                                                printInfo("Matched!");
+                                            } else {
+                                                matchedAll = false;
+                                                printWarning("Not matched!");
+                                            }
+                                        } catch (Exception e) {
+                                            printError(e.getMessage());
                                         }
-                                    } catch (Exception e) {
-                                        printError(e.getMessage());
                                     }
-                                }
 
-                                boolean isAnyMatch = defaultSlotSelection.slotItemMatchMode.get() == DefaultSlotSelection.SlotItemMatchMode.Any;
-                                if (!(isAnyMatch && matchedAny || !isAnyMatch && matchedAll)) continue;
-                            } else {
-                                printWarning("There is no item in the slot " + slot + "!");
+                                    boolean isAnyMatch = defaultSlotSelection.slotItemMatchMode.get() == DefaultSlotSelection.SlotItemMatchMode.Any;
+                                    if (!(isAnyMatch && matchedAny || !isAnyMatch && matchedAll)) continue;
+                                } else {
+                                    printWarning("There is no item in the slot " + slot + "!");
+                                }
+                            } catch (Exception e) {
+                                printError(e.getMessage());
                             }
                         }
 

@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static zgoly.meteorist.Meteorist.MOD_ID;
+import static zgoly.meteorist.utils.MeteoristUtils.removeInvalidChars;
 
 public class MeteoristConfigManager {
     public static void reload(boolean fromPrompt) {
@@ -39,7 +40,7 @@ public class MeteoristConfigManager {
     }
 
     public static void configManager(GuiTheme theme, WVerticalList list, Module module) {
-        File folderPath = new File(Paths.get(FabricLoader.getInstance().getGameDir().toString(), MOD_ID, module.name).toString());
+        File folderPath = new File(Paths.get(FabricLoader.getInstance().getGameDir().toString(), MOD_ID, removeInvalidChars(module.name)).toString());
 
         WSection configSection = list.add(theme.section("Config Manager")).expandX().widget();
         WTable control = configSection.add(theme.table()).expandX().widget();
@@ -131,7 +132,7 @@ public class MeteoristConfigManager {
                 };
 
                 WMinus delete = configTable.add(theme.minus()).widget();
-                delete.action = () -> YesNoPrompt.create().title("Delete Config").message("Are you sure you want to delete \"" + file.getName() + "\"?").onYes(() -> {
+                delete.action = () -> YesNoPrompt.create().title("Delete Config").message("Are you sure you want to delete \"" + file.getName() + "\"? This cannot be undone.").onYes(() -> {
                     file.delete();
                     reload(true);
                 }).dontShowAgainCheckboxVisible(false).show();
@@ -158,7 +159,7 @@ public class MeteoristConfigManager {
             }
             reload(false);
         } else {
-            YesNoPrompt.create().title("Overwrite Config").message("Are you sure you want to overwrite the config?").onYes(() -> save(module, file, true)).dontShowAgainCheckboxVisible(false).show();
+            YesNoPrompt.create().title("Overwrite Config").message("Are you sure you want to overwrite \"" + file.getName() + "\"? This cannot be undone.").onYes(() -> save(module, file, true)).dontShowAgainCheckboxVisible(false).show();
         }
     }
 }

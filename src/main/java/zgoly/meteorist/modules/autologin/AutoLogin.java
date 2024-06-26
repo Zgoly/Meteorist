@@ -140,13 +140,13 @@ public class AutoLogin extends Module {
             list.add(mTag);
         }
         tag.put("autoLogins", list);
-        MeteoristConfig.save(this.name, "autoLogins", tag);
+        MeteoristConfig.save(this.name, "default", tag);
 
         return superTag;
     }
 
     public Module fromTag(NbtCompound superTag) {
-        NbtCompound tag = MeteoristConfig.load(this.name, "autoLogins");
+        NbtCompound tag = MeteoristConfig.load(this.name, "default");
 
         autoLogins.clear();
         NbtList list = tag.getList("autoLogins", NbtElement.COMPOUND_TYPE);

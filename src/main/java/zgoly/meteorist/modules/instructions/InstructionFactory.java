@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InstructionFactory {
-
     private final Map<String, Factory> factories;
 
     public InstructionFactory() {

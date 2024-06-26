@@ -1,5 +1,5 @@
 plugins {
-    id "fabric-loom" version "1.6-SNAPSHOT"
+    id "fabric-loom" version "1.7-SNAPSHOT"
     id "maven-publish"
 }
 
@@ -28,6 +28,10 @@ dependencies {
 
     // Baritone (https://github.com/MeteorDevelopment/baritone)
     modCompileOnly "meteordevelopment:baritone:${project.baritone_version}-SNAPSHOT"
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/meteorist.accesswidener")
 }
 
 processResources {

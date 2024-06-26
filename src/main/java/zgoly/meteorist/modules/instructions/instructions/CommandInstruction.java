@@ -7,15 +7,15 @@ import meteordevelopment.meteorclient.settings.StringSetting;
 
 public class CommandInstruction extends BaseInstruction {
     public static final String type = "Command";
-    protected final SettingGroup sgGeneral = settings.createGroup("Command Instruction");
+    protected final SettingGroup sgCommandInstruction = settings.createGroup("Command Instruction");
 
-    public final Setting<String> command = sgGeneral.add(new StringSetting.Builder()
+    public final Setting<String> command = sgCommandInstruction.add(new StringSetting.Builder()
             .name("command")
             .description("The command to run.")
             .build()
     );
 
-    public final Setting<Integer> runCount = sgGeneral.add(new IntSetting.Builder()
+    public final Setting<Integer> runCount = sgCommandInstruction.add(new IntSetting.Builder()
             .name("run-count")
             .description("The number of times to run the command.")
             .defaultValue(1)
@@ -24,7 +24,7 @@ public class CommandInstruction extends BaseInstruction {
             .build()
     );
 
-    public final Setting<Integer> delayBetweenRuns = sgGeneral.add(new IntSetting.Builder()
+    public final Setting<Integer> delayBetweenRuns = sgCommandInstruction.add(new IntSetting.Builder()
             .name("delay-between-runs")
             .description("The delay between runs in ticks.")
             .defaultValue(10)

@@ -7,9 +7,9 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 public class DelayInstruction extends BaseInstruction {
     public static final String type = "Delay";
 
-    protected final SettingGroup sgGeneral = settings.createGroup("Delay Instruction");
+    protected final SettingGroup sgDelayInstruction = settings.createGroup("Delay Instruction");
 
-    public final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
+    public final Setting<Integer> delay = sgDelayInstruction.add(new IntSetting.Builder()
             .name("delay")
             .description("The number of ticks to wait.")
             .defaultValue(20)
