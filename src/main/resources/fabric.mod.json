@@ -22,7 +22,7 @@
   "mixins": [
     "meteorist.mixins.json"
   ],
-  "accessWidener": "meteorist.accessWidener",
+  "accessWidener": "meteorist.accesswidener",
   "custom": {
     "meteor-client:color": "90,120,255"
   },
