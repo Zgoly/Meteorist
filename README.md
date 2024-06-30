@@ -136,9 +136,9 @@ To download the addon, follow these steps:
   <img alt="Join Discord" src="https://img.shields.io/discord/1035620564133490809?label=%20&color=5865F2">
 </a>
 
-| № | Title                                                     | Text                                                         |
-|---|-----------------------------------------------------------|--------------------------------------------------------------|
-| 1 | [Fall Damage](../../wiki/presets#fall-damage)             | Fall damage: #1{round(meteorist.fall_damage) / 2} ❤          |
-| 2 | [Fall Distance](../../wiki/presets#fall-distance)         | Fall distance: #1{round(meteorist.fall_distance, 1)}         |
-| 3 | [Max Fall Damage](../../wiki/presets#max-fall-damage)     | Max fall damage: #1{round(meteorist.max_fall_damage) / 2} ❤  |
-| 4 | [Max Fall Distance](../../wiki/presets#max-fall-distance) | Max fall distance: #1{round(meteorist.max_fall_distance, 1)} |
+| № | Title                                                     | Text                                                           |
+|---|-----------------------------------------------------------|----------------------------------------------------------------|
+| 1 | [Fall Damage](../../wiki/presets#fall-damage)             | `Fall damage: #1{round(meteorist.fall_damage) / 2} ❤`          |
+| 2 | [Fall Distance](../../wiki/presets#fall-distance)         | `Fall distance: #1{round(meteorist.fall_distance, 1)}`         |
+| 3 | [Max Fall Damage](../../wiki/presets#max-fall-damage)     | `Max fall damage: #1{round(meteorist.max_fall_damage) / 2} ❤`  |
+| 4 | [Max Fall Distance](../../wiki/presets#max-fall-distance) | `Max fall distance: #1{round(meteorist.max_fall_distance, 1)}` |
