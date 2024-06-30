@@ -73,12 +73,8 @@ Add-on for Meteor that adds modules, commands and other useful stuff for primary
 
 To download the addon, follow these steps:
 
-1. If you still haven't downloaded latest Meteor dev
-   build, [download it first](https://meteorclient.com/download?devBuild).
-2.
-    *
-*[Download latest meteorist-xx.jar](https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar).
-**
+1. If you still haven't downloaded latest Meteor dev build, [download it first](https://meteorclient.com/download?devBuild).
+2. **[Download latest meteorist-xx.jar](https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar)**.
 3. You can also [download Baritone](https://meteorclient.com/api/downloadBaritone) to unlock baritone related features.
 4. Move the downloaded `.jar` files into your `.minecraft/mods` folder.
 
