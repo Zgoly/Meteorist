@@ -79,6 +79,12 @@ public class DmSpam extends Module {
             .defaultValue(true)
             .build()
     );
+    private final Setting<List<String>> blacklistedUsers = sgSpecialCases.add(new StringListSetting.Builder()
+            .name("blacklisted-users")
+            .description("List of users who will not receive DMs.")
+            .defaultValue(Collections.emptyList())
+            .build()
+    );
     private final Setting<Boolean> excludeSelf = sgSpecialCases.add(new BoolSetting.Builder()
             .name("exclude-self")
             .description("If set to 'true', the system will not send messages to yourself.")
@@ -147,6 +153,16 @@ public class DmSpam extends Module {
 
         if (excludeSelf.get()) unusedPlayerUUIDs.remove(mc.player.getUuid());
 
+        // Remove blacklisted users
+        unusedPlayerUUIDs.removeIf(uuid -> {
+            String playerName = mc.getNetworkHandler().getPlayerList().stream()
+                    .filter(player -> player.getProfile().getId().equals(uuid))
+                    .map(player -> player.getProfile().getName())
+                    .findFirst()
+                    .orElse("");
+            return blacklistedUsers.get().contains(playerName);
+        });
+
         long currentWorldTime = mc.world.getTime();
 
         if (!unusedPlayerUUIDs.isEmpty() && currentTick <= currentWorldTime) {
@@ -176,8 +192,16 @@ public class DmSpam extends Module {
                 selectedMessage += " " + RandomStringUtils.randomAlphabetic(bypassTextLength.get()).toLowerCase();
 
             ChatUtils.sendPlayerMsg(messageCommand.get().replace("{player}", playerName).replace("{message}", selectedMessage));
-            if (printDebugInfo.get())
+            if (printDebugInfo.get()) {
                 info("Sent '" + selectedMessage + "' to '" + playerName + "'. Handling a delay of " + delayBetweenMessages.get() + " ticks.");
+
+                // Add this part
+                blacklistedUsers.get().forEach(blacklistedUser -> {
+                    if (mc.getNetworkHandler().getPlayerList().stream().anyMatch(player -> player.getProfile().getName().equals(blacklistedUser))) {
+                        info("Skipped blacklisted user: " + blacklistedUser);
+                    }
+                });
+            }
 
             usedMessageIds.add(selectedMessageId);
             usedPlayerUUIDs.add(selectedPlayerUUID);
