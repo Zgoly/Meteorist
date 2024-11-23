@@ -28,6 +28,12 @@
 
 Add-on for Meteor that adds modules, commands and other useful stuff for primary non-vanilla anarchy servers.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://reporoster.com/stars/dark/Zgoly/Meteorist">
+  <source media="(prefers-color-scheme: light)" srcset="https://reporoster.com/stars/light/Zgoly/Meteorist">
+  <img alt="Stargazers" src="https://reporoster.com/stars/dark/Zgoly/Meteorist">
+</picture>
+
 ## ⬇️ Download
 
 [![Join Discord][shield-discord-server]][discord]
