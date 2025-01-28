@@ -27,8 +27,6 @@ public class DelaySelection extends BaseSlotSelection {
     }
 
     public DelaySelection copy() {
-        DelaySelection copy = new DelaySelection();
-        copy.delay.set(this.delay.get());
-        return copy;
+        return (DelaySelection) new DelaySelection().fromTag(toTag());
     }
 }

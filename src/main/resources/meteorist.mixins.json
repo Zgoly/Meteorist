@@ -3,7 +3,9 @@
   "package": "zgoly.meteorist.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "DisconnectedScreenMixin"
+    "DisconnectedScreenMixin",
+    "GameRendererMixin",
+    "MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -18,14 +18,12 @@ public class SingleSlotSelection extends DefaultSlotSelection {
             .onChanged(value -> reloadParent())
             .build()
     );
-
     public final Setting<SlotActionType> action = sgSingleSlotSelection.add(new EnumSetting.Builder<SlotActionType>()
             .name("action")
             .description("Action to perform.")
             .defaultValue(SlotActionType.PICKUP)
             .build()
     );
-
     public final Setting<Integer> button = sgSingleSlotSelection.add(new IntSetting.Builder()
             .name("button")
             .description("Button to press.")
@@ -40,13 +38,6 @@ public class SingleSlotSelection extends DefaultSlotSelection {
     }
 
     public SingleSlotSelection copy() {
-        SingleSlotSelection copy = new SingleSlotSelection();
-
-        copyDefaultSettings(copy);
-        copy.slot.set(this.slot.get());
-        copy.action.set(this.action.get());
-        copy.button.set(this.button.get());
-
-        return copy;
+        return (SingleSlotSelection) new SingleSlotSelection().fromTag(toTag());
     }
 }

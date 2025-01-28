@@ -1,6 +1,6 @@
 package zgoly.meteorist.modules.autologin;
 
-import meteordevelopment.meteorclient.events.game.GameLeftEvent;
+import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
@@ -29,8 +29,8 @@ import static zgoly.meteorist.Meteorist.ARROW_DOWN;
 import static zgoly.meteorist.Meteorist.ARROW_UP;
 
 public class AutoLogin extends Module {
-    public static List<BaseAutoLogin> autoLogins = new ArrayList<>();
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+
     private final Setting<Boolean> autoSave = sgGeneral.add(new BoolSetting.Builder()
             .name("auto-save")
             .description("Automatically saves passwords when you login or register.")
@@ -114,7 +114,9 @@ public class AutoLogin extends Module {
             .visible(autoSave::get)
             .build()
     );
-    private long currentWorldTime = -1;
+
+    public static List<BaseAutoLogin> autoLogins = new ArrayList<>();
+    private long startWorldTime = -1;
     private boolean work = true;
     // I haven't come up with anything better than this, feel free to create PR and make it better!
     private boolean isSendingChatMessage = false;
@@ -125,7 +127,7 @@ public class AutoLogin extends Module {
 
     @Override
     public void onActivate() {
-        currentWorldTime = -1;
+        startWorldTime = -1;
     }
 
     public NbtCompound toTag() {
@@ -173,7 +175,10 @@ public class AutoLogin extends Module {
     }
 
     private void fillWidget(GuiTheme theme, WVerticalList list) {
+        list.clear();
+
         for (BaseAutoLogin autoLogin : autoLogins) {
+
             list.add(theme.settings(autoLogin.settings)).expandX();
 
             WContainer controls = list.add(theme.horizontalList()).widget();
@@ -187,7 +192,6 @@ public class AutoLogin extends Module {
                     moveUp.action = () -> {
                         autoLogins.remove(index);
                         autoLogins.add(index - 1, autoLogin);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -198,7 +202,6 @@ public class AutoLogin extends Module {
                     moveDown.action = () -> {
                         autoLogins.remove(index);
                         autoLogins.add(index + 1, autoLogin);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -207,7 +210,6 @@ public class AutoLogin extends Module {
             WButton copy = controls.add(theme.button("Copy")).expandX().widget();
             copy.tooltip = "Duplicate auto login.";
             copy.action = () -> {
-                list.clear();
                 autoLogins.add(autoLogins.indexOf(autoLogin), autoLogin.copy());
                 fillWidget(theme, list);
             };
@@ -215,7 +217,6 @@ public class AutoLogin extends Module {
             WButton remove = controls.add(theme.button("Remove")).expandX().widget();
             remove.tooltip = "Remove auto login.";
             remove.action = () -> {
-                list.clear();
                 autoLogins.remove(autoLogin);
                 fillWidget(theme, list);
             };
@@ -228,14 +229,12 @@ public class AutoLogin extends Module {
         add.action = () -> {
             BaseAutoLogin autoLogin = new BaseAutoLogin();
             autoLogins.add(autoLogin);
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton removeAll = controls.add(theme.button("Remove All Auto Logins")).expandX().widget();
         removeAll.action = () -> {
             autoLogins.clear();
-            list.clear();
             fillWidget(theme, list);
         };
 
@@ -245,9 +244,15 @@ public class AutoLogin extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (work) {
-            if (currentWorldTime == -1) currentWorldTime = mc.world.getTime();
+            if (startWorldTime == -1) startWorldTime = mc.world.getTime();
+            boolean hasRemainingAutoLogins = false;
             for (BaseAutoLogin autoLogin : List.copyOf(autoLogins)) {
-                if (mc.world.getTime() != currentWorldTime + autoLogin.delay.get()) continue;
+                // Check all conditions
+
+                if (mc.world.getTime() < startWorldTime + autoLogin.delay.get()) {
+                    hasRemainingAutoLogins = true;
+                    continue;
+                }
                 if (autoLogin.executionMode.get() == BaseAutoLogin.ExecutionMode.Multiplayer && mc.isInSingleplayer())
                     continue;
                 if (autoLogin.executionMode.get() == BaseAutoLogin.ExecutionMode.Singleplayer && !mc.isInSingleplayer())
@@ -261,14 +266,19 @@ public class AutoLogin extends Module {
                 ChatUtils.sendPlayerMsg(autoLogin.passwordCommand.get());
                 isSendingChatMessage = false;
 
-                if (autoLogin.lastLogin.get()) work = false;
+                if (autoLogin.lastLogin.get()) {
+                    work = false;
+                    break;
+                }
+
+                if (!hasRemainingAutoLogins) work = false;
             }
         }
     }
 
     @EventHandler
-    private void onGameLeft(GameLeftEvent event) {
-        currentWorldTime = -1;
+    private void onGameJoined(GameJoinedEvent event) {
+        startWorldTime = -1;
         work = true;
     }
 
@@ -292,6 +302,7 @@ public class AutoLogin extends Module {
         for (BaseAutoLogin autoLogin : List.copyOf(autoLogins)) {
             boolean allChecksPassed = true;
 
+            // Check all conditions
             if (checkPasswordCommand.get())
                 allChecksPassed &= autoLogin.passwordCommand.get().equals(toCheck.passwordCommand.get());
             if (checkExecutionMode.get())

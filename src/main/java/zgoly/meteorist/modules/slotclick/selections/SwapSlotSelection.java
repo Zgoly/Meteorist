@@ -17,7 +17,6 @@ public class SwapSlotSelection extends DefaultSlotSelection {
             .onChanged(value -> reloadParent())
             .build()
     );
-
     public final Setting<Integer> toSlot = sgSwapSlotSelection.add(new IntSetting.Builder()
             .name("to-slot")
             .description("Slot to swap to.")
@@ -35,12 +34,6 @@ public class SwapSlotSelection extends DefaultSlotSelection {
     }
 
     public SwapSlotSelection copy() {
-        SwapSlotSelection copy = new SwapSlotSelection();
-
-        copyDefaultSettings(copy);
-        copy.fromSlot.set(this.fromSlot.get());
-        copy.toSlot.set(this.toSlot.get());
-
-        return copy;
+        return (SwapSlotSelection) new SwapSlotSelection().fromTag(toTag());
     }
 }

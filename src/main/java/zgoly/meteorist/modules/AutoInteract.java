@@ -56,7 +56,7 @@ public class AutoInteract extends Module {
     );
 
     public AutoInteract() {
-        super(Meteorist.CATEGORY, "auto-interact", "Automatically interact with interactable blocks like doors, trapdoors, etc.");
+        super(Meteorist.CATEGORY, "auto-interact", "Automatically interacts with interactable blocks like doors, trapdoors, etc.");
     }
 
     @EventHandler

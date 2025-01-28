@@ -94,4 +94,41 @@ public class MeteoristUtils {
             throw e;
         }
     }
+
+    /**
+     * Converts a given number of ticks into a human-readable time format.
+     * <p>
+     * This method takes the number of ticks and converts it into hours, minutes, and seconds.
+     * It then formats the result into a string that highlights the time components.
+     *
+     * @param ticks the number of ticks to convert
+     * @return a formatted string representing the time in hours, minutes, and seconds
+     */
+    public static String ticksToTime(int ticks) {
+        int ticksPerSecond = 20;
+        int ticksPerMinute = ticksPerSecond * 60;
+        int ticksPerHour = ticksPerMinute * 60;
+
+        int hours = ticks / ticksPerHour;
+        int minutes = (ticks % ticksPerHour) / ticksPerMinute;
+        int seconds = (ticks % ticksPerMinute) / ticksPerSecond;
+
+        StringBuilder result = new StringBuilder();
+
+        if (hours > 0) {
+            result.append(String.format("(highlight)%d(default) hour%s", hours, hours > 1 ? "s" : ""));
+            if (minutes > 0 || seconds > 0) result.append(", ");
+        }
+
+        if (minutes > 0) {
+            result.append(String.format("(highlight)%d(default) minute%s", minutes, minutes > 1 ? "s" : ""));
+            if (seconds > 0) result.append(", ");
+        }
+
+        if (seconds > 0) {
+            result.append(String.format("(highlight)%d(default) second%s", seconds, seconds > 1 ? "s" : ""));
+        }
+
+        return result.toString();
+    }
 }

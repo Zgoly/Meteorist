@@ -54,15 +54,6 @@ public class SlotRangeSelection extends DefaultSlotSelection {
     }
 
     public SlotRangeSelection copy() {
-        SlotRangeSelection copy = new SlotRangeSelection();
-
-        copyDefaultSettings(copy);
-        copy.fromSlot.set(this.fromSlot.get());
-        copy.toSlot.set(this.toSlot.get());
-        copy.action.set(this.action.get());
-        copy.button.set(this.button.get());
-        copy.delay.set(this.delay.get());
-
-        return copy;
+        return (SlotRangeSelection) new SlotRangeSelection().fromTag(toTag());
     }
 }

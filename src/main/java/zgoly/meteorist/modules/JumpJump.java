@@ -12,6 +12,7 @@ import zgoly.meteorist.Meteorist;
 
 public class JumpJump extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
             .name("delay")
             .description("Delay between jumps in ticks (20 ticks = 1 sec).")
@@ -29,6 +30,7 @@ public class JumpJump extends Module {
             .onChanged(a -> onActivate())
             .build()
     );
+
     int mult;
     int timer;
 

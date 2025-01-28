@@ -26,8 +26,6 @@ public class DelayInstruction extends BaseInstruction {
     }
 
     public DelayInstruction copy() {
-        DelayInstruction copy = new DelayInstruction();
-        copy.delay.set(this.delay.get());
-        return copy;
+        return (DelayInstruction) new DelayInstruction().fromTag(toTag());
     }
 }

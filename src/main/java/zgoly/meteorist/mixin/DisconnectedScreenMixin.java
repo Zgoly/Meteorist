@@ -18,6 +18,6 @@ public class DisconnectedScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("HEAD"))
     public void init(CallbackInfo ci) {
-        MeteorClient.EVENT_BUS.post(DisconnectedScreenEvent.get());
+        MeteorClient.EVENT_BUS.post(new DisconnectedScreenEvent());
     }
 }

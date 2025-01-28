@@ -6,6 +6,7 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 
 public class IdOffer extends BaseOffer {
     public static final String type = "ID";
+
     SettingGroup sgId = settings.createGroup("ID");
 
     public final Setting<Integer> offerId = sgId.add(new IntSetting.Builder()
@@ -25,9 +26,6 @@ public class IdOffer extends BaseOffer {
     }
 
     public IdOffer copy() {
-        IdOffer copy = new IdOffer();
-        copy.enabled.set(enabled.get());
-        copy.offerId.set(offerId.get());
-        return copy;
+        return (IdOffer) new IdOffer().fromTag(toTag());
     }
 }

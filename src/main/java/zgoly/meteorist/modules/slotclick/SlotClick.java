@@ -1,6 +1,6 @@
 package zgoly.meteorist.modules.slotclick;
 
-import meteordevelopment.meteorclient.events.game.GameLeftEvent;
+import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
@@ -39,9 +39,8 @@ import java.util.stream.IntStream;
 import static zgoly.meteorist.Meteorist.*;
 
 public class SlotClick extends Module {
-    public static List<BaseSlotSelection> slotSelections = new ArrayList<>();
-    private final SelectionFactory factory = new SelectionFactory();
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+
     private final Setting<Boolean> disableAfterIteration = sgGeneral.add(new BoolSetting.Builder()
             .name("disable-after-iteration")
             .description("Disables the module after one iteration.")
@@ -54,6 +53,9 @@ public class SlotClick extends Module {
             .defaultValue(false)
             .build()
     );
+
+    public static List<BaseSlotSelection> slotSelections = new ArrayList<>();
+    private final SelectionFactory factory = new SelectionFactory();
     private int startTick = -1;
 
     public SlotClick() {
@@ -103,12 +105,12 @@ public class SlotClick extends Module {
         return this;
     }
 
-    @EventHandler
-    private void onGameLeft(GameLeftEvent event) {
+    public void onDeactivate() {
         startTick = -1;
     }
 
-    public void onDeactivate() {
+    @EventHandler
+    private void onGameJoined(GameJoinedEvent event) {
         startTick = -1;
     }
 
@@ -120,6 +122,8 @@ public class SlotClick extends Module {
     }
 
     public void fillWidget(GuiTheme theme, WVerticalList list) {
+        list.clear();
+
         WTable table = list.add(theme.table()).expandX().widget();
 
         for (BaseSlotSelection slotSelection : slotSelections) {
@@ -173,7 +177,6 @@ public class SlotClick extends Module {
                     moveUp.action = () -> {
                         slotSelections.remove(index);
                         slotSelections.add(index - 1, slotSelection);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -184,7 +187,6 @@ public class SlotClick extends Module {
                     moveDown.action = () -> {
                         slotSelections.remove(index);
                         slotSelections.add(index + 1, slotSelection);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -194,7 +196,6 @@ public class SlotClick extends Module {
             copy.tooltip = "Copy slot selection.";
             copy.action = () -> {
                 slotSelections.add(slotSelections.indexOf(slotSelection), slotSelection.copy());
-                list.clear();
                 fillWidget(theme, list);
             };
 
@@ -202,7 +203,6 @@ public class SlotClick extends Module {
             remove.tooltip = "Remove slot selection.";
             remove.action = () -> {
                 slotSelections.remove(slotSelection);
-                list.clear();
                 fillWidget(theme, list);
             };
 
@@ -215,35 +215,30 @@ public class SlotClick extends Module {
         WButton createSingleSlotSelection = controls.add(theme.button("New " + SingleSlotSelection.type)).widget();
         createSingleSlotSelection.action = () -> {
             slotSelections.add(new SingleSlotSelection());
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton createSlotRangeSelection = controls.add(theme.button("New " + SlotRangeSelection.type)).widget();
         createSlotRangeSelection.action = () -> {
             slotSelections.add(new SlotRangeSelection());
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton createSwapSlotSelection = controls.add(theme.button("New " + SwapSlotSelection.type)).widget();
         createSwapSlotSelection.action = () -> {
             slotSelections.add(new SwapSlotSelection());
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton createDelaySelection = controls.add(theme.button("New " + DelaySelection.type)).widget();
         createDelaySelection.action = () -> {
             slotSelections.add(new DelaySelection());
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton removeAll = controls.add(theme.button("Remove All Selections")).widget();
         removeAll.action = () -> {
             slotSelections.clear();
-            list.clear();
             fillWidget(theme, list);
         };
 
@@ -339,7 +334,7 @@ public class SlotClick extends Module {
                             try {
                                 ItemStack itemStack = screenHandler.getSlot(slot).getStack();
                                 if (!itemStack.isEmpty()) {
-                                    NbtElement element = itemStack.encode(mc.player.getRegistryManager());
+                                    NbtElement element = itemStack.toNbt(mc.player.getRegistryManager());
                                     printInfo("Item data: " + element.asString());
 
                                     boolean matchedAny = false;

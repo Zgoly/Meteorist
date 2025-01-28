@@ -14,6 +14,7 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class BaseOffer implements ISerializable<BaseOffer> {
     public Settings settings = new Settings();
+
     SettingGroup sgGeneral = settings.getDefaultGroup();
 
     public final Setting<Boolean> enabled = sgGeneral.add(new BoolSetting.Builder()

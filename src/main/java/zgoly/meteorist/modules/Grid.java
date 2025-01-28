@@ -13,6 +13,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import zgoly.meteorist.Meteorist;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Grid extends Module {
     private final SettingGroup sgRange = settings.createGroup("Range");
     private final SettingGroup sgGrid = settings.createGroup("Grid");
     private final SettingGroup sgRender = settings.createGroup("Render");
+
     private final Setting<FilterMode> filterMode = sgGeneral.add(new EnumSetting.Builder<FilterMode>()
             .name("filter-mode")
             .description("Filter placements based on mode.")
@@ -54,6 +56,7 @@ public class Grid extends Module {
             .defaultValue(true)
             .build()
     );
+
     private final Setting<Integer> gridSize = sgGrid.add(new IntSetting.Builder()
             .name("grid-size")
             .description("Grid size.")
@@ -68,6 +71,7 @@ public class Grid extends Module {
             .min(1)
             .build()
     );
+
     private final Setting<Integer> switchRange = sgRange.add(new IntSetting.Builder()
             .name("switch-range")
             .description("Range to switch to the nearest placement of grid.")
@@ -82,36 +86,38 @@ public class Grid extends Module {
             .min(1)
             .build()
     );
+
     private final Setting<Boolean> show = sgRender.add(new BoolSetting.Builder()
             .name("show")
             .description("Show placements.")
             .defaultValue(true)
             .build()
     );
-    private final Setting<SettingColor> sC1 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> sideColor1 = sgRender.add(new ColorSetting.Builder()
             .name("main-placement-side-color")
             .description("The color of the sides of the blocks being rendered.")
             .defaultValue(new SettingColor(0, 255, 0, 40))
             .build()
     );
-    private final Setting<SettingColor> lC1 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> lineColor1 = sgRender.add(new ColorSetting.Builder()
             .name("main-placement-line-color")
             .description("The color of the lines of the blocks being rendered.")
             .defaultValue(new SettingColor(0, 255, 0, 100))
             .build()
     );
-    private final Setting<SettingColor> sC2 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> sideColor2 = sgRender.add(new ColorSetting.Builder()
             .name("placement-side-color")
             .description("The color of the sides of the blocks being rendered.")
             .defaultValue(new SettingColor(255, 255, 0, 40))
             .build()
     );
-    private final Setting<SettingColor> lC2 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> lineColor2 = sgRender.add(new ColorSetting.Builder()
             .name("placement-line-color")
             .description("The color of the lines of the blocks being rendered.")
             .defaultValue(new SettingColor(255, 255, 0, 100))
             .build()
     );
+
     BlockPos centerPos = null;
     List<BlockPos> placements = new ArrayList<>();
 
@@ -134,12 +140,14 @@ public class Grid extends Module {
     }
 
     private BlockPos getHeight(BlockPos blockPos) {
-        while (!mc.world.getBlockState(blockPos).isReplaceable() && blockPos.getY() < mc.world.getTopY()) {
+        while (!mc.world.getBlockState(blockPos).isReplaceable() && blockPos.getY() < mc.world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos.getX(), blockPos.getZ())) {
             blockPos = blockPos.up(1);
         }
+
         while (mc.world.getBlockState(blockPos.down(1)).isReplaceable() && blockPos.getY() > mc.world.getBottomY()) {
             blockPos = blockPos.down(1);
         }
+
         return blockPos;
     }
 
@@ -176,9 +184,9 @@ public class Grid extends Module {
     @EventHandler
     private void onRender(Render3DEvent event) {
         if (centerPos != null && show.get()) {
-            event.renderer.box(centerPos, sC1.get(), lC1.get(), ShapeMode.Both, 0);
+            event.renderer.box(centerPos, sideColor1.get(), lineColor1.get(), ShapeMode.Both, 0);
             for (BlockPos placement : placements) {
-                event.renderer.box(placement, sC2.get(), lC2.get(), ShapeMode.Both, 0);
+                event.renderer.box(placement, sideColor2.get(), lineColor2.get(), ShapeMode.Both, 0);
             }
         }
     }

@@ -40,6 +40,7 @@ import static zgoly.meteorist.Meteorist.*;
 
 public class AutoTrade extends Module {
     private final SettingGroup sgGeneral = settings.createGroup("Auto Trade");
+
     private final Setting<Boolean> oneOfferPerTick = sgGeneral.add(new BoolSetting.Builder()
             .name("one-offer-per-tick")
             .description("One offer per tick.")
@@ -58,6 +59,7 @@ public class AutoTrade extends Module {
             .defaultValue(false)
             .build()
     );
+
     private final OfferFactory factory = new OfferFactory();
     private final List<BaseOffer> offers = new ArrayList<>();
     private SetTradeOffersS2CPacket lastTrade = null;
@@ -112,7 +114,10 @@ public class AutoTrade extends Module {
     }
 
     public void fillWidget(GuiTheme theme, WVerticalList list) {
+        list.clear();
+
         WTable table = list.add(theme.table()).expandX().widget();
+
         for (BaseOffer offer : offers) {
             table.add(theme.label(offer.getTypeName())).expandX().widget();
 
@@ -177,7 +182,6 @@ public class AutoTrade extends Module {
                     moveUp.action = () -> {
                         offers.remove(index);
                         offers.add(index - 1, offer);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -188,7 +192,6 @@ public class AutoTrade extends Module {
                     moveDown.action = () -> {
                         offers.remove(index);
                         offers.add(index + 1, offer);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -198,7 +201,6 @@ public class AutoTrade extends Module {
             copy.tooltip = "Copy offer.";
             copy.action = () -> {
                 offers.add(offers.indexOf(offer), offer.copy());
-                list.clear();
                 fillWidget(theme, list);
             };
 
@@ -206,7 +208,6 @@ public class AutoTrade extends Module {
             remove.tooltip = "Remove offer.";
             remove.action = () -> {
                 offers.remove(offer);
-                list.clear();
                 fillWidget(theme, list);
             };
 
@@ -219,21 +220,18 @@ public class AutoTrade extends Module {
         WButton createItemsOffer = controls.add(theme.button("New Items Offer")).expandX().widget();
         createItemsOffer.action = () -> {
             offers.add(new ItemsOffer());
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton createIdOffer = controls.add(theme.button("New ID Offer")).expandX().widget();
         createIdOffer.action = () -> {
             offers.add(new IdOffer());
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton removeAll = controls.add(theme.button("Remove All Offers")).widget();
         removeAll.action = () -> {
             offers.clear();
-            list.clear();
             fillWidget(theme, list);
         };
 

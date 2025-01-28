@@ -21,12 +21,15 @@ public class DmSpam extends Module {
     private final SettingGroup sgDelay = settings.createGroup("Delay");
     private final SettingGroup sgDisableSettings = settings.createGroup("Disable Settings");
     private final SettingGroup sgSpecialCases = settings.createGroup("Special Cases");
+    private final SettingGroup sgDebug = settings.createGroup("Debug");
+
     private final Setting<String> messageCommand = sgCommand.add(new StringSetting.Builder()
             .name("message-command")
             .description("Specified command to direct message a player.")
             .defaultValue("/msg {player} {message}")
             .build()
     );
+
     private final Setting<List<String>> spamMessages = sgSelection.add(new StringListSetting.Builder()
             .name("spam-messages")
             .description("List of messages that can be sent to the players.")
@@ -45,6 +48,7 @@ public class DmSpam extends Module {
             .defaultValue(Mode.Sequential)
             .build()
     );
+
     private final Setting<Integer> delayBetweenMessages = sgDelay.add(new IntSetting.Builder()
             .name("delay-between-messages")
             .description("Time delay in ticks between the sending of individual messages.")
@@ -61,9 +65,10 @@ public class DmSpam extends Module {
             .sliderMax(1200)
             .build()
     );
+
     private final Setting<DisableTrigger> disableTrigger = sgDisableSettings.add(new EnumSetting.Builder<DisableTrigger>()
             .name("disable-trigger")
-            .description("Defines when to auto-disable messaging: 'None' - never; 'NoMoreMessages' - when there are no more messages to send; 'NoMorePlayers' - when there are no more players to send messages to.")
+            .description("'None' - never; 'NoMoreMessages' - no more messages to send; 'NoMorePlayers' - no more players to send messages to.")
             .defaultValue(DisableTrigger.None)
             .build()
     );
@@ -79,6 +84,7 @@ public class DmSpam extends Module {
             .defaultValue(true)
             .build()
     );
+
     private final Setting<Boolean> excludeSelf = sgSpecialCases.add(new BoolSetting.Builder()
             .name("exclude-self")
             .description("If set to 'true', the system will not send messages to yourself.")
@@ -99,12 +105,14 @@ public class DmSpam extends Module {
             .sliderRange(1, 256)
             .build()
     );
-    private final Setting<Boolean> printDebugInfo = sgSpecialCases.add(new BoolSetting.Builder()
+
+    private final Setting<Boolean> printDebugInfo = sgDebug.add(new BoolSetting.Builder()
             .name("print-debug-info")
             .description("Logs debug information in the chat.")
             .defaultValue(false)
             .build()
     );
+
     private final List<UUID> usedPlayerUUIDs = new ArrayList<>();
     private final List<Integer> usedMessageIds = new ArrayList<>();
     private long currentTick;
@@ -150,7 +158,7 @@ public class DmSpam extends Module {
         long currentWorldTime = mc.world.getTime();
 
         if (!unusedPlayerUUIDs.isEmpty() && currentTick <= currentWorldTime) {
-            UUID selectedPlayerUUID = playerMode.get() == Mode.Sequential ? unusedPlayerUUIDs.get(0) : unusedPlayerUUIDs.get(new Random().nextInt(unusedPlayerUUIDs.size()));
+            UUID selectedPlayerUUID = playerMode.get() == Mode.Sequential ? unusedPlayerUUIDs.getFirst() : unusedPlayerUUIDs.get(new Random().nextInt(unusedPlayerUUIDs.size()));
 
             List<Integer> allMessageIds = IntStream.rangeClosed(0, spamMessages.get().size() - 1).boxed().collect(Collectors.toCollection(LinkedList::new));
             allMessageIds.removeAll(usedMessageIds);
@@ -170,7 +178,7 @@ public class DmSpam extends Module {
                     .findFirst()
                     .orElse("");
 
-            int selectedMessageId = messageMode.get() == Mode.Sequential ? allMessageIds.get(0) : allMessageIds.get(new Random().nextInt(allMessageIds.size()));
+            int selectedMessageId = messageMode.get() == Mode.Sequential ? allMessageIds.getFirst() : allMessageIds.get(new Random().nextInt(allMessageIds.size()));
             String selectedMessage = spamMessages.get().get(selectedMessageId);
             if (antiSpamBypass.get())
                 selectedMessage += " " + RandomStringUtils.randomAlphabetic(bypassTextLength.get()).toLowerCase();

@@ -13,15 +13,18 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import zgoly.meteorist.commands.CoordinatesCommand;
 import zgoly.meteorist.commands.DataCommand;
+import zgoly.meteorist.commands.InstructionsCommand;
+import zgoly.meteorist.commands.InteractCommand;
 import zgoly.meteorist.commands.PlayersInfoCommand;
 import zgoly.meteorist.hud.TextPresets;
 import zgoly.meteorist.modules.*;
+import zgoly.meteorist.modules.autocrafter.AutoCrafter;
 import zgoly.meteorist.modules.autologin.AutoLogin;
 import zgoly.meteorist.modules.autotrade.AutoTrade;
 import zgoly.meteorist.modules.instructions.Instructions;
 import zgoly.meteorist.modules.placer.Placer;
+import zgoly.meteorist.modules.rangeactions.RangeActions;
 import zgoly.meteorist.modules.slotclick.SlotClick;
 import zgoly.meteorist.settings.StringPairSetting;
 import zgoly.meteorist.utils.misc.MeteoristStarscript;
@@ -48,6 +51,10 @@ public class Meteorist extends MeteorAddon {
     public static GuiTexture COPY;
     public static GuiTexture EYE;
 
+    public static Identifier identifier(String path) {
+        return Identifier.of(MOD_ID, path);
+    }
+
     @Override
     public void onInitialize() {
         // Log random message
@@ -60,6 +67,7 @@ public class Meteorist extends MeteorAddon {
 
         // Modules
         LOG.info("Registering modules...");
+        Modules.get().add(new AutoCrafter());
         Modules.get().add(new AutoFeed());
         Modules.get().add(new AutoFix());
         Modules.get().add(new AutoHeal());
@@ -82,13 +90,17 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new JumpJump());
         Modules.get().add(new Placer());
         Modules.get().add(new SlotClick());
+        Modules.get().add(new NerdVision());
+        Modules.get().add(new RangeActions());
         Modules.get().add(new ZAimbot());
         Modules.get().add(new ZKillaura());
+        Modules.get().add(new ZoomPlus());
 
         // Commands
         LOG.info("Registering commands...");
-        Commands.add(new CoordinatesCommand());
         Commands.add(new DataCommand());
+        Commands.add(new InstructionsCommand());
+        Commands.add(new InteractCommand());
         Commands.add(new PlayersInfoCommand());
 
         // HUD text presets
@@ -116,9 +128,5 @@ public class Meteorist extends MeteorAddon {
     @Override
     public GithubRepo getRepo() {
         return new GithubRepo("zgoly", "meteorist");
-    }
-
-    public static Identifier identifier(String path) {
-        return Identifier.of(MOD_ID, path);
     }
 }

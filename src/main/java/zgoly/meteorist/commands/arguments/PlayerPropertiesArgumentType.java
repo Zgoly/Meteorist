@@ -21,12 +21,20 @@ public class PlayerPropertiesArgumentType implements ArgumentType<List<String>> 
         return INSTANCE;
     }
 
+    public static List<String> get(CommandContext<?> context) {
+        // Retrieve and filter properties to include only String elements
+        List<?> properties = context.getArgument("properties", List.class);
+
+        return properties.stream().filter(String.class::isInstance).map(String.class::cast).toList();
+    }
+
     @Override
     public List<String> parse(StringReader reader) throws CommandSyntaxException {
         final String text = reader.getRemaining();
         reader.setCursor(reader.getTotalLength());
         List<String> keywords = List.of(text.split("\\s+"));
 
+        // Filter out invalid keywords
         Optional<String> unmatchedKeyword = keywords.stream()
                 .filter(keyword -> PROPERTIES.stream().noneMatch(property -> property.equalsIgnoreCase(keyword)))
                 .findAny();
@@ -43,6 +51,7 @@ public class PlayerPropertiesArgumentType implements ArgumentType<List<String>> 
         List<String> suggestions = new ArrayList<>(PROPERTIES);
 
         String remainingLowerCase = builder.getRemainingLowerCase();
+        // Splitting arguments to get properties
         List<String> parsedProperties = remainingLowerCase.isEmpty() ? Collections.emptyList() : Arrays.asList(remainingLowerCase.split(" "));
 
         parsedProperties.forEach(property -> suggestions.removeIf(text -> text.equalsIgnoreCase(property)));
@@ -60,7 +69,6 @@ public class PlayerPropertiesArgumentType implements ArgumentType<List<String>> 
         suggestions.forEach(builder::suggest);
         return builder.buildFuture();
     }
-
 
     @Override
     public Collection<String> getExamples() {

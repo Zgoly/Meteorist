@@ -160,4 +160,3 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
         }
     }
 }
-

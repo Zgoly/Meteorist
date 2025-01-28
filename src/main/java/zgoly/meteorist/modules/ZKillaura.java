@@ -9,7 +9,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
+import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
@@ -23,6 +26,7 @@ public class ZKillaura extends Module {
     private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgAttack = settings.createGroup("Attack");
     private final SettingGroup sgVisual = settings.createGroup("Visual");
+
     private final Setting<Set<EntityType<?>>> entities = sgFilter.add(new EntityTypeListSetting.Builder()
             .name("entities")
             .description("Specifies the entity types to target for attack.")
@@ -170,9 +174,9 @@ public class ZKillaura extends Module {
                 && entities.get().contains(e.getType())
                 && !(ignoreBabies.get() && (e instanceof AnimalEntity && (((AnimalEntity) e).isBaby())))
                 && !(ignoreNamed.get() && e.hasCustomName())
-                && !(ignorePassive.get() && (e instanceof Tameable && ((Tameable) e).getOwnerUuid() != null && !((Tameable) e).getOwnerUuid().equals(mc.player.getUuid())))
-                && !(ignoreTamed.get() && (e instanceof PlayerEntity && !Friends.get().shouldAttack((PlayerEntity) e)))
-                && !(ignoreFriends.get() && (e instanceof PlayerEntity && !Friends.get().shouldAttack((PlayerEntity) e)))
+                && !(ignorePassive.get() && ((e instanceof EndermanEntity enderman && !enderman.isAngry()) || (e instanceof ZombifiedPiglinEntity piglin && !piglin.isAttacking()) || (e instanceof WolfEntity wolf && !wolf.isAttacking())))
+                && !(ignoreTamed.get() && (e instanceof Tameable tameable && tameable.getOwnerUuid() != null && tameable.getOwnerUuid().equals(mc.player.getUuid())))
+                && !(ignoreFriends.get() && (e instanceof PlayerEntity player && !Friends.get().shouldAttack(player)))
         ));
 
         if (hitResult == null || hitResult.getType() != HitResult.Type.ENTITY) return;

@@ -18,6 +18,7 @@ import zgoly.meteorist.Meteorist;
 
 public class JumpFlight extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+
     private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
             .name("speed")
             .description("Flight speed.")
@@ -26,7 +27,6 @@ public class JumpFlight extends Module {
             .sliderRange(1, 75)
             .build()
     );
-
     private final Setting<Integer> verticalSpeed = sgGeneral.add(new IntSetting.Builder()
             .name("change-y-axis-force")
             .description("Force of change y-axis.")
@@ -35,14 +35,12 @@ public class JumpFlight extends Module {
             .sliderRange(1, 10)
             .build()
     );
-
     private final Setting<Boolean> scrollBool = sgGeneral.add(new BoolSetting.Builder()
             .name("scroll-to-speed")
             .description("Allows change speed using scroll wheel.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Double> scrollSens = sgGeneral.add(new DoubleSetting.Builder()
             .name("scroll-sensitivity")
             .description("Change speed using scroll wheel sensitivity.")
@@ -70,7 +68,7 @@ public class JumpFlight extends Module {
         Vec3d vel = PlayerUtils.getHorizontalVelocity(speed.get());
         double velX = vel.getX();
         double velZ = vel.getZ();
-        ((IVec3d) event.movement).set(velX, event.movement.y, velZ);
+        ((IVec3d) event.movement).meteor$set(velX, event.movement.y, velZ);
     }
 
     @EventHandler

@@ -1,6 +1,6 @@
 package zgoly.meteorist.modules.instructions;
 
-import meteordevelopment.meteorclient.events.game.GameLeftEvent;
+import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
@@ -9,18 +9,18 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
+import meteordevelopment.meteorclient.settings.BoolSetting;
+import meteordevelopment.meteorclient.settings.Setting;
+import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
-import meteordevelopment.starscript.Script;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.modules.instructions.instructions.BaseInstruction;
 import zgoly.meteorist.modules.instructions.instructions.CommandInstruction;
 import zgoly.meteorist.modules.instructions.instructions.DelayInstruction;
+import zgoly.meteorist.utils.InstructionUtils;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
 
 import java.util.ArrayList;
@@ -31,12 +31,21 @@ import java.util.Map;
 import static zgoly.meteorist.Meteorist.*;
 
 public class Instructions extends Module {
+    public final SettingGroup sgDebug = settings.createGroup("Debug");
+
+    public final Setting<Boolean> printDebugInfo = sgDebug.add(new BoolSetting.Builder()
+            .name("print-debug-info")
+            .description("Logs debug information to the chat. Not intended for the module, but for the command.")
+            .defaultValue(false)
+            .build()
+    );
+
     public static List<BaseInstruction> instructions = new ArrayList<>();
     private final InstructionFactory factory = new InstructionFactory();
     private int startTick = -1;
 
     public Instructions() {
-        super(Meteorist.CATEGORY, "instructions", "Runs commands one by one with different delays and number of cycles.");
+        super(Meteorist.CATEGORY, "instructions", "Runs commands with different delays and number of cycles. Supports Starscript.");
     }
 
     public NbtCompound toTag() {
@@ -58,21 +67,7 @@ public class Instructions extends Module {
         super.fromTag(tag);
 
         instructions.clear();
-        NbtList list = tag.getList("instructions", NbtElement.COMPOUND_TYPE);
-
-        for (NbtElement tagII : list) {
-            NbtCompound tagI = (NbtCompound) tagII;
-
-            String type = tagI.getString("type");
-            BaseInstruction instruction = factory.createInstruction(type);
-
-            if (instruction != null) {
-                NbtCompound instructionTag = tagI.getCompound("instruction");
-                if (instructionTag != null) instruction.fromTag(instructionTag);
-
-                instructions.add(instruction);
-            }
-        }
+        instructions = InstructionUtils.readInstructionsFromTag(tag, factory);
 
         return this;
     }
@@ -85,6 +80,8 @@ public class Instructions extends Module {
     }
 
     private void fillWidget(GuiTheme theme, WVerticalList list) {
+        list.clear();
+
         for (BaseInstruction instruction : instructions) {
             list.add(theme.settings(instruction.settings)).expandX();
 
@@ -97,7 +94,6 @@ public class Instructions extends Module {
                     moveUp.action = () -> {
                         instructions.remove(index);
                         instructions.add(index - 1, instruction);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -108,7 +104,6 @@ public class Instructions extends Module {
                     moveDown.action = () -> {
                         instructions.remove(index);
                         instructions.add(index + 1, instruction);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -118,7 +113,6 @@ public class Instructions extends Module {
             copy.tooltip = "Duplicate instruction.";
             copy.action = () -> {
                 instructions.add(instructions.indexOf(instruction), instruction.copy());
-                list.clear();
                 fillWidget(theme, list);
             };
 
@@ -126,7 +120,6 @@ public class Instructions extends Module {
             remove.tooltip = "Remove instruction.";
             remove.action = () -> {
                 instructions.remove(instruction);
-                list.clear();
                 fillWidget(theme, list);
             };
         }
@@ -138,7 +131,6 @@ public class Instructions extends Module {
         createCommand.action = () -> {
             CommandInstruction instruction = new CommandInstruction();
             instructions.add(instruction);
-            list.clear();
             fillWidget(theme, list);
         };
 
@@ -146,14 +138,12 @@ public class Instructions extends Module {
         createDelay.action = () -> {
             DelayInstruction instruction = new DelayInstruction();
             instructions.add(instruction);
-            list.clear();
             fillWidget(theme, list);
         };
 
         WButton removeAll = controls.add(theme.button("Remove All Instructions")).expandX().widget();
         removeAll.action = () -> {
             instructions.clear();
-            list.clear();
             fillWidget(theme, list);
         };
 
@@ -161,7 +151,7 @@ public class Instructions extends Module {
     }
 
     @EventHandler
-    private void onGameLeft(GameLeftEvent event) {
+    private void onGameJoined(GameJoinedEvent event) {
         startTick = -1;
     }
 
@@ -169,7 +159,6 @@ public class Instructions extends Module {
         startTick = -1;
     }
 
-    // This method of looping through all instructions allows to perform actions in one tick, which can be useful in certain situations
     @EventHandler
     public void onTick(TickEvent.Post event) {
         int currentTick = (int) mc.world.getTime();
@@ -177,32 +166,10 @@ public class Instructions extends Module {
 
         Map<Integer, List<String>> map = new HashMap<>();
 
-        int tick = 0;
+        int lastTick = InstructionUtils.processInstructions(instructions, map);
+        InstructionUtils.executeCommands(map, currentTick, startTick);
 
-        for (BaseInstruction instruction : instructions) {
-            if (instruction instanceof DelayInstruction delayInstruction) {
-                tick += delayInstruction.delay.get();
-            } else if (instruction instanceof CommandInstruction commandInstruction) {
-                for (int i = 0; i < commandInstruction.runCount.get(); i++) {
-                    map.computeIfAbsent(tick, ArrayList::new).add(commandInstruction.command.get());
-                    if (i < commandInstruction.runCount.get() - 1) {
-                        tick += commandInstruction.delayBetweenRuns.get();
-                    }
-                }
-            }
-        }
+        if (startTick + lastTick <= currentTick) startTick = -1;
 
-        for (Map.Entry<Integer, List<String>> entry : map.entrySet()) {
-            if (startTick + entry.getKey() == currentTick) {
-                for (String command : entry.getValue()) {
-                    Script script = MeteorStarscript.compile(command);
-                    if (script != null) {
-                        ChatUtils.sendPlayerMsg(MeteorStarscript.run(script));
-                    }
-                }
-            }
-        }
-
-        if (startTick + tick <= currentTick) startTick = -1;
     }
 }

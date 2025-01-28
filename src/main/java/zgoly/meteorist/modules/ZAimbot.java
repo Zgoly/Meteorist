@@ -14,8 +14,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -26,6 +27,14 @@ import java.util.Set;
 public class ZAimbot extends Module {
     private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgAim = settings.createGroup("Aim");
+    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
+            .name("target-movement-prediction")
+            .description("Amount to predict the target's movement when aiming.")
+            .min(0.0F)
+            .sliderMax(20.0F)
+            .defaultValue(0.0F)
+            .build()
+    );
     private final SettingGroup sgVisibility = settings.createGroup("Visibility");
     private final Setting<Set<EntityType<?>>> entities = sgFilter.add(new EntityTypeListSetting.Builder()
             .name("entities")
@@ -105,14 +114,6 @@ public class ZAimbot extends Module {
             .visible(() -> !instantAim.get())
             .build()
     );
-    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
-            .name("target-movement-prediction")
-            .description("Amount to predict the target's movement when aiming.")
-            .min(0.0F)
-            .sliderMax(20.0F)
-            .defaultValue(0.0F)
-            .build()
-    );
     private final Setting<Boolean> useFovRange = sgVisibility.add(new BoolSetting.Builder()
             .name("use-fov-range")
             .description("Restrict aiming to entities within the specified FOV.")
@@ -141,24 +142,23 @@ public class ZAimbot extends Module {
     @EventHandler
     private void renderTick(Render3DEvent event) {
         if (mc.player == null || mc.world == null) return;
-        LivingEntity player = mc.player;
 
         // filter entities
-        Entity target = TargetUtils.get(e -> !e.equals(player)
+        Entity target = TargetUtils.get(e -> !e.equals(mc.player)
                 && e.isAlive()
                 && entities.get().contains(e.getType())
-                && !(ignoreBabies.get() && (e instanceof AnimalEntity && (((AnimalEntity) e).isBaby())))
+                && !(ignoreBabies.get() && (e instanceof LivingEntity entity && entity.isBaby()))
                 && !(ignoreNamed.get() && e.hasCustomName())
-                && !(ignorePassive.get() && (e instanceof PassiveEntity && ((PassiveEntity) e).isAttacking()))
-                && !(ignoreTamed.get() && (e instanceof Tameable && ((Tameable) e).getOwnerUuid() != null && !((Tameable) e).getOwnerUuid().equals(player.getUuid())))
-                && !(ignoreFriends.get() && (e instanceof PlayerEntity && !Friends.get().shouldAttack((PlayerEntity) e)))
+                && !(ignorePassive.get() && ((e instanceof EndermanEntity enderman && !enderman.isAngry()) || (e instanceof ZombifiedPiglinEntity piglin && !piglin.isAttacking()) || (e instanceof WolfEntity wolf && !wolf.isAttacking())))
+                && !(ignoreTamed.get() && (e instanceof Tameable tameable && tameable.getOwnerUuid() != null && tameable.getOwnerUuid().equals(mc.player.getUuid())))
+                && !(ignoreFriends.get() && (e instanceof PlayerEntity player && !Friends.get().shouldAttack(player)))
                 && PlayerUtils.isWithin(e, range.get())
-                && (!useFovRange.get() || calculateFov(player, e) <= fovRange.get())
+                && (!useFovRange.get() || calculateFov(mc.player, e) <= fovRange.get())
                 && (ignoreWalls.get() || PlayerUtils.canSeeEntity(e)), priority.get()
         );
 
         if (target == null) return;
-        aim(player, target);
+        aim(mc.player, target);
     }
 
     private float calculateFov(LivingEntity player, Entity target) {

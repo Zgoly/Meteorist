@@ -184,6 +184,8 @@ public class Placer extends Module {
     }
 
     public void fillWidget(GuiTheme theme, WVerticalList list) {
+        list.clear();
+
         WTable table = list.add(theme.table()).expandX().widget();
 
         for (BasePlacer placer : placers) {
@@ -213,7 +215,6 @@ public class Placer extends Module {
                     moveUp.action = () -> {
                         placers.remove(index);
                         placers.add(index - 1, placer);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -224,7 +225,6 @@ public class Placer extends Module {
                     moveDown.action = () -> {
                         placers.remove(index);
                         placers.add(index + 1, placer);
-                        list.clear();
                         fillWidget(theme, list);
                     };
                 }
@@ -233,7 +233,6 @@ public class Placer extends Module {
             WButton copy = table.add(theme.button(COPY)).widget();
             copy.tooltip = "Duplicate placer.";
             copy.action = () -> {
-                list.clear();
                 BasePlacer newPlacer = placer.copy();
                 newPlacer.settings.registerColorSettings(null);
                 placers.add(placers.indexOf(placer), newPlacer);
@@ -243,7 +242,6 @@ public class Placer extends Module {
             WMinus remove = table.add(theme.minus()).widget();
             remove.tooltip = "Remove placer.";
             remove.action = () -> {
-                list.clear();
                 placer.settings.unregisterColorSettings();
                 placers.remove(placer);
                 fillWidget(theme, list);
@@ -259,7 +257,6 @@ public class Placer extends Module {
             placer.settings.registerColorSettings(null);
             placer.name.set("Placer #" + (placers.size() + 1));
             placers.add(placer);
-            list.clear();
             fillWidget(theme, list);
         };
 
@@ -267,7 +264,6 @@ public class Placer extends Module {
         removeAll.action = () -> {
             placers.forEach(placer -> placer.settings.unregisterColorSettings());
             placers.clear();
-            list.clear();
             fillWidget(theme, list);
         };
 
@@ -389,7 +385,8 @@ public class Placer extends Module {
                 pos = new BlockPos(-pos.getY(), pos.getX(), pos.getZ());
             }
         }
-        Direction direction = Direction.fromRotation(mc.player.getYaw());
+
+        Direction direction = Direction.fromHorizontalDegrees(mc.player.getYaw());
         return switch (direction) {
             case NORTH -> new BlockPos(pos.getZ(), pos.getY(), -pos.getX());
             case SOUTH -> new BlockPos(-pos.getZ(), pos.getY(), pos.getX());

@@ -38,14 +38,12 @@ public class BoatControl extends Module {
             .visible(autoForward::get)
             .build()
     );
-
     private final Setting<Boolean> smartTurning = sgGeneral.add(new BoolSetting.Builder()
             .name("smart-turning")
             .description("Automatically turns the boat.")
             .defaultValue(true)
             .build()
     );
-
     private final Setting<Boolean> turnToYaw = sgGeneral.add(new BoolSetting.Builder()
             .name("turn-to-yaw")
             .description("Always try (if possible) to turn the boat back to the yaw axis. Not effective but may be useful in some cases.")
@@ -53,7 +51,6 @@ public class BoatControl extends Module {
             .visible(smartTurning::get)
             .build()
     );
-
     private final Setting<Double> yaw = sgGeneral.add(new DoubleSetting.Builder()
             .name("yaw")
             .description("The yaw to turn to.")
@@ -63,7 +60,6 @@ public class BoatControl extends Module {
             .visible(() -> smartTurning.get() && turnToYaw.get())
             .build()
     );
-
     private final Setting<Boolean> autoYaw = sgGeneral.add(new BoolSetting.Builder()
             .name("auto-yaw")
             .description("Automatically capture boat's yaw upon boarding.")
@@ -71,7 +67,6 @@ public class BoatControl extends Module {
             .visible(() -> smartTurning.get() && turnToYaw.get())
             .build()
     );
-
     private final Setting<Double> accuracy = sgGeneral.add(new DoubleSetting.Builder()
             .name("accuracy")
             .description("Accuracy of turning to yaw. The higher the value, the lower the accuracy.")
@@ -126,47 +121,48 @@ public class BoatControl extends Module {
             .defaultValue(State.TURNING_LEFT)
             .build()
     );
-    private final Setting<Boolean> renderSC1 = sgRender.add(new BoolSetting.Builder()
+
+    private final Setting<Boolean> renderSideColor1 = sgRender.add(new BoolSetting.Builder()
             .name("render-left-collision")
             .description("Renders the left collision.")
             .defaultValue(true)
             .build()
     );
-    private final Setting<SettingColor> sC1 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> sideColor1 = sgRender.add(new ColorSetting.Builder()
             .name("left-collision-side-color")
             .description("The color of the sides of the collision being rendered.")
             .defaultValue(new SettingColor(0, 0, 255, 40))
-            .visible(renderSC1::get)
+            .visible(renderSideColor1::get)
             .build()
     );
-    private final Setting<SettingColor> lC1 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> lineColor1 = sgRender.add(new ColorSetting.Builder()
             .name("left-collision-line-color")
             .description("The color of the lines of the collision being rendered.")
             .defaultValue(new SettingColor(0, 0, 255, 100))
-            .visible(renderSC1::get)
+            .visible(renderSideColor1::get)
             .build()
     );
-
-    private final Setting<Boolean> renderSC2 = sgRender.add(new BoolSetting.Builder()
+    private final Setting<Boolean> renderSideColor2 = sgRender.add(new BoolSetting.Builder()
             .name("render-right-collision")
             .description("Renders the right collision.")
             .defaultValue(true)
             .build()
     );
-    private final Setting<SettingColor> sC2 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> sideColor2 = sgRender.add(new ColorSetting.Builder()
             .name("right-collision-side-color")
             .description("The color of the sides of the collision being rendered.")
             .defaultValue(new SettingColor(255, 0, 0, 40))
-            .visible(renderSC2::get)
+            .visible(renderSideColor2::get)
             .build()
     );
-    private final Setting<SettingColor> lC2 = sgRender.add(new ColorSetting.Builder()
+    private final Setting<SettingColor> lineColor2 = sgRender.add(new ColorSetting.Builder()
             .name("right-collision-line-color")
             .description("The color of the lines of the collision being rendered.")
             .defaultValue(new SettingColor(255, 0, 0, 100))
-            .visible(renderSC2::get)
+            .visible(renderSideColor2::get)
             .build()
     );
+
     private final List<KeyBinding> toRelease = new ArrayList<>();
     private State currentState = State.NOTHING;
     private boolean wasInBoat = false;
@@ -279,11 +275,11 @@ public class BoatControl extends Module {
     private void onRender(Render3DEvent event) {
         if (mc.player.getVehicle() instanceof net.minecraft.entity.vehicle.BoatEntity boat) {
             if (boat.isInFluid() && boat.getControllingPassenger() == mc.player) {
-                if (renderSC1.get()) {
-                    event.renderer.box(getBox(boat, leftCollisionOffset.get(), leftCollisionSize.get()), sC1.get(), lC1.get(), ShapeMode.Both, 0);
+                if (renderSideColor1.get()) {
+                    event.renderer.box(getBox(boat, leftCollisionOffset.get(), leftCollisionSize.get()), sideColor1.get(), lineColor1.get(), ShapeMode.Both, 0);
                 }
-                if (renderSC2.get()) {
-                    event.renderer.box(getBox(boat, rightCollisionOffset.get(), rightCollisionSize.get()), sC2.get(), lC2.get(), ShapeMode.Both, 0);
+                if (renderSideColor2.get()) {
+                    event.renderer.box(getBox(boat, rightCollisionOffset.get(), rightCollisionSize.get()), sideColor2.get(), lineColor2.get(), ShapeMode.Both, 0);
                 }
             }
         }

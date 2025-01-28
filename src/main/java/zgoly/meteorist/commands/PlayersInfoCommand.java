@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PlayersInfoCommand extends Command {
     public PlayersInfoCommand() {
-        super("playersinfo", "Saves in file / copies to clipboard info about players on current server");
+        super("playersinfo", "Saves in file / copies to clipboard info about players on current server.");
     }
 
     @Override
@@ -40,7 +40,7 @@ public class PlayersInfoCommand extends Command {
                     FileOutputStream outputStream = new FileOutputStream(result);
                     outputStream.write(getPlayersInfo(context).getBytes());
                     outputStream.close();
-                    info("Players info was saved to " + result);
+                    info("Players info was saved to (highlight)%s(default)", result);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -57,8 +57,9 @@ public class PlayersInfoCommand extends Command {
 
     private String getPlayersInfo(CommandContext<CommandSource> context) {
         List<String> properties;
+
         try {
-            properties = context.getArgument("properties", List.class);
+            properties = PlayerPropertiesArgumentType.get(context);
         } catch (Exception e) {
             properties = PlayerPropertiesArgumentType.PROPERTIES;
         }

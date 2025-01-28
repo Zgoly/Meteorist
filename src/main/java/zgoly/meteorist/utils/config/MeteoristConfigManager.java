@@ -29,6 +29,12 @@ import static zgoly.meteorist.Meteorist.MOD_ID;
 import static zgoly.meteorist.utils.MeteoristUtils.removeInvalidChars;
 
 public class MeteoristConfigManager {
+    /**
+     * Reloads the currently displayed config screen.
+     * If fromPrompt is true and the current screen is a child of another screen, the parent screen is reloaded instead.
+     * This is used when the user is prompted to save a config and chooses not to, in which case the parent screen should be reloaded.
+     * @param fromPrompt Whether the reload is from a prompt (i.e. the user was prompted to save a config and chose not to).
+     */
     public static void reload(boolean fromPrompt) {
         if (mc.currentScreen instanceof WidgetScreen screen) {
             if (fromPrompt) {
@@ -39,8 +45,27 @@ public class MeteoristConfigManager {
         }
     }
 
+    /**
+     * Returns the file path of the directory associated with the given module.
+     * The directory is determined based on the module's name after removing invalid characters.
+     *
+     * @param module The module for which to get the directory path.
+     * @return A File object representing the path of the module's directory.
+     */
+
+    public static File getFolderPath(Module module) {
+        return new File(Paths.get(FabricLoader.getInstance().getGameDir().toString(), MOD_ID, removeInvalidChars(module.name)).toString());
+    }
+
+    /**
+     * Adds a config manager to the given list for the given module, allowing the user to save and load configurations of the module.
+     *
+     * @param theme The GuiTheme to use for the config manager.
+     * @param list The WVerticalList to add the config manager to.
+     * @param module The module for which to display the config manager.
+     */
     public static void configManager(GuiTheme theme, WVerticalList list, Module module) {
-        File folderPath = new File(Paths.get(FabricLoader.getInstance().getGameDir().toString(), MOD_ID, removeInvalidChars(module.name)).toString());
+        File folderPath = getFolderPath(module);
 
         WSection configSection = list.add(theme.section("Config Manager")).expandX().widget();
         WTable control = configSection.add(theme.table()).expandX().widget();
@@ -81,7 +106,11 @@ public class MeteoristConfigManager {
         };
     }
 
-    // We don't want to modify module class, so we remove all unnecessary tags
+    /**
+     * Converts a module into an NbtCompound, removing unnecessary tags that will be reset by Meteor on load.
+     * @param module The module to convert.
+     * @return An NbtCompound containing the module's settings.
+     */
     public static NbtCompound toTag(Module module) {
         NbtCompound nbtCompound = module.toTag();
         nbtCompound.remove("name");
@@ -93,7 +122,15 @@ public class MeteoristConfigManager {
         return nbtCompound;
     }
 
-    // Meteor resets settings that are not included in compound (strange behaviour imo), so we prevent it
+    /**
+     * Restores a module's settings from an NbtCompound, ensuring certain properties are retained.
+     * This method reads the given NbtCompound to set the module's state but preserves specific
+     * properties such as keybind, toggleOnBindRelease, chat feedback, favorite status, and active
+     * status to prevent unintended changes by the NbtCompound data.
+     *
+     * @param module The module whose settings are to be restored.
+     * @param nbtCompound The NbtCompound containing the module's settings.
+     */
     public static void fromTag(Module module, NbtCompound nbtCompound) {
         Keybind keybind = module.keybind.copy();
         boolean toggleOnBindRelease = module.toggleOnBindRelease;
@@ -110,6 +147,18 @@ public class MeteoristConfigManager {
         if (module.isActive() != isActive) module.toggle();
     }
 
+    /**
+     * Fills the given WTable with WLabels and WButtons for each .nbt file in the given folderPath.
+     * Each WLabel displays the name of the corresponding .nbt file.
+     * Each WButton has a name of "Save" and an action that saves the given module to the corresponding .nbt file.
+     * Each WButton has a name of "Load" and an action that loads the given module from the corresponding .nbt file.
+     * Each WMinus has an action that prompts the user to delete the corresponding .nbt file.
+     * If the folderPath does not exist, this method does nothing.
+     * @param theme The GuiTheme to use for the WTable.
+     * @param module The module whose configurations should be saved/loaded.
+     * @param folderPath The folder path to search for .nbt files.
+     * @param configTable The WTable to fill with the WLabels and WButtons.
+     */
     private static void fillConfigTable(GuiTheme theme, Module module, File folderPath, WTable configTable) {
         if (folderPath.exists()) {
             Arrays.stream(folderPath.listFiles()).filter(file -> file.getName().endsWith(".nbt")).forEach(file -> {
@@ -142,10 +191,28 @@ public class MeteoristConfigManager {
         }
     }
 
+    /**
+     * Saves the given module to the given file.
+     * If the file does not exist, this method will create it and save the module to it.
+     * If the file does exist, this method will prompt the user to overwrite the file.
+     * If an exception occurs while saving the module, this method will display an error toast.
+     * @param module The module to save.
+     * @param file The file to save the module to.
+     */
     private static void save(Module module, File file) {
         save(module, file, false);
     }
 
+    /**
+     * Saves the given module to the given file.
+     * If the file does not exist, this method will create it and save the module to it.
+     * If the file does exist and overwrite is false, this method will prompt the user to overwrite the file.
+     * If the file does exist and overwrite is true, this method will overwrite the file without prompting the user.
+     * If an exception occurs while saving the module, this method will display an error toast.
+     * @param module The module to save.
+     * @param file The file to save the module to.
+     * @param overwrite Whether to overwrite the file if it already exists.
+     */
     private static void save(Module module, File file, boolean overwrite) {
         if (!file.exists() || overwrite) {
             try {
