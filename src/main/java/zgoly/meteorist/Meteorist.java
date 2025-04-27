@@ -95,6 +95,7 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new ZAimbot());
         Modules.get().add(new ZKillaura());
         Modules.get().add(new ZoomPlus());
+        Modules.get().add(new ZAutoTotem());
 
         // Commands
         LOG.info("Registering commands...");
