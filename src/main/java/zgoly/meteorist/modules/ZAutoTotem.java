@@ -104,16 +104,15 @@ public class ZAutoTotem extends Module {
             locked = mode.get() == Mode.Strict || (mode.get() == Mode.Smart && (low || ely));
 
             if (locked && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) {
-                // Si tenemos activada la opción de solo-inventario, y el inventario NO está abierto, no mover.
+                // If the "only in inventory" option is enabled and the inventory is NOT open, do not move
                 if (onlyInInventory.get() && mc.currentScreen == null) return;
 
-                // Si tenemos activada la opción de solo-quieto, y estamos moviéndonos, no mover.
+                // If the "only when still" option is enabled and the player is moving, do not move
                 if (onlyWhenStill.get() && (mc.player.input.movementForward != 0 || mc.player.input.movementSideways != 0)) return;
 
-                // Si pasa las comprobaciones, mueve el tótem.
+                // If all checks pass, move the totem to the offhand
                 InvUtils.move().from(result.slot()).toOffhand();
             }
-
 
             ticks = 0;
             return;
