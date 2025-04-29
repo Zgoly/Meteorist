@@ -17,6 +17,7 @@ public class MeteoristStarscript {
     private static double maxStartY = Double.MIN_VALUE;
     private static double maxFallDamage = 0;
 
+    // TODO Rewrite
     public static void init() {
         MeteorStarscript.ss.set("meteorist", new ValueMap()
                 .set("fall_distance", () -> Value.number(getDistance(false)))

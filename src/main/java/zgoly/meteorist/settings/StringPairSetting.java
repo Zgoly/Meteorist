@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 import meteordevelopment.meteorclient.settings.IVisible;
 import meteordevelopment.meteorclient.settings.Setting;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Pair;
 
@@ -128,10 +129,10 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     protected List<Pair<String, String>> load(NbtCompound tag) {
         get().clear();
 
-        NbtList valueTag = tag.getList("pairs", NbtList.COMPOUND_TYPE);
-        for (int i = 0; i < valueTag.size(); i++) {
-            NbtCompound pairTag = valueTag.getCompound(i);
-            get().add(new Pair<>(pairTag.getString("left"), pairTag.getString("right")));
+        NbtList valueTag = tag.getListOrEmpty("pairs");
+        for (NbtElement nbtElement : valueTag) {
+            NbtCompound pairTag = (NbtCompound) nbtElement;
+            get().add(new Pair<>(pairTag.getString("left", ""), pairTag.getString("right", "")));
         }
 
         return get();

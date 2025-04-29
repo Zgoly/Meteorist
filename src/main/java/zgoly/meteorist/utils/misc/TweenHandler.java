@@ -159,7 +159,7 @@ public class TweenHandler {
          *
          * @param easingStyle The easing style.
          * @param x           The input value.
-         * @return             The eased value.
+         * @return            The eased value.
          */
         private static double easeIn(EasingStyle easingStyle, double x) {
             switch (easingStyle) {

@@ -9,7 +9,7 @@ import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.LilyPadBlock;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -122,6 +122,12 @@ public class BoatControl extends Module {
             .build()
     );
 
+    private final Setting<Boolean> useLerpedPos = sgRender.add(new BoolSetting.Builder()
+            .name("use-lerped-position")
+            .description("Uses the lerped position for the rendering collisions.")
+            .defaultValue(true)
+            .build()
+    );
     private final Setting<Boolean> renderSideColor1 = sgRender.add(new BoolSetting.Builder()
             .name("render-left-collision")
             .description("Renders the left collision.")
@@ -190,8 +196,12 @@ public class BoatControl extends Module {
     private void onTick(TickEvent.Pre event) {
         currentState = State.NOTHING;
 
-        BoatEntity boat = (BoatEntity) mc.player.getVehicle();
-        if (boat == null || !boat.isInFluid() || boat.getControllingPassenger() != mc.player) {
+        if (!(mc.player.getVehicle() instanceof AbstractBoatEntity boat)) {
+            wasInBoat = false;
+            return;
+        }
+
+        if (!boat.isInFluid() || boat.getControllingPassenger() != mc.player) {
             wasInBoat = false;
             return;
         }
@@ -258,8 +268,16 @@ public class BoatControl extends Module {
         return new Vec3d(vector3d.x, vector3d.y, vector3d.z);
     }
 
-    private Box getBox(BoatEntity boat, Vector3d collisionOffset, Vector3d collisionSize) {
-        Vec3d offsetPos = boat.getPos().add(vectorToVec(collisionOffset).rotateY((float) -Math.toRadians(boat.getYaw() + 90)));
+    private Box getBox(AbstractBoatEntity boat, Vector3d collisionOffset, Vector3d collisionSize) {
+        return getBoxInternal(boat, collisionOffset, collisionSize, boat.getPos());
+    }
+
+    private Box getBoxWithLerp(AbstractBoatEntity boat, Vector3d collisionOffset, Vector3d collisionSize, float deltaTime) {
+        return getBoxInternal(boat, collisionOffset, collisionSize, boat.getLerpedPos(deltaTime));
+    }
+
+    private Box getBoxInternal(AbstractBoatEntity boat, Vector3d collisionOffset, Vector3d collisionSize, Vec3d boatPos) {
+        Vec3d offsetPos = boatPos.add(vectorToVec(collisionOffset).rotateY((float) -Math.toRadians(boat.getYaw() + 90)));
         Vec3d size = vectorToVec(collisionSize);
         return Box.of(offsetPos, size.x, size.y, size.z);
     }
@@ -273,15 +291,20 @@ public class BoatControl extends Module {
 
     @EventHandler
     private void onRender(Render3DEvent event) {
-        if (mc.player.getVehicle() instanceof net.minecraft.entity.vehicle.BoatEntity boat) {
-            if (boat.isInFluid() && boat.getControllingPassenger() == mc.player) {
-                if (renderSideColor1.get()) {
-                    event.renderer.box(getBox(boat, leftCollisionOffset.get(), leftCollisionSize.get()), sideColor1.get(), lineColor1.get(), ShapeMode.Both, 0);
-                }
-                if (renderSideColor2.get()) {
-                    event.renderer.box(getBox(boat, rightCollisionOffset.get(), rightCollisionSize.get()), sideColor2.get(), lineColor2.get(), ShapeMode.Both, 0);
-                }
-            }
+        if (!(mc.player.getVehicle() instanceof AbstractBoatEntity boat) || !boat.isInFluid() || boat.getControllingPassenger() != mc.player) return;
+
+        if (renderSideColor1.get()) {
+            Box box = useLerpedPos.get()
+                    ? getBoxWithLerp(boat, leftCollisionOffset.get(), leftCollisionSize.get(), event.tickDelta)
+                    : getBox(boat, leftCollisionOffset.get(), leftCollisionSize.get());
+            event.renderer.box(box, sideColor1.get(), lineColor1.get(), ShapeMode.Both, 0);
+        }
+
+        if (renderSideColor2.get()) {
+            Box box = useLerpedPos.get()
+                    ? getBoxWithLerp(boat, rightCollisionOffset.get(), rightCollisionSize.get(), event.tickDelta)
+                    : getBox(boat, rightCollisionOffset.get(), rightCollisionSize.get());
+            event.renderer.box(box, sideColor2.get(), lineColor2.get(), ShapeMode.Both, 0);
         }
     }
 

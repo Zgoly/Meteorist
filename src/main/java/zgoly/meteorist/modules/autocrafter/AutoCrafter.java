@@ -69,16 +69,16 @@ public class AutoCrafter extends Module {
         super.fromTag(tag);
 
         autoCrafts.clear();
-        NbtList list = tag.getList("autoCrafts", NbtElement.COMPOUND_TYPE);
+        NbtList list = tag.getListOrEmpty("autoCrafts");
 
         for (NbtElement tagI : list) {
             NbtCompound tagII = (NbtCompound) tagI;
 
-            String type = tagII.getString("type");
+            String type = tagII.getString("type", "");
             BaseAutoCraft autoCraft = factory.createAutoCraft(type);
 
             if (autoCraft != null) {
-                NbtCompound autoCraftTag = tagII.getCompound("autoCraft");
+                NbtCompound autoCraftTag = (NbtCompound) tagII.get("autoCraft");
                 if (autoCraftTag != null) autoCraft.fromTag(autoCraftTag);
 
                 autoCrafts.add(autoCraft);

@@ -923,7 +923,7 @@ public class NerdVision extends Module {
 
                         spawnersRenderDebugInfoAllowedKeys.get().forEach(key -> {
                             if (nbt.contains(key)) {
-                                debugInfo.put(key, nbt.get(key).asString());
+                                debugInfo.put(key, String.valueOf(nbt.get(key).asString()));
                             }
                         });
 
@@ -1139,8 +1139,7 @@ public class NerdVision extends Module {
 
     @EventHandler
     private void onReceivePacket(PacketEvent.Receive event) {
-        if (!blocksToTrack.isEmpty() && event.packet instanceof UnloadChunkS2CPacket packet) {
-            ChunkPos pos = packet.pos();
+        if (!blocksToTrack.isEmpty() && event.packet instanceof UnloadChunkS2CPacket(ChunkPos pos)) {
             int startX = pos.getStartX();
             int startZ = pos.getStartZ();
             int endX = pos.getEndX();

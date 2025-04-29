@@ -131,4 +131,18 @@ public class MeteoristUtils {
 
         return result.toString();
     }
+
+    /**
+     * Calculates the FOV angle in degrees between the player's look direction and the target.
+     *
+     * @param player the player entity
+     * @param target the target entity
+     * @return the FOV angle in degrees
+     */
+    public static float calculateFov(LivingEntity player, Entity target) {
+        Vec3d lookDirection = player.getRotationVec(1.0F);
+        Vec3d targetDirection = target.getPos().subtract(player.getPos()).normalize();
+
+        return (float) Math.toDegrees(Math.acos(lookDirection.dotProduct(targetDirection)));
+    }
 }

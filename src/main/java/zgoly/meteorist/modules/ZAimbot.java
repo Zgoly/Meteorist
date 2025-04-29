@@ -4,6 +4,7 @@ import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
 import meteordevelopment.meteorclient.utils.entity.SortPriority;
 import meteordevelopment.meteorclient.utils.entity.Target;
 import meteordevelopment.meteorclient.utils.entity.TargetUtils;
@@ -16,38 +17,95 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import zgoly.meteorist.Meteorist;
 
 import java.util.Set;
 
+import static zgoly.meteorist.utils.MeteoristUtils.calculateFov;
+
 public class ZAimbot extends Module {
     private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgAim = settings.createGroup("Aim");
-    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
-            .name("target-movement-prediction")
-            .description("Amount to predict the target's movement when aiming.")
-            .min(0.0F)
-            .sliderMax(20.0F)
-            .defaultValue(0.0F)
-            .build()
-    );
-    private final SettingGroup sgVisibility = settings.createGroup("Visibility");
+
     private final Setting<Set<EntityType<?>>> entities = sgFilter.add(new EntityTypeListSetting.Builder()
             .name("entities")
-            .description("Specifies the entity types to aim at.")
+            .description("Entities to aim at.")
             .onlyAttackable()
             .defaultValue(EntityType.PLAYER)
             .build()
     );
     private final Setting<Double> range = sgFilter.add(new DoubleSetting.Builder()
             .name("range")
-            .description("Maximum distance to target entities.")
-            .min(0)
+            .description("The maximum range the entity can be to aim at it.")
             .defaultValue(4.5)
+            .min(0)
+            .sliderMax(6)
+            .build()
+    );
+    private final Setting<KillAura.EntityAge> mobAgeFilter = sgFilter.add(new EnumSetting.Builder<KillAura.EntityAge>()
+            .name("mob-age-filter")
+            .description("Determines the age of the mobs to target (baby, adult, or both).")
+            .defaultValue(KillAura.EntityAge.Adult)
+            .build()
+    );
+    private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
+            .name("ignore-named")
+            .description("Whether or not to aim at mobs with a name.")
+            .defaultValue(false)
+            .build()
+    );
+    private final Setting<Boolean> ignorePassive = sgFilter.add(new BoolSetting.Builder()
+            .name("ignore-passive")
+            .description("Will only aim at sometimes passive mobs if they are targeting you.")
+            .defaultValue(true)
+            .build()
+    );
+    private final Setting<Boolean> ignoreTamed = sgFilter.add(new BoolSetting.Builder()
+            .name("ignore-tamed")
+            .description("Will avoid aiming at mobs you tamed.")
+            .defaultValue(false)
+            .build()
+    );
+    private final Setting<Boolean> ignoreCreative = sgFilter.add(new BoolSetting.Builder()
+            .name("ignore-creative")
+            .description("Will avoid aiming at players in creative mode.")
+            .defaultValue(true)
+            .build()
+    );
+    private final Setting<Boolean> ignoreFriends = sgFilter.add(new BoolSetting.Builder()
+            .name("ignore-friends")
+            .description("Will avoid aiming at players on your friends list.")
+            .defaultValue(true)
+            .build()
+    );
+    private final Setting<Boolean> ignoreShield = sgFilter.add(new BoolSetting.Builder()
+            .name("ignore-shield")
+            .description("Will avoid aiming at players who are using a shield.")
+            .defaultValue(false)
+            .build()
+    );
+    private final Setting<Boolean> useFovRange = sgFilter.add(new BoolSetting.Builder()
+            .name("use-fov-range")
+            .description("Restrict aiming to entities within the specified FOV.")
+            .defaultValue(true)
+            .build()
+    );
+    private final Setting<Double> fovRange = sgFilter.add(new DoubleSetting.Builder()
+            .name("fov-range")
+            .description("Maximum Field of View (FOV) range for targeting entities.")
+            .sliderRange(0, 180)
+            .defaultValue(90)
+            .visible(useFovRange::get)
+            .build()
+    );
+    private final Setting<Boolean> ignoreWalls = sgFilter.add(new BoolSetting.Builder()
+            .name("ignore-walls")
+            .description("Allow aiming through walls.")
+            .defaultValue(false)
             .build()
     );
     private final Setting<SortPriority> priority = sgFilter.add(new EnumSetting.Builder<SortPriority>()
@@ -56,34 +114,13 @@ public class ZAimbot extends Module {
             .defaultValue(SortPriority.ClosestAngle)
             .build()
     );
-    private final Setting<Boolean> ignoreBabies = sgFilter.add(new BoolSetting.Builder()
-            .name("ignore-babies")
-            .description("Prevents aiming at baby variants of mobs.")
-            .defaultValue(true)
-            .build()
-    );
-    private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
-            .name("ignore-named")
-            .description("Prevents aiming at named mobs.")
-            .defaultValue(false)
-            .build()
-    );
-    private final Setting<Boolean> ignorePassive = sgFilter.add(new BoolSetting.Builder()
-            .name("ignore-passive")
-            .description("Allows aiming at passive mobs only if they target you.")
-            .defaultValue(true)
-            .build()
-    );
-    private final Setting<Boolean> ignoreTamed = sgFilter.add(new BoolSetting.Builder()
-            .name("ignore-tamed")
-            .description("Prevents aiming at tamed mobs.")
-            .defaultValue(false)
-            .build()
-    );
-    private final Setting<Boolean> ignoreFriends = sgFilter.add(new BoolSetting.Builder()
-            .name("ignore-friends")
-            .description("Prevents aiming at players on your friends list.")
-            .defaultValue(true)
+
+    public final Setting<Double> targetMovementPrediction = sgAim.add(new DoubleSetting.Builder()
+            .name("target-movement-prediction")
+            .description("Amount to predict the target's movement when aiming.")
+            .min(0)
+            .sliderMax(20)
+            .defaultValue(0)
             .build()
     );
     private final Setting<Target> bodyTarget = sgAim.add(new EnumSetting.Builder<Target>()
@@ -114,58 +151,70 @@ public class ZAimbot extends Module {
             .visible(() -> !instantAim.get())
             .build()
     );
-    private final Setting<Boolean> useFovRange = sgVisibility.add(new BoolSetting.Builder()
-            .name("use-fov-range")
-            .description("Restrict aiming to entities within the specified FOV.")
-            .defaultValue(true)
-            .build()
-    );
-    private final Setting<Double> fovRange = sgVisibility.add(new DoubleSetting.Builder()
-            .name("fov-range")
-            .description("Maximum Field of View (FOV) range for targeting entities.")
-            .sliderRange(0, 180)
-            .defaultValue(90)
-            .visible(useFovRange::get)
-            .build()
-    );
-    private final Setting<Boolean> ignoreWalls = sgVisibility.add(new BoolSetting.Builder()
-            .name("ignore-walls")
-            .description("Allow aiming through walls.")
-            .defaultValue(false)
-            .build()
-    );
 
     public ZAimbot() {
         super(Meteorist.CATEGORY, "z-aimbot", "Smart aimbot that takes many settings into account when targeting.");
     }
 
     @EventHandler
-    private void renderTick(Render3DEvent event) {
+    private void onRender3D(Render3DEvent event) {
         if (mc.player == null || mc.world == null) return;
 
-        // filter entities
-        Entity target = TargetUtils.get(e -> !e.equals(mc.player)
-                && e.isAlive()
-                && entities.get().contains(e.getType())
-                && !(ignoreBabies.get() && (e instanceof LivingEntity entity && entity.isBaby()))
-                && !(ignoreNamed.get() && e.hasCustomName())
-                && !(ignorePassive.get() && ((e instanceof EndermanEntity enderman && !enderman.isAngry()) || (e instanceof ZombifiedPiglinEntity piglin && !piglin.isAttacking()) || (e instanceof WolfEntity wolf && !wolf.isAttacking())))
-                && !(ignoreTamed.get() && (e instanceof Tameable tameable && tameable.getOwnerUuid() != null && tameable.getOwnerUuid().equals(mc.player.getUuid())))
-                && !(ignoreFriends.get() && (e instanceof PlayerEntity player && !Friends.get().shouldAttack(player)))
-                && PlayerUtils.isWithin(e, range.get())
-                && (!useFovRange.get() || calculateFov(mc.player, e) <= fovRange.get())
-                && (ignoreWalls.get() || PlayerUtils.canSeeEntity(e)), priority.get()
-        );
+        Entity target = TargetUtils.get(this::entityCheck, priority.get());
 
         if (target == null) return;
         aim(mc.player, target);
     }
 
-    private float calculateFov(LivingEntity player, Entity target) {
-        Vec3d lookDirection = player.getRotationVec(1.0F);
-        Vec3d targetDirection = target.getPos().subtract(player.getPos()).normalize();
+    private boolean entityCheck(Entity entity) {
+        if (entity.equals(mc.player) || entity.equals(mc.cameraEntity)) return false;
+        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDead()) || !entity.isAlive()) return false;
 
-        return (float) Math.toDegrees(Math.acos(lookDirection.dotProduct(targetDirection)));
+        if (!PlayerUtils.isWithin(entity, range.get())) return false;
+
+        if (!entities.get().contains(entity.getType())) return false;
+        if (ignoreNamed.get() && entity.hasCustomName()) return false;
+
+        if (ignoreTamed.get()) {
+            if (entity instanceof Tameable tameable
+                    && tameable.getOwner() != null
+                    && tameable.getOwner().equals(mc.player)) {
+                return false;
+            }
+        }
+
+        if (ignorePassive.get()) {
+            switch (entity) {
+                case EndermanEntity enderman when !enderman.isAngry() -> {
+                    return false;
+                }
+                case ZombifiedPiglinEntity piglin when !piglin.isAttacking() -> {
+                    return false;
+                }
+                case WolfEntity wolf when !wolf.isAttacking() -> {
+                    return false;
+                }
+                default -> {
+                }
+            }
+        }
+
+        if (entity instanceof PlayerEntity player) {
+            if (ignoreCreative.get() && player.isCreative()) return false;
+            if (ignoreFriends.get() && !Friends.get().shouldAttack(player)) return false;
+            if (ignoreShield.get() && player.isBlocking()) return false;
+        }
+
+        if (entity instanceof AnimalEntity animal) {
+            return switch (mobAgeFilter.get()) {
+                case Baby -> animal.isBaby();
+                case Adult -> !animal.isBaby();
+                case Both -> true;
+            };
+        }
+
+        if (useFovRange.get() && calculateFov(mc.player, entity) > fovRange.get()) return false;
+        return ignoreWalls.get() || PlayerUtils.canSeeEntity(entity);
     }
 
     private void aim(LivingEntity player, Entity target) {

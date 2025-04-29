@@ -69,7 +69,7 @@ public class Meteorist extends MeteorAddon {
         LOG.info("Registering modules...");
         Modules.get().add(new AutoCrafter());
         Modules.get().add(new AutoFeed());
-        Modules.get().add(new AutoFix());
+        Modules.get().add(new AutoRepair());
         Modules.get().add(new AutoHeal());
         Modules.get().add(new AutoInteract());
         Modules.get().add(new AutoLeave());

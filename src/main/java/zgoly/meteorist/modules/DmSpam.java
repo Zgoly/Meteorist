@@ -105,6 +105,22 @@ public class DmSpam extends Module {
             .sliderRange(1, 256)
             .build()
     );
+    private final Setting<PlayerMode> playerModeSetting = sgSpecialCases.add(new EnumSetting.Builder<PlayerMode>()
+            .name("player-mode")
+            .description("Choose between Blacklist (exclude players) or Whitelist (only include players).")
+            .defaultValue(PlayerMode.Blacklist)
+            .build()
+    );
+    private final Setting<List<String>> playerWhitelist = sgSpecialCases.add(new StringListSetting.Builder()
+            .name("player-whitelist")
+            .description("List of player names to include when in Whitelist mode.")
+            .build()
+    );
+    private final Setting<List<String>> playerBlacklist = sgSpecialCases.add(new StringListSetting.Builder()
+            .name("player-blacklist")
+            .description("List of player names to exclude from receiving messages when in Blacklist mode.")
+            .build()
+    );
 
     private final Setting<Boolean> printDebugInfo = sgDebug.add(new BoolSetting.Builder()
             .name("print-debug-info")
@@ -137,8 +153,6 @@ public class DmSpam extends Module {
     }
 
     @EventHandler
-
-
     public void onDeactivate() {
         usedPlayerUUIDs.clear();
         usedMessageIds.clear();
@@ -160,6 +174,26 @@ public class DmSpam extends Module {
         if (!unusedPlayerUUIDs.isEmpty() && currentTick <= currentWorldTime) {
             UUID selectedPlayerUUID = playerMode.get() == Mode.Sequential ? unusedPlayerUUIDs.getFirst() : unusedPlayerUUIDs.get(new Random().nextInt(unusedPlayerUUIDs.size()));
 
+            String playerName = mc.getNetworkHandler().getPlayerList().stream()
+                    .filter(player -> player.getProfile().getId().equals(selectedPlayerUUID))
+                    .map(player -> player.getProfile().getName())
+                    .findFirst()
+                    .orElse("");
+
+            if (playerModeSetting.get() == PlayerMode.Blacklist) {
+                if (playerBlacklist.get().contains(playerName)) {
+                    if (printDebugInfo.get()) info("Skipping blacklisted player: " + playerName);
+                    usedPlayerUUIDs.add(selectedPlayerUUID);
+                    return;
+                }
+            } else if (playerModeSetting.get() == PlayerMode.Whitelist) {
+                if (!playerWhitelist.get().contains(playerName)) {
+                    if (printDebugInfo.get()) info("Skipping non-whitelisted player: " + playerName);
+                    usedPlayerUUIDs.add(selectedPlayerUUID);
+                    return;
+                }
+            }
+
             List<Integer> allMessageIds = IntStream.rangeClosed(0, spamMessages.get().size() - 1).boxed().collect(Collectors.toCollection(LinkedList::new));
             allMessageIds.removeAll(usedMessageIds);
 
@@ -172,16 +206,10 @@ public class DmSpam extends Module {
                 allMessageIds = IntStream.rangeClosed(0, spamMessages.get().size() - 1).boxed().collect(Collectors.toCollection(LinkedList::new));
             }
 
-            String playerName = mc.getNetworkHandler().getPlayerList().stream()
-                    .filter(player -> player.getProfile().getId().equals(selectedPlayerUUID))
-                    .map(player -> player.getProfile().getName())
-                    .findFirst()
-                    .orElse("");
-
             int selectedMessageId = messageMode.get() == Mode.Sequential ? allMessageIds.getFirst() : allMessageIds.get(new Random().nextInt(allMessageIds.size()));
             String selectedMessage = spamMessages.get().get(selectedMessageId);
             if (antiSpamBypass.get())
-                selectedMessage += " " + RandomStringUtils.randomAlphabetic(bypassTextLength.get()).toLowerCase();
+                selectedMessage += " " + RandomStringUtils.insecure().nextAlphabetic(bypassTextLength.get()).toLowerCase();
 
             ChatUtils.sendPlayerMsg(messageCommand.get().replace("{player}", playerName).replace("{message}", selectedMessage));
             if (printDebugInfo.get())
@@ -210,5 +238,10 @@ public class DmSpam extends Module {
         None,
         NoMoreMessages,
         NoMorePlayers
+    }
+
+    public enum PlayerMode {
+        Blacklist,
+        Whitelist
     }
 }

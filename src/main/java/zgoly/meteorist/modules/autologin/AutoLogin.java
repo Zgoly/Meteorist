@@ -151,13 +151,13 @@ public class AutoLogin extends Module {
         NbtCompound tag = MeteoristConfig.load(this.name, "default");
 
         autoLogins.clear();
-        NbtList list = tag.getList("autoLogins", NbtElement.COMPOUND_TYPE);
+        NbtList list = tag.getListOrEmpty("autoLogins");
 
         for (NbtElement tagII : list) {
             NbtCompound tagI = (NbtCompound) tagII;
 
             BaseAutoLogin autoLogin = new BaseAutoLogin();
-            NbtCompound autoLoginTag = tagI.getCompound("autoLogin");
+            NbtCompound autoLoginTag = (NbtCompound) tagI.get("autoLogin");
 
             if (autoLoginTag != null) autoLogin.fromTag(autoLoginTag);
 

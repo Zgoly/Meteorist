@@ -27,15 +27,15 @@ public class InstructionUtils {
      */
     public static List<BaseInstruction> readInstructionsFromTag(NbtCompound tag, InstructionFactory factory) {
         List<BaseInstruction> instructions = new ArrayList<>();
-        NbtList list = tag.getList("instructions", NbtElement.COMPOUND_TYPE);
+        NbtList list = tag.getListOrEmpty("instructions");
 
         for (NbtElement tagII : list) {
             NbtCompound tagI = (NbtCompound) tagII;
-            String type = tagI.getString("type");
+            String type = tagI.getString("type", "");
             BaseInstruction instruction = factory.createInstruction(type);
 
             if (instruction != null) {
-                NbtCompound instructionTag = tagI.getCompound("instruction");
+                NbtCompound instructionTag = (NbtCompound) tagI.get("instruction");
                 if (instructionTag != null) instruction.fromTag(instructionTag);
                 instructions.add(instruction);
             }
@@ -100,7 +100,7 @@ public class InstructionUtils {
      * @param startTick The start tick.
      */
     public static void executeCommands(Map<Integer, List<String>> map, int currentTick, int startTick) {
-        for (Map.Entry<Integer, List<String>> entry : map.entrySet()) {
+        for (Map.Entry<Integer, List<String>> entry : new ArrayList<>(map.entrySet())) {
             if (startTick + entry.getKey() == currentTick) {
                 for (String command : entry.getValue()) {
                     Script script = MeteorStarscript.compile(command);
