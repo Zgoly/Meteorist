@@ -88,7 +88,7 @@ public class ZAutoTotem extends Module {
     private int totems, ticks;
 
     public ZAutoTotem() {
-        super(Meteorist.CATEGORY, "z-auto-totem", "Auto totem with some extra options");
+        super(Meteorist.CATEGORY, "z-auto-totem", "Auto totem with some extra options (by Rapou7)");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
