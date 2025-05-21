@@ -32,7 +32,8 @@ public class DataCommand extends Command {
                 .executes(context -> getDataOrStates(copy))
                 .then(literal("player")
                         .executes(context -> getEntityData(mc.player, copy))
-                        .then(argument("player", PlayerArgumentType.create()).executes(context -> getEntityData(PlayerArgumentType.get(context), copy)))
+                        .then(argument("player", PlayerArgumentType.create())
+                                .executes(context -> getEntityData(PlayerArgumentType.get(context), copy)))
                 )
                 .then(literal("target")
                         .executes(context -> getDataOrStates(copy))
@@ -43,7 +44,6 @@ public class DataCommand extends Command {
     }
 
     public int getEntityData(Entity entity, boolean copy) {
-        // NBT entity text
         NbtCompound nbt = entity.writeNbt(new NbtCompound());
         if (copy) {
             mc.keyboard.setClipboard(nbt.asString().orElse(""));
@@ -55,10 +55,11 @@ public class DataCommand extends Command {
     }
 
     public int getDataOrStates(boolean copy) {
-        if (getData(copy) != WarningType.NO_WARNING) {
-            if (getStates(copy) != WarningType.NO_WARNING) {
-                warningMessage(WarningType.NO_TARGET);
-            }
+        WarningType dataWarning = getData(copy);
+        WarningType statesWarning = getStates(copy);
+        
+        if (dataWarning != WarningType.NO_WARNING && statesWarning != WarningType.NO_WARNING) {
+            warningMessage(WarningType.NO_TARGET);
         }
         return SINGLE_SUCCESS;
     }
@@ -80,7 +81,6 @@ public class DataCommand extends Command {
             BlockPos blockPos = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
             BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
             if (blockEntity != null) {
-                // NBT block entity text
                 NbtCompound nbt = blockEntity.createNbtWithIdentifyingData(mc.world.getRegistryManager());
                 if (copy) {
                     mc.keyboard.setClipboard(nbt.asString().orElse(""));
@@ -101,7 +101,6 @@ public class DataCommand extends Command {
         if (mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
             BlockState blockState = mc.world.getBlockState(blockPos);
-            // NBT block states text
             NbtCompound nbt = NbtHelper.fromBlockState(blockState);
             if (copy) {
                 mc.keyboard.setClipboard(nbt.asString().orElse(""));
@@ -118,12 +117,12 @@ public class DataCommand extends Command {
     }
 
     private void warningMessage(WarningType warning) {
-        // The best way to avoid repeating stuff in code
         switch (warning) {
             case NOT_A_BLOCK_ENTITY -> warning("Target block is not a block entity");
             case NOT_A_BLOCK -> warning("Target is not a block");
             case NO_TARGET -> warning("There is no target for your cursor");
             case NO_WARNING -> {
+                // No warning to display
             }
         }
     }
