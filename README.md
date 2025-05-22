@@ -114,7 +114,7 @@ Additional presets for Meteor.
 
 [meteorist-banner-download]: https://raw.githubusercontent.com/Zgoly/hosts/main/meteorist_banner.svg
 [meteorist-download]: https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar
-[meteor-download]: https://meteorclient.com/download?devBuild
+[meteor-download]: https://meteorclient.com
 [baritone-download]: https://meteorclient.com/api/downloadBaritone
 
 [shield-repo-license]: https://img.shields.io/github/license/Zgoly/Meteorist?style=flat&labelColor=004a94&color=004a94
