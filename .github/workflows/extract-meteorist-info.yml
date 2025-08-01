@@ -28,6 +28,11 @@ jobs:
       - name: Run MeteoristInfoParser
         run: ./gradlew generateMeteoristInfo
 
+      - name: Copy Meteorist Info to Website Repo
+        run: |
+          mkdir -p ./website-repo/meteorist/generated
+          cp build/info/meteorist-info.json ./website-repo/meteorist/generated/meteorist-info.json
+
       - name: Commit and Push Meteorist Info to Website
         run: |
           cd ./website-repo
