@@ -22,9 +22,9 @@
   "mixins": [
     "meteorist.mixins.json"
   ],
-  "accessWidener": "meteorist.accesswidener",
   "custom": {
-    "meteor-client:color": "90,120,255"
+    "meteor-client:color": "90,120,255",
+    "meteorist:commit": "${commit}"
   },
   "depends": {
     "minecraft": "*",

@@ -1,6 +1,5 @@
 package zgoly.meteorist.modules.autologin;
 
-import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
@@ -8,6 +7,7 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
+import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
@@ -20,11 +20,13 @@ import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.config.MeteoristConfig;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
+import zgoly.meteorist.utils.misc.DebugLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
 import static zgoly.meteorist.Meteorist.ARROW_DOWN;
 import static zgoly.meteorist.Meteorist.ARROW_UP;
 
@@ -116,18 +118,18 @@ public class AutoLogin extends Module {
     );
 
     public static List<BaseAutoLogin> autoLogins = new ArrayList<>();
-    private long startWorldTime = -1;
-    private boolean work = true;
-    // I haven't come up with anything better than this, feel free to create PR and make it better!
+    private long loginStartTime = -1;
+    private boolean shouldContinueProcessing = true;
+    private boolean initialized = true;
+
     private boolean isSendingChatMessage = false;
+
+    private final DebugLogger debugLogger;
 
     public AutoLogin() {
         super(Meteorist.CATEGORY, "auto-login", "Automatically logs in your account using /login.");
-    }
 
-    @Override
-    public void onActivate() {
-        startWorldTime = -1;
+        debugLogger = new DebugLogger(this, settings);
     }
 
     public NbtCompound toTag() {
@@ -186,6 +188,7 @@ public class AutoLogin extends Module {
             if (autoLogins.size() > 1) {
                 WContainer moveContainer = controls.add(theme.horizontalList()).expandX().widget();
                 int index = autoLogins.indexOf(autoLogin);
+
                 if (index > 0) {
                     WButton moveUp = moveContainer.add(theme.button(ARROW_UP)).expandX().widget();
                     moveUp.tooltip = "Move auto login up.";
@@ -207,14 +210,14 @@ public class AutoLogin extends Module {
                 }
             }
 
-            WButton copy = controls.add(theme.button("Copy")).expandX().widget();
+            WButton copy = controls.add(theme.button(COPY)).widget();
             copy.tooltip = "Duplicate auto login.";
             copy.action = () -> {
                 autoLogins.add(autoLogins.indexOf(autoLogin), autoLogin.copy());
                 fillWidget(theme, list);
             };
 
-            WButton remove = controls.add(theme.button("Remove")).expandX().widget();
+            WMinus remove = controls.add(theme.minus()).widget();
             remove.tooltip = "Remove auto login.";
             remove.action = () -> {
                 autoLogins.remove(autoLogin);
@@ -222,9 +225,10 @@ public class AutoLogin extends Module {
             };
         }
 
-        list.add(theme.horizontalSeparator()).expandX();
+        if (!autoLogins.isEmpty()) list.add(theme.horizontalSeparator()).expandX();
 
         WContainer controls = list.add(theme.horizontalList()).expandX().widget();
+
         WButton add = controls.add(theme.button("New Auto Login")).expandX().widget();
         add.action = () -> {
             BaseAutoLogin autoLogin = new BaseAutoLogin();
@@ -241,58 +245,81 @@ public class AutoLogin extends Module {
         MeteoristConfigManager.configManager(theme, list, this);
     }
 
+    @Override
+    public void onActivate() {
+        loginStartTime = -1;
+        shouldContinueProcessing = true;
+        initialized = true;
+    }
+
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (work) {
-            if (startWorldTime == -1) startWorldTime = mc.world.getTime();
+        if (initialized) {
+            loginStartTime = -1;
+            shouldContinueProcessing = true;
+            initialized = false;
+        }
+
+        if (shouldContinueProcessing) {
+            if (loginStartTime == -1) loginStartTime = mc.world.getTime();
             boolean hasRemainingAutoLogins = false;
             for (BaseAutoLogin autoLogin : List.copyOf(autoLogins)) {
-                // Check all conditions
-
-                if (mc.world.getTime() < startWorldTime + autoLogin.delay.get()) {
+                // Check delay
+                if (mc.world.getTime() < loginStartTime + autoLogin.delay.get()) {
                     hasRemainingAutoLogins = true;
                     continue;
                 }
-                if (autoLogin.executionMode.get() == BaseAutoLogin.ExecutionMode.Multiplayer && mc.isInSingleplayer())
-                    continue;
-                if (autoLogin.executionMode.get() == BaseAutoLogin.ExecutionMode.Singleplayer && !mc.isInSingleplayer())
-                    continue;
-                if (!autoLogin.serverIpFilter.get().isEmpty() && !Utils.getWorldName().equals(autoLogin.serverIpFilter.get()))
-                    continue;
-                if (!autoLogin.usernameFilter.get().isEmpty() && !mc.getSession().getUsername().equals(autoLogin.usernameFilter.get()))
-                    continue;
+                debugLogger.info("Delay check passed");
+
+                // Check execution mode
+                BaseAutoLogin.ExecutionMode executionMode = autoLogin.executionMode.get();
+                if (executionMode == BaseAutoLogin.ExecutionMode.Multiplayer && mc.isInSingleplayer()) continue;
+                if (executionMode == BaseAutoLogin.ExecutionMode.Singleplayer && !mc.isInSingleplayer()) continue;
+                debugLogger.info("Execution mode check passed");
+
+                // Check server ip
+                String serverIpFilter = autoLogin.serverIpFilter.get();
+                if (!serverIpFilter.isEmpty()) {
+                    if (!Utils.getWorldName().equals(serverIpFilter)) continue;
+                    debugLogger.info("Server ip check passed");
+                }
+
+                // Check username
+                String usernameFilter = autoLogin.usernameFilter.get();
+                if (!usernameFilter.isEmpty()) {
+                    if (!mc.getSession().getUsername().equals(usernameFilter)) continue;
+                    debugLogger.info("Username check passed");
+                }
 
                 isSendingChatMessage = true;
-                ChatUtils.sendPlayerMsg(autoLogin.passwordCommand.get());
+                ChatUtils.sendPlayerMsg(autoLogin.loginCommand.get());
                 isSendingChatMessage = false;
 
                 if (autoLogin.lastLogin.get()) {
-                    work = false;
+                    shouldContinueProcessing = false;
                     break;
                 }
 
-                if (!hasRemainingAutoLogins) work = false;
+                if (!hasRemainingAutoLogins) shouldContinueProcessing = false;
             }
         }
     }
 
     @EventHandler
-    private void onGameJoined(GameJoinedEvent event) {
-        startWorldTime = -1;
-        work = true;
-    }
-
-    @EventHandler
-    private void onPacketSent(PacketEvent.Send event) {
-        if (autoSave.get() && event.packet instanceof CommandExecutionC2SPacket packet) {
+    private void onPacketSend(PacketEvent.Send event) {
+        if (autoSave.get() && event.packet instanceof CommandExecutionC2SPacket(String command)) {
             if (ignoreSelf.get() && isSendingChatMessage) return;
-            String command = packet.command();
+
             String[] args = command.split(" ");
+
             if (args.length >= 2 && commandsToHandle.get().contains(args[0])) {
                 BaseAutoLogin autoLogin = new BaseAutoLogin();
-                autoLogin.passwordCommand.set(loginCommand.get() + " " + args[1]);
+                autoLogin.loginCommand.set(loginCommand.get() + " " + args[1]);
+
+                // Save username and server ip
                 if (saveUsername.get()) autoLogin.usernameFilter.set(mc.getSession().getUsername());
                 if (saveServerIp.get() && mc.getServer() != null) autoLogin.serverIpFilter.set(Utils.getWorldName());
+
                 if (!exists(autoLogin)) autoLogins.add(autoLogin);
             }
         }
@@ -302,17 +329,35 @@ public class AutoLogin extends Module {
         for (BaseAutoLogin autoLogin : List.copyOf(autoLogins)) {
             boolean allChecksPassed = true;
 
-            // Check all conditions
-            if (checkPasswordCommand.get())
-                allChecksPassed &= autoLogin.passwordCommand.get().equals(toCheck.passwordCommand.get());
-            if (checkExecutionMode.get())
+            // Check password
+            if (checkPasswordCommand.get()) {
+                allChecksPassed &= autoLogin.loginCommand.get().equals(toCheck.loginCommand.get());
+            }
+
+            // Check execution mode
+            if (checkExecutionMode.get()) {
                 allChecksPassed &= autoLogin.executionMode.get() == toCheck.executionMode.get();
-            if (checkDelay.get()) allChecksPassed &= Objects.equals(autoLogin.delay.get(), toCheck.delay.get());
-            if (checkUsername.get())
+            }
+
+            // Check delay
+            if (checkDelay.get()) {
+                allChecksPassed &= Objects.equals(autoLogin.delay.get(), toCheck.delay.get());
+            }
+
+            // Check username
+            if (checkUsername.get()) {
                 allChecksPassed &= autoLogin.usernameFilter.get().equals(toCheck.usernameFilter.get());
-            if (checkServerIp.get())
+            }
+
+            // Check server ip
+            if (checkServerIp.get()) {
                 allChecksPassed &= autoLogin.serverIpFilter.get().equals(toCheck.serverIpFilter.get());
-            if (checkLastLogin.get()) allChecksPassed &= autoLogin.lastLogin.get() == toCheck.lastLogin.get();
+            }
+
+            // Check last login
+            if (checkLastLogin.get()) {
+                allChecksPassed &= autoLogin.lastLogin.get() == toCheck.lastLogin.get();
+            }
 
             if (allChecksPassed) return true;
         }

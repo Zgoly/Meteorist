@@ -53,62 +53,21 @@ To download the addon, follow these steps:
 [![Join Discord][shield-discord-server]][discord]
 [![Join Discord][shield-discord-members]][discord]
 
-| №  | Module                                                            | Description                                                                    |
-|----|-------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| 1  | [Auto Crafter](../../wiki/modules#auto-crafter)                   | Automatically craft items.                                                     |
-| 2  | [Auto Feed](../../wiki/modules#auto-feed)                         | Writes command in chat when hunger level is low.                               |
-| 3  | [Auto Fix](../../wiki/modules#auto-fix)                           | Writes command in chat when item close to break.                               |
-| 4  | [Auto Heal](../../wiki/modules#auto-heal)                         | Writes command in chat when health level is low.                               |
-| 5  | [Auto Interact](../../wiki/modules#auto-interact)                 | Automatically interacts with interactable blocks like doors, trapdoors, etc.   |
-| 6  | [Auto Leave](../../wiki/modules#auto-leave)                       | Automatically leaves if player with specific name joins the server.            |
-| 7  | [Auto Login](../../wiki/modules#auto-login)                       | Automatically logs in your account using /login.                               |
-| 8  | [Auto Mud](../../wiki/modules#auto-mud)                           | Automatically uses water bottle on dirt variants to get mud.                   |
-| 9  | [Auto Sleep](../../wiki/modules#auto-sleep)                       | Gets into bed automatically for you.                                           |
-| 10 | [Auto Sneak](../../wiki/modules#auto-sneak)                       | Automatically sneaks at block edge (idea by kokqi).                            |
-| 11 | [Auto Trade](../../wiki/modules#auto-trade)                       | Automatically trades items with villagers (idea by Hiradpi).                   |
-| 12 | [Boat Control](../../wiki/modules#boat-control)                   | Automatically controls the boat for you.                                       |
-| 13 | [Disconnect Sound](../../wiki/modules#disconnect-sound)           | Plays a sound when the Disconnected Screen appears (e.g., when kicked).        |
-| 14 | [Dm Spam](../../wiki/modules#dm-spam)                             | Spams messages in players direct messages.                                     |
-| 15 | [Double Doors Interact](../../wiki/modules#double-doors-interact) | Open both doors with one interaction.                                          |
-| 16 | [Entity Interact](../../wiki/modules#entity-interact)             | Automatically interacts with entities in range.                                |
-| 17 | [Grid](../../wiki/modules#grid)                                   | Allows you to place blocks on a grid.                                          |
-| 18 | [Instructions](../../wiki/modules#instructions)                   | Runs commands with different delays and number of cycles. Supports Starscript. |
-| 19 | [Item Sucker](../../wiki/modules#item-sucker)                     | Automatically picks up dropped items.                                          |
-| 20 | [Jump Flight](../../wiki/modules#jump-flight)                     | Flight that using jumps for fly. No fall recommended.                          |
-| 21 | [Jump Jump](../../wiki/modules#jump-jump)                         | Makes you jump higher than normal using multiple jumps.                        |
-| 22 | [Nerd Vision](../../wiki/modules#nerd-vision)                     | Allows you to visualize various game mechanics/farms.                          |
-| 23 | [Placer](../../wiki/modules#placer)                               | Places blocks in range.                                                        |
-| 24 | [Range Actions](../../wiki/modules#range-actions)                 | Combined functionality of different range actions.                             |
-| 25 | [Slot Click](../../wiki/modules#slot-click)                       | Module that automates clicking on slots.                                       |
-| 26 | [Z Aimbot](../../wiki/modules#z-aimbot)                           | Smart aimbot that takes many settings into account when targeting.             |
-| 27 | [Z Kill Aura](../../wiki/modules#z-kill-aura)                     | Killaura which only attacks target if you aim at it.                           |
-| 28 | [Zoom Plus](../../wiki/modules#zoom-plus)                         | Advanced Zoom module with more customizable settings.                          |
+Info will be added soon.
 
 ## 📘 Commands
 
 [![Join Discord][shield-discord-server]][discord]
 [![Join Discord][shield-discord-members]][discord]
 
-| № | Command                                            | Description                                                               |
-|---|----------------------------------------------------|---------------------------------------------------------------------------|
-| 1 | [`data`](../../wiki/commands#data)                 | Gets NBT data of entities or blocks.                                      |
-| 2 | [`instructions`](../../wiki/commands#instructions) | Runs saved instructions from the "Instructions" module.                   |
-| 3 | [`interact`](../../wiki/commands#interact)         | Interact with closest block.                                              |
-| 4 | [`playersinfo`](../../wiki/commands#playersinfo)   | Saves in file / copies to clipboard info about players on current server. |
+Info will be added soon.
 
 ## 🎨 Presets
 
 [![Join Discord][shield-discord-server]][discord]
 [![Join Discord][shield-discord-members]][discord]
 
-Additional presets for Meteor.
-
-| № | Title                                                     | Text                                                           |
-|---|-----------------------------------------------------------|----------------------------------------------------------------|
-| 1 | [Fall Damage](../../wiki/presets#fall-damage)             | `Fall damage: #1{round(meteorist.fall_damage) / 2} ❤`          |
-| 2 | [Fall Distance](../../wiki/presets#fall-distance)         | `Fall distance: #1{round(meteorist.fall_distance, 1)}`         |
-| 3 | [Max Fall Damage](../../wiki/presets#max-fall-damage)     | `Max fall damage: #1{round(meteorist.max_fall_damage) / 2} ❤`  |
-| 4 | [Max Fall Distance](../../wiki/presets#max-fall-distance) | `Max fall distance: #1{round(meteorist.max_fall_distance, 1)}` |
+Info will be added soon.
 
 
 

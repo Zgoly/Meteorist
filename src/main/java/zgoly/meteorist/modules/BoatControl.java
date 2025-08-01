@@ -291,7 +291,8 @@ public class BoatControl extends Module {
 
     @EventHandler
     private void onRender(Render3DEvent event) {
-        if (!(mc.player.getVehicle() instanceof AbstractBoatEntity boat) || !boat.isInFluid() || boat.getControllingPassenger() != mc.player) return;
+        if (!(mc.player.getVehicle() instanceof AbstractBoatEntity boat) || !boat.isInFluid() || boat.getControllingPassenger() != mc.player)
+            return;
 
         if (renderSideColor1.get()) {
             Box box = useLerpedPos.get()

@@ -68,6 +68,7 @@ public class EntityInteract extends Module {
             .defaultValue(true)
             .build()
     );
+
     private final List<Entity> used = new ArrayList<>();
 
     public EntityInteract() {

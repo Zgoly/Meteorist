@@ -3,7 +3,6 @@ package zgoly.meteorist.modules;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
-import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
@@ -15,73 +14,73 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
-
 import zgoly.meteorist.Meteorist;
 
 public class ZAutoTotem extends Module {
+    // TODO little rewrite
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-        .name("mode")
-        .description("Determines when to hold a totem, strict will always hold.")
-        .defaultValue(Mode.Smart)
-        .build()
+            .name("mode")
+            .description("Determines when to hold a totem, strict will always hold.")
+            .defaultValue(Mode.Smart)
+            .build()
     );
 
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-        .name("delay")
-        .description("The ticks between slot movements.")
-        .defaultValue(0)
-        .min(0)
-        .build()
+            .name("delay")
+            .description("The ticks between slot movements.")
+            .defaultValue(0)
+            .min(0)
+            .build()
     );
 
     private final Setting<Integer> health = sgGeneral.add(new IntSetting.Builder()
-        .name("health")
-        .description("The health to hold a totem at.")
-        .defaultValue(10)
-        .range(0, 36)
-        .sliderMax(36)
-        .visible(() -> mode.get() == Mode.Smart)
-        .build()
+            .name("health")
+            .description("The health to hold a totem at.")
+            .defaultValue(10)
+            .range(0, 36)
+            .sliderMax(36)
+            .visible(() -> mode.get() == Mode.Smart)
+            .build()
     );
 
     private final Setting<Boolean> elytra = sgGeneral.add(new BoolSetting.Builder()
-        .name("elytra")
-        .description("Will always hold a totem when flying with elytra.")
-        .defaultValue(true)
-        .visible(() -> mode.get() == Mode.Smart)
-        .build()
+            .name("elytra")
+            .description("Will always hold a totem when flying with elytra.")
+            .defaultValue(true)
+            .visible(() -> mode.get() == Mode.Smart)
+            .build()
     );
 
     private final Setting<Boolean> fall = sgGeneral.add(new BoolSetting.Builder()
-        .name("fall")
-        .description("Will hold a totem when fall damage could kill you.")
-        .defaultValue(true)
-        .visible(() -> mode.get() == Mode.Smart)
-        .build()
+            .name("fall")
+            .description("Will hold a totem when fall damage could kill you.")
+            .defaultValue(true)
+            .visible(() -> mode.get() == Mode.Smart)
+            .build()
     );
 
     private final Setting<Boolean> explosion = sgGeneral.add(new BoolSetting.Builder()
-        .name("explosion")
-        .description("Will hold a totem when explosion damage could kill you.")
-        .defaultValue(true)
-        .visible(() -> mode.get() == Mode.Smart)
-        .build()
+            .name("explosion")
+            .description("Will hold a totem when explosion damage could kill you.")
+            .defaultValue(true)
+            .visible(() -> mode.get() == Mode.Smart)
+            .build()
     );
 
     private final Setting<Boolean> onlyInInventory = sgGeneral.add(new BoolSetting.Builder()
-        .name("only-in-inventory")
-        .description("Only moves the totem if your inventory is open.")
-        .defaultValue(false)
-        .build()
+            .name("only-in-inventory")
+            .description("Only moves the totem if your inventory is open.")
+            .defaultValue(false)
+            .build()
     );
 
     private final Setting<Boolean> onlyWhenStill = sgGeneral.add(new BoolSetting.Builder()
-        .name("only-when-still")
-        .description("Only moves the totem if you stop moving")
-        .defaultValue(false)
-        .build()
+            .name("only-when-still")
+            .description("Only moves the totem if you stop moving")
+            .defaultValue(false)
+            .build()
     );
 
     public boolean locked;
@@ -108,7 +107,7 @@ public class ZAutoTotem extends Module {
                 if (onlyInInventory.get() && mc.currentScreen == null) return;
 
                 // If the "only when still" option is enabled and the player is moving, do not move
-                if (onlyWhenStill.get() && (mc.player.input.movementForward != 0 || mc.player.input.movementSideways != 0)) return;
+                if (onlyWhenStill.get() && (mc.player.input.hasForwardMovement())) return;
 
                 // If all checks pass, move the totem to the offhand
                 InvUtils.move().from(result.slot()).toOffhand();

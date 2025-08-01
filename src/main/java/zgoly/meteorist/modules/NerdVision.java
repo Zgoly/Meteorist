@@ -34,6 +34,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.dimension.DimensionType;
 import org.joml.Vector3d;
 import zgoly.meteorist.Meteorist;
+import zgoly.meteorist.mixin.MobSpawnerLogicAccessor;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -870,23 +871,25 @@ public class NerdVision extends Module {
                 BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
                 if (blockEntity instanceof MobSpawnerBlockEntity mobSpawner) {
                     MobSpawnerLogic spawnerLogic = mobSpawner.getLogic();
+                    int spawnRange = ((MobSpawnerLogicAccessor) spawnerLogic).getSpawnRange();
 
                     if (spawnersRenderSphereEnabled.get()) {
+                        int requiredPlayerRange = ((MobSpawnerLogicAccessor) spawnerLogic).getRequiredPlayerRange();
                         if (spawnersRenderSphereType.get() == SphereType.Default) {
-                            renderQuadSphere(event, centerPos, spawnerLogic.requiredPlayerRange, spawnersRenderSpherePhiCount.get(), spawnersRenderSphereThetaCount.get(), spawnersRenderSphereSideColor.get(), spawnersRenderSphereLineColor.get(), spawnersRenderSphereShapeMode.get());
+                            renderQuadSphere(event, centerPos, requiredPlayerRange, spawnersRenderSpherePhiCount.get(), spawnersRenderSphereThetaCount.get(), spawnersRenderSphereSideColor.get(), spawnersRenderSphereLineColor.get(), spawnersRenderSphereShapeMode.get());
                         } else {
-                            renderCubicSphere(event, centerPos, spawnerLogic.requiredPlayerRange, spawnersRenderSphereSideColor.get(), spawnersRenderSphereLineColor.get(), spawnersRenderSphereShapeMode.get());
+                            renderCubicSphere(event, centerPos, requiredPlayerRange, spawnersRenderSphereSideColor.get(), spawnersRenderSphereLineColor.get(), spawnersRenderSphereShapeMode.get());
                         }
                     }
 
                     if (spawnersRenderDetectingZoneEnabled.get()) {
-                        Box box = new Box(blockPos).expand(spawnerLogic.spawnRange);
+                        Box box = new Box(blockPos).expand(spawnRange);
                         event.renderer.box(box, spawnersRenderDetectingZoneSideColor.get(), spawnersRenderDetectingZoneLineColor.get(), spawnersRenderDetectingZoneShapeMode.get(), 0);
                     }
 
                     if (spawnersRenderSpawningZoneEnabled.get()) {
                         Entity entity = spawnerLogic.getRenderedEntity(mc.world, blockPos);
-                        Vec3d size = new Vec3d(spawnerLogic.spawnRange, 1, spawnerLogic.spawnRange).multiply(2);
+                        Vec3d size = new Vec3d(spawnRange, 1, spawnRange).multiply(2);
 
                         if (entity != null) {
                             Box spawnBox = entity.getBoundingBox();
@@ -906,7 +909,7 @@ public class NerdVision extends Module {
                         event.renderer.box(box, spawnersRenderSpawningZoneSideColor.get(), spawnersRenderSpawningZoneLineColor.get(), spawnersRenderSpawningZoneShapeMode.get(), 0);
                     }
 
-                    boolean isPlayerInRange = spawnerLogic.isPlayerInRange(mc.world, blockPos);
+                    boolean isPlayerInRange = ((MobSpawnerLogicAccessor) spawnerLogic).invokeIsPlayerInRange(mc.world, blockPos);
 
                     if (isPlayerInRange && spawnersRenderActiveSpawnerEnabled.get()) {
                         event.renderer.box(blockPos, spawnersRenderActiveSpawnerSideColor.get(), spawnersRenderActiveSpawnerLineColor.get(), spawnersRenderActiveSpawnerShapeMode.get(), 0);
@@ -1148,11 +1151,13 @@ public class NerdVision extends Module {
             trackedBlocks.removeIf(blockPos -> blockPos.getX() >= startX && blockPos.getX() <= endX && blockPos.getZ() >= startZ && blockPos.getZ() <= endZ);
         }
     }
+
     // Enums
     private enum CenterPositionMode {
         Relative,
         Absolute
     }
+
     private enum CenterPositionType {
         BlockPos,
         Pos

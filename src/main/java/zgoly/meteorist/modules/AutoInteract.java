@@ -15,6 +15,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import zgoly.meteorist.Meteorist;
+import zgoly.meteorist.mixin.TrapdoorBlockAccessor;
 
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class AutoInteract extends Module {
                 continue;
             if (blockState.getBlock() instanceof DoorBlock doorBlock && !doorBlock.getBlockSetType().canOpenByHand())
                 continue;
-            if (blockState.getBlock() instanceof TrapdoorBlock trapdoorBlock && !trapdoorBlock.getBlockSetType().canOpenByHand())
+            if (blockState.getBlock() instanceof TrapdoorBlock trapdoorBlock && !((TrapdoorBlockAccessor) trapdoorBlock).invokeGetBlockSetType().canOpenByHand())
                 continue;
 
             if (blocks.get().contains(blockState.getBlock())) {

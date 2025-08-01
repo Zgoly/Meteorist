@@ -18,7 +18,6 @@ public class CommandsRangeAction extends BaseRangeAction {
             .defaultValue("/spawn")
             .build()
     );
-
     public final Setting<Integer> delay = sgCommandsRangeAction.add(new IntSetting.Builder()
             .name("delay")
             .description("Delay after sending a commands in ticks (20 ticks = 1 sec).")
@@ -27,7 +26,6 @@ public class CommandsRangeAction extends BaseRangeAction {
             .sliderRange(1, 40)
             .build()
     );
-
     public final Setting<Integer> commandsPerTick = sgCommandsRangeAction.add(new IntSetting.Builder()
             .name("commands-per-tick")
             .description("Number of commands to send per tick.")

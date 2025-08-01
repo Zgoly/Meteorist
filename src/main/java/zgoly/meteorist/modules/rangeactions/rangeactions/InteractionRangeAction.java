@@ -15,28 +15,24 @@ public class InteractionRangeAction extends BaseRangeAction {
             .defaultValue(false)
             .build()
     );
-
     public final Setting<Boolean> ignoreInteractBlock = sgInteractionRangeAction.add(new BoolSetting.Builder()
             .name("ignore-interact-block")
             .description("Ignore actions when interacting with a block.")
             .defaultValue(false)
             .build()
     );
-
     public final Setting<Boolean> ignoreAttackEntity = sgInteractionRangeAction.add(new BoolSetting.Builder()
             .name("ignore-attack-entity")
             .description("Ignore actions when attacking an entity.")
             .defaultValue(false)
             .build()
     );
-
     public final Setting<Boolean> ignoreInteractEntity = sgInteractionRangeAction.add(new BoolSetting.Builder()
             .name("ignore-interact-entity")
             .description("Ignore actions when interacting with an entity.")
             .defaultValue(false)
             .build()
     );
-
     public final Setting<Boolean> enableSneak = sgInteractionRangeAction.add(new BoolSetting.Builder()
             .name("enable-sneak")
             .description("Enable sneak action.")

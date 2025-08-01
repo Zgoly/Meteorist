@@ -1,6 +1,6 @@
 package zgoly.meteorist.modules.slotclick;
 
-import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
+import com.mojang.serialization.DataResult;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
@@ -18,16 +18,17 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.gui.screens.SlotSelectionScreen;
 import zgoly.meteorist.modules.slotclick.selections.*;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
+import zgoly.meteorist.utils.misc.DebugLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,10 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-import static zgoly.meteorist.Meteorist.*;
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.EDIT;
+import static zgoly.meteorist.Meteorist.ARROW_DOWN;
+import static zgoly.meteorist.Meteorist.ARROW_UP;
 
 public class SlotClick extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -47,19 +51,17 @@ public class SlotClick extends Module {
             .defaultValue(false)
             .build()
     );
-    private final Setting<Boolean> printDebugInfo = sgGeneral.add(new BoolSetting.Builder()
-            .name("print-debug-info")
-            .description("Prints debug information.")
-            .defaultValue(false)
-            .build()
-    );
 
     public static List<BaseSlotSelection> slotSelections = new ArrayList<>();
     private final SelectionFactory factory = new SelectionFactory();
     private int startTick = -1;
 
+    private final DebugLogger debugLogger;
+
     public SlotClick() {
         super(Meteorist.CATEGORY, "slot-click", "Module that automates clicking on slots.");
+
+        debugLogger = new DebugLogger(this, settings);
     }
 
     public static List<Integer> createList(int start, int end) {
@@ -105,12 +107,7 @@ public class SlotClick extends Module {
         return this;
     }
 
-    public void onDeactivate() {
-        startTick = -1;
-    }
-
-    @EventHandler
-    private void onGameJoined(GameJoinedEvent event) {
+    public void onActivate() {
         startTick = -1;
     }
 
@@ -127,7 +124,7 @@ public class SlotClick extends Module {
         WTable table = list.add(theme.table()).expandX().widget();
 
         for (BaseSlotSelection slotSelection : slotSelections) {
-            table.add(theme.label(slotSelection.getTypeName())).expandX().widget();
+            table.add(theme.label(slotSelection.getTypeName())).expandX();
             WContainer infoContainer = table.add(theme.horizontalList()).expandX().widget();
             switch (slotSelection) {
                 case SingleSlotSelection singleSlotSelection -> {
@@ -164,13 +161,14 @@ public class SlotClick extends Module {
                 }
             }
 
-            WButton edit = table.add(theme.button("Edit")).expandX().widget();
+            WButton edit = table.add(theme.button(EDIT)).widget();
             edit.tooltip = "Edit the slot selection.";
             edit.action = () -> mc.setScreen(new SlotSelectionScreen(theme, slotSelection));
 
-            WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
             if (slotSelections.size() > 1) {
+                WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
                 int index = slotSelections.indexOf(slotSelection);
+
                 if (index > 0) {
                     WButton moveUp = moveContainer.add(theme.button(ARROW_UP)).expandX().widget();
                     moveUp.tooltip = "Move slot selection up.";
@@ -209,7 +207,8 @@ public class SlotClick extends Module {
             table.row();
         }
 
-        list.add(theme.horizontalSeparator()).expandX();
+        if (!slotSelections.isEmpty()) list.add(theme.horizontalSeparator()).expandX();
+
         WTable controls = list.add(theme.table()).expandX().widget();
 
         WButton createSingleSlotSelection = controls.add(theme.button("New " + SingleSlotSelection.type)).widget();
@@ -275,12 +274,12 @@ public class SlotClick extends Module {
             if (startTick + entry.getKey() == currentTick) {
                 for (BaseSlotSelection baseSlotSelection : entry.getValue()) {
                     if (baseSlotSelection instanceof DefaultSlotSelection defaultSlotSelection) {
-                        printInfo("Slot selection: " + defaultSlotSelection.getTypeName());
+                        debugLogger.info("Slot selection: (highlight)%s", defaultSlotSelection.getTypeName());
                         Screen screen = mc.currentScreen;
                         ScreenHandler screenHandler = mc.player.currentScreenHandler;
 
                         if (defaultSlotSelection.checkContainerType.get()) {
-                            printInfo("Checking container type...");
+                            debugLogger.info("Checking container type...");
                             try {
                                 boolean containerTypeMatched;
                                 if (defaultSlotSelection.containerTypeMode.get() == DefaultSlotSelection.ContainerTypeMode.Whitelist) {
@@ -289,39 +288,39 @@ public class SlotClick extends Module {
                                     containerTypeMatched = !defaultSlotSelection.containerType.get().contains(screenHandler.getType());
                                 }
                                 if (containerTypeMatched) {
-                                    printInfo("Container type matched!");
+                                    debugLogger.info("Container type (highlight)%s(default) matched!", screenHandler.getType());
                                 } else {
-                                    printWarning("Container type not matched!");
+                                    debugLogger.warning("Container type (highlight)%s(default) not matched!", screenHandler.getType());
                                     continue;
                                 }
                             } catch (Exception e) {
-                                printError(e.getMessage());
+                                debugLogger.error(e.getMessage());
                                 if (!defaultSlotSelection.ignoreMenuTypeMismatch.get()) continue;
                             }
                         }
 
                         if (defaultSlotSelection.checkScreenName.get()) {
-                            printInfo("Checking screen name...");
+                            debugLogger.info("Checking screen name...");
                             try {
                                 Pattern screenNamePattern = Pattern.compile(defaultSlotSelection.screenName.get());
                                 String screenName = screen != null ? screen.getTitle().getString() : "null";
-                                printInfo("Screen name: " + screenName);
-                                printInfo("Regular expression: " + screenNamePattern.pattern());
+                                debugLogger.info("Screen name: (highlight)%s", screenName);
+                                debugLogger.info("Regular expression: (highlight)%s", screenNamePattern.pattern());
 
                                 boolean checkScreenName = screenNamePattern.matcher(screenName).find();
                                 if (checkScreenName) {
-                                    printInfo("Screen name matched!");
+                                    debugLogger.info("Screen name matched!");
                                 } else {
-                                    printWarning("Screen name not matched!");
+                                    debugLogger.warning("Screen name not matched!");
                                     continue;
                                 }
                             } catch (Exception e) {
-                                printError(e.getMessage());
+                                debugLogger.error(e.getMessage());
                             }
                         }
 
                         if (defaultSlotSelection.checkSlotItemData.get()) {
-                            printInfo("Checking slot item data...");
+                            debugLogger.info("Checking slot item data...");
                             int slot = 0;
                             switch (defaultSlotSelection) {
                                 case SingleSlotSelection singleSlotSelection -> slot = singleSlotSelection.slot.get();
@@ -334,37 +333,42 @@ public class SlotClick extends Module {
                             try {
                                 ItemStack itemStack = screenHandler.getSlot(slot).getStack();
                                 if (!itemStack.isEmpty()) {
-                                    NbtElement element = itemStack.toNbt(mc.player.getRegistryManager());
-                                    printInfo("Item data: " + element.asString());
+                                    DataResult<NbtElement> dataResult = ItemStack.CODEC.encodeStart(mc.player.getRegistryManager().getOps(NbtOps.INSTANCE), itemStack);
+                                    if (dataResult.result().isPresent()) {
+                                        NbtElement element = dataResult.result().get();
+                                        debugLogger.info(Text.literal("Item data: ").formatted(Formatting.GRAY).append(NbtHelper.toPrettyPrintedText(element)));
 
-                                    boolean matchedAny = false;
-                                    boolean matchedAll = true;
+                                        boolean matchedAny = false;
+                                        boolean matchedAll = true;
 
-                                    for (Pair<String, String> pair : defaultSlotSelection.slotItemData.get()) {
-                                        try {
-                                            String value = NbtPathArgumentType.NbtPath.parse(pair.getLeft()).get(element).getFirst().asString().orElse("");
-                                            Pattern pattern = Pattern.compile(pair.getRight());
-                                            printInfo("Element: " + value);
-                                            printInfo("Pattern: " + pattern.pattern());
-                                            if (pattern.matcher(value).find()) {
-                                                matchedAny = true;
-                                                printInfo("Matched!");
-                                            } else {
-                                                matchedAll = false;
-                                                printWarning("Not matched!");
+                                        for (Pair<String, String> pair : defaultSlotSelection.slotItemData.get()) {
+                                            try {
+                                                Pattern pattern = Pattern.compile(pair.getRight());
+                                                NbtElement value = NbtPathArgumentType.NbtPath.parse(pair.getLeft()).get(element).getFirst();
+                                                debugLogger.info(Text.literal("Found element for path \"" + pair.getLeft() + "\": ").formatted(Formatting.GRAY).append(NbtHelper.toPrettyPrintedText(value)));
+
+                                                if (pattern.matcher(value.toString()).find()) {
+                                                    matchedAny = true;
+                                                    debugLogger.info("Pattern (highlight)%s(default) matched!", pair.getRight());
+                                                } else {
+                                                    matchedAll = false;
+                                                    debugLogger.warning("Pattern (highlight)%s(default) not matched!", pair.getRight());
+                                                }
+                                            } catch (Exception e) {
+                                                debugLogger.error(e.getMessage());
                                             }
-                                        } catch (Exception e) {
-                                            printError(e.getMessage());
                                         }
-                                    }
 
-                                    boolean isAnyMatch = defaultSlotSelection.slotItemMatchMode.get() == DefaultSlotSelection.SlotItemMatchMode.Any;
-                                    if (!(isAnyMatch && matchedAny || !isAnyMatch && matchedAll)) continue;
+                                        boolean isAnyMatch = defaultSlotSelection.slotItemMatchMode.get() == DefaultSlotSelection.SlotItemMatchMode.Any;
+                                        if (!(isAnyMatch && matchedAny || !isAnyMatch && matchedAll)) continue;
+                                    } else {
+                                        debugLogger.warning("Cannot find any data for item (highlight)%s(default) in slot (highlight)%s(default)!", itemStack, slot);
+                                    }
                                 } else {
-                                    printWarning("There is no item in the slot " + slot + "!");
+                                    debugLogger.warning("There is no item in the slot (highlight)%s(default)!", slot);
                                 }
                             } catch (Exception e) {
-                                printError(e.getMessage());
+                                debugLogger.error(e.getMessage());
                             }
                         }
 
@@ -383,7 +387,7 @@ public class SlotClick extends Module {
                                     }
                                 }
                             } catch (Exception e) {
-                                printError(e.getMessage());
+                                debugLogger.error(e.getMessage());
                             }
                         }
                     }
@@ -398,17 +402,5 @@ public class SlotClick extends Module {
                 startTick = -1;
             }
         }
-    }
-
-    private void printInfo(String message) {
-        if (printDebugInfo.get()) info(message);
-    }
-
-    private void printWarning(String message) {
-        if (printDebugInfo.get()) warning(message);
-    }
-
-    private void printError(String message) {
-        if (printDebugInfo.get()) error(message);
     }
 }

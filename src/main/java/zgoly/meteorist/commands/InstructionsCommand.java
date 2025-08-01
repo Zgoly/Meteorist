@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.commands.Command;
-import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
+import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.orbit.EventHandler;
@@ -18,6 +18,7 @@ import zgoly.meteorist.modules.instructions.Instructions;
 import zgoly.meteorist.modules.instructions.instructions.BaseInstruction;
 import zgoly.meteorist.utils.InstructionUtils;
 import zgoly.meteorist.utils.MeteoristUtils;
+import zgoly.meteorist.utils.misc.DebugLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,9 +31,13 @@ public class InstructionsCommand extends Command {
     public Instructions instructionsModule = Modules.get().get(Instructions.class);
     public Map<Integer, List<String>> map = new HashMap<>();
 
+    private final DebugLogger debugLogger;
+
     public InstructionsCommand() {
         super("instructions", "Runs saved instructions from the \"Instructions\" module.");
         MeteorClient.EVENT_BUS.subscribe(this);
+
+        debugLogger = new DebugLogger(instructionsModule, instructionsModule.settings);
     }
 
     @Override
@@ -56,9 +61,9 @@ public class InstructionsCommand extends Command {
         );
 
         builder.then(literal("debug").executes(context -> {
-            boolean value = instructionsModule.printDebugInfo.get();
+            boolean value = debugLogger.isDebugEnabled();
 
-            instructionsModule.printDebugInfo.set(!value);
+            debugLogger.toggleDebug();
             info("Debug Info was (highlight)%s", value ? "disabled" : "enabled");
 
             return SINGLE_SUCCESS;
@@ -90,9 +95,7 @@ public class InstructionsCommand extends Command {
 
             for (int r = 0; r < runs; r++) {
                 int lastTick = InstructionUtils.processInstructions(instructions, map, tick);
-                if (instructionsModule.printDebugInfo.get()) {
-                    info("Iteration (highlight)%d(default) will run from (highlight)%d(default) to (highlight)%d(default) ticks", r + 1, tick, lastTick);
-                }
+                debugLogger.info("Iteration (highlight)%d(default) will run from (highlight)%d(default) to (highlight)%d(default) ticks", r + 1, tick, lastTick);
                 tick = lastTick;
             }
 
@@ -111,8 +114,8 @@ public class InstructionsCommand extends Command {
         if (mc.world == null) return;
         int worldTime = (int) mc.world.getTime();
 
-        if (instructionsModule.printDebugInfo.get() && !map.isEmpty()) {
-            info("Running (highlight)%d(default) instructions", map.size());
+        if (!map.isEmpty()) {
+            debugLogger.info("Running (highlight)%d(default) instructions", map.size());
         }
 
         // Remove old instructions
@@ -122,7 +125,7 @@ public class InstructionsCommand extends Command {
     }
 
     @EventHandler
-    private void onGameJoined(GameJoinedEvent event) {
+    private void onGameLeft(GameLeftEvent event) {
         map.clear();
     }
 }

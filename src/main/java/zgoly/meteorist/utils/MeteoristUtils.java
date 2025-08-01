@@ -1,8 +1,13 @@
 package zgoly.meteorist.utils;
 
+import net.minecraft.client.gui.screen.recipebook.AbstractCraftingRecipeBookWidget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.screen.AbstractCraftingScreenHandler;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -144,5 +149,26 @@ public class MeteoristUtils {
         Vec3d targetDirection = target.getPos().subtract(player.getPos()).normalize();
 
         return (float) Math.toDegrees(Math.acos(lookDirection.dotProduct(targetDirection)));
+    }
+
+    /**
+     * Checks if the recipe can be displayed based on the crafting grid size.
+     *
+     * @param screenHandler The crafting screen handler providing the grid dimensions
+     * @param display       The recipe to check
+     * @return True if the recipe can be displayed in the current grid
+     * @see AbstractCraftingRecipeBookWidget
+     */
+    public static boolean canDisplayRecipe(AbstractCraftingScreenHandler screenHandler, RecipeDisplay display) {
+        int width = screenHandler.getWidth();
+        int height = screenHandler.getHeight();
+
+        if (display instanceof ShapedCraftingRecipeDisplay shaped) {
+            return width >= shaped.width() && height >= shaped.height();
+        } else if (display instanceof ShapelessCraftingRecipeDisplay shapeless) {
+            return width * height >= shapeless.ingredients().size();
+        }
+
+        return false;
     }
 }

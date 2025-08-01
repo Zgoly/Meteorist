@@ -30,7 +30,6 @@ public class AutoSneak extends Module {
             .sliderRange(0.05, 1)
             .build()
     );
-
     private final Setting<Double> height = sgGeneral.add(new DoubleSetting.Builder()
             .name("height")
             .description("Height of the box.")
@@ -39,7 +38,6 @@ public class AutoSneak extends Module {
             .sliderRange(0.05, 1)
             .build()
     );
-
     private final Setting<Double> playerPosPrediction = sgGeneral.add(new DoubleSetting.Builder()
             .name("player-pos-prediction")
             .description("Predict player position based on velocity to move box to it.")
@@ -54,35 +52,30 @@ public class AutoSneak extends Module {
             .defaultValue(SneakBlocksMode.Whitelist)
             .build()
     );
-
     private final Setting<List<Block>> sneakBlocksWhitelist = sgFilter.add(new BlockListSetting.Builder()
             .name("sneak-blocks-whitelist")
             .description("Sneak on blocks from list, but not others.")
             .visible(() -> sneakBlocksMode.get() == SneakBlocksMode.Whitelist)
             .build()
     );
-
     private final Setting<List<Block>> sneakBlocksBlacklist = sgFilter.add(new BlockListSetting.Builder()
             .name("sneak-blocks-blacklist")
             .description("Sneak on other blocks, but not from list.")
             .visible(() -> sneakBlocksMode.get() == SneakBlocksMode.Blacklist)
             .build()
     );
-
     private final Setting<IgnoreBlocksMode> ignoreBlocksMode = sgFilter.add(new EnumSetting.Builder<IgnoreBlocksMode>()
             .name("ignore-blocks-mode")
             .description("Ignore blocks mode.")
             .defaultValue(IgnoreBlocksMode.Whitelist)
             .build()
     );
-
     private final Setting<List<Block>> ignoreBlocksWhitelist = sgFilter.add(new BlockListSetting.Builder()
             .name("ignore-blocks-whitelist")
             .description("Ignore blocks from list, but not others.")
             .visible(() -> ignoreBlocksMode.get() == IgnoreBlocksMode.Whitelist)
             .build()
     );
-
     private final Setting<List<Block>> ignoreBlocksBlacklist = sgFilter.add(new BlockListSetting.Builder()
             .name("ignore-blocks-blacklist")
             .description("Ignore other blocks, but not from list.")
@@ -96,7 +89,6 @@ public class AutoSneak extends Module {
             .defaultValue(true)
             .build()
     );
-
     private final Setting<SettingColor> sideColorOff = sgRender.add(new ColorSetting.Builder()
             .name("side-color-off")
             .description("The color of the sides of box when not sneaking.")
@@ -104,7 +96,6 @@ public class AutoSneak extends Module {
             .visible(showBox::get)
             .build()
     );
-
     private final Setting<SettingColor> lineColorOff = sgRender.add(new ColorSetting.Builder()
             .name("line-color-off")
             .description("The color of the lines of box when not sneaking.")
@@ -112,7 +103,6 @@ public class AutoSneak extends Module {
             .visible(showBox::get)
             .build()
     );
-
     private final Setting<SettingColor> sideColorOn = sgRender.add(new ColorSetting.Builder()
             .name("side-color-on")
             .description("The color of the sides of box when sneaking.")
@@ -120,7 +110,6 @@ public class AutoSneak extends Module {
             .visible(showBox::get)
             .build()
     );
-
     private final Setting<SettingColor> lineColorOn = sgRender.add(new ColorSetting.Builder()
             .name("line-color-on")
             .description("The color of the lines of box when sneaking.")
@@ -128,6 +117,7 @@ public class AutoSneak extends Module {
             .visible(showBox::get)
             .build()
     );
+
     boolean sneaking = false;
 
     public AutoSneak() {

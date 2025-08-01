@@ -32,14 +32,18 @@ import zgoly.meteorist.modules.autotrade.offers.BaseOffer;
 import zgoly.meteorist.modules.autotrade.offers.IdOffer;
 import zgoly.meteorist.modules.autotrade.offers.ItemsOffer;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
+import zgoly.meteorist.utils.misc.DebugLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static zgoly.meteorist.Meteorist.*;
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.EDIT;
+import static zgoly.meteorist.Meteorist.ARROW_DOWN;
+import static zgoly.meteorist.Meteorist.ARROW_UP;
 
 public class AutoTrade extends Module {
-    private final SettingGroup sgGeneral = settings.createGroup("Auto Trade");
+    private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<Boolean> oneOfferPerTick = sgGeneral.add(new BoolSetting.Builder()
             .name("one-offer-per-tick")
@@ -53,19 +57,17 @@ public class AutoTrade extends Module {
             .defaultValue(false)
             .build()
     );
-    private final Setting<Boolean> printDebugInfo = sgGeneral.add(new BoolSetting.Builder()
-            .name("print-debug-info")
-            .description("Prints debug information.")
-            .defaultValue(false)
-            .build()
-    );
 
     private final OfferFactory factory = new OfferFactory();
     private final List<BaseOffer> offers = new ArrayList<>();
     private SetTradeOffersS2CPacket lastTrade = null;
 
+    private final DebugLogger debugLogger;
+
     public AutoTrade() {
         super(Meteorist.CATEGORY, "auto-trade", "Automatically trades items with villagers (idea by Hiradpi).");
+
+        debugLogger = new DebugLogger(this, settings);
     }
 
     public NbtCompound toTag() {
@@ -119,7 +121,7 @@ public class AutoTrade extends Module {
         WTable table = list.add(theme.table()).expandX().widget();
 
         for (BaseOffer offer : offers) {
-            table.add(theme.label(offer.getTypeName())).expandX().widget();
+            table.add(theme.label(offer.getTypeName())).expandX();
 
             WHorizontalList container = table.add(theme.horizontalList()).expandX().widget();
             if (offer instanceof ItemsOffer itemsOffer) {
@@ -169,13 +171,14 @@ public class AutoTrade extends Module {
                 edit.actionOnRelease = () -> idOffer.offerId.set(edit.get());
             }
 
-            WButton edit = table.add(theme.button("Edit")).expandX().widget();
+            WButton edit = table.add(theme.button(EDIT)).widget();
             edit.tooltip = "Edit the offer.";
             edit.action = () -> mc.setScreen(new OfferScreen(theme, offer));
 
-            WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
             if (offers.size() > 1) {
+                WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
                 int index = offers.indexOf(offer);
+
                 if (index > 0) {
                     WButton moveUp = moveContainer.add(theme.button(ARROW_UP)).expandX().widget();
                     moveUp.tooltip = "Move offer up.";
@@ -214,7 +217,8 @@ public class AutoTrade extends Module {
             table.row();
         }
 
-        list.add(theme.horizontalSeparator()).expandX();
+        if (!offers.isEmpty()) list.add(theme.horizontalSeparator()).expandX();
+
         WTable controls = list.add(theme.table()).expandX().widget();
 
         WButton createItemsOffer = controls.add(theme.button("New Items Offer")).expandX().widget();
@@ -248,18 +252,18 @@ public class AutoTrade extends Module {
                 for (BaseOffer offer : offers) {
                     if (!offer.enabled.get()) continue;
                     if (offer instanceof ItemsOffer itemsOffer) {
-                        printInfo("");
-                        printInfo("===== Trade Offer №" + tradeOffers.indexOf(tradeOffer) + " (Offer: " + offers.indexOf(offer) + ") =====");
+                        debugLogger.info("");
+                        debugLogger.info("===== Trade Offer №" + tradeOffers.indexOf(tradeOffer) + " (Offer: " + offers.indexOf(offer) + ") =====");
                         boolean firstInputItemMatched = true;
                         boolean secondInputItemMatched = true;
                         boolean outputItemMatched = true;
 
-                        printInfo("");
-                        printInfo("First Input Item");
+                        debugLogger.info("");
+                        debugLogger.info("First Input Item");
                         if (itemsOffer.checkFirstInputItem.get()) {
                             Item item = itemsOffer.firstInputItem.get();
                             Item tradeItem = tradeOffer.getFirstBuyItem().item().value();
-                            printInfo("Item: " + item + ", Trade Item: " + tradeItem);
+                            debugLogger.info("Item: " + item + ", Trade Item: " + tradeItem);
                             if (item == tradeItem) {
                                 if (itemsOffer.checkFirstInputItemCount.get()) {
                                     int count;
@@ -272,53 +276,53 @@ public class AutoTrade extends Module {
                                     int min = itemsOffer.minFirstInputItemCount.get();
                                     int max = itemsOffer.maxFirstInputItemCount.get();
                                     firstInputItemMatched = count >= min && count <= max;
-                                    printInfo("Count: " + count + ", Min: " + min + ", Max: " + max);
+                                    debugLogger.info("Count: " + count + ", Min: " + min + ", Max: " + max);
                                 }
                             } else {
                                 firstInputItemMatched = false;
                             }
                         }
-                        printInfo("Item matched: " + firstInputItemMatched);
+                        debugLogger.info("Item matched: " + firstInputItemMatched);
 
-                        printInfo("");
-                        printInfo("Second Input Item");
+                        debugLogger.info("");
+                        debugLogger.info("Second Input Item");
                         if (itemsOffer.checkSecondInputItem.get() && tradeOffer.getSecondBuyItem().isPresent()) {
                             Item item = itemsOffer.secondInputItem.get();
                             Item tradeItem = tradeOffer.getSecondBuyItem().get().item().value();
-                            printInfo("Item: " + item + ", Trade Item: " + tradeItem);
+                            debugLogger.info("Item: " + item + ", Trade Item: " + tradeItem);
                             if (item == tradeItem) {
                                 if (itemsOffer.checkSecondInputItemCount.get()) {
                                     int count = tradeOffer.getDisplayedSecondBuyItem().getCount();
                                     int min = itemsOffer.minSecondInputItemCount.get();
                                     int max = itemsOffer.maxSecondInputItemCount.get();
                                     secondInputItemMatched = count >= min && count <= max;
-                                    printInfo("Count: " + count + ", Min: " + min + ", Max: " + max);
+                                    debugLogger.info("Count: " + count + ", Min: " + min + ", Max: " + max);
                                 }
                             } else {
                                 secondInputItemMatched = false;
                             }
                         }
-                        printInfo("Item matched: " + secondInputItemMatched);
+                        debugLogger.info("Item matched: " + secondInputItemMatched);
 
-                        printInfo("");
-                        printInfo("Output Item");
+                        debugLogger.info("");
+                        debugLogger.info("Output Item");
                         if (itemsOffer.checkOutputItem.get()) {
                             Item item = itemsOffer.outputItem.get();
                             Item tradeItem = tradeOffer.getSellItem().getItem();
-                            printInfo("Item: " + item + ", Trade Item: " + tradeItem);
+                            debugLogger.info("Item: " + item + ", Trade Item: " + tradeItem);
                             if (item == tradeItem) {
                                 if (itemsOffer.checkOutputItemCount.get()) {
                                     int count = tradeOffer.getSellItem().getCount();
                                     int min = itemsOffer.minOutputItemCount.get();
                                     int max = itemsOffer.maxOutputItemCount.get();
                                     outputItemMatched = count >= min && count <= max;
-                                    printInfo("Count: " + count + ", Min: " + min + ", Max: " + max);
+                                    debugLogger.info("Count: " + count + ", Min: " + min + ", Max: " + max);
                                 }
                             } else {
                                 outputItemMatched = false;
                             }
                         }
-                        printInfo("Item matched: " + outputItemMatched);
+                        debugLogger.info("Item matched: " + outputItemMatched);
 
                         if (firstInputItemMatched && secondInputItemMatched && outputItemMatched && !tradeOffer.isDisabled()) {
                             offerMatched = true;
@@ -335,7 +339,7 @@ public class AutoTrade extends Module {
                 if (offerMatched) {
                     offerMatched = false;
                     successfulOffer = true;
-                    printInfo("Offer matched");
+                    debugLogger.info("Offer matched");
                     mc.world.sendPacket(new SelectMerchantTradeC2SPacket(tradeOffers.indexOf(tradeOffer)));
                     mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, 2, 0, SlotActionType.QUICK_MOVE, mc.player);
                     if (oneOfferPerTick.get()) break;
@@ -348,9 +352,5 @@ public class AutoTrade extends Module {
     @EventHandler
     public void onPacket(PacketEvent.Receive event) {
         if (event.packet instanceof SetTradeOffersS2CPacket packet) lastTrade = packet;
-    }
-
-    private void printInfo(String message) {
-        if (printDebugInfo.get()) info(message);
     }
 }

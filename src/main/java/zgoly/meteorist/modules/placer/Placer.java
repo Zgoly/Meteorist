@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.EDIT;
 import static zgoly.meteorist.Meteorist.*;
 
 public class Placer extends Module {
@@ -193,8 +195,7 @@ public class Placer extends Module {
             name.tooltip = placer.name.description;
             name.actionOnUnfocused = () -> placer.name.set(name.get());
 
-            WVisibilityCheckbox visible = new WVisibilityCheckbox(placer.visible.get());
-            table.add(visible).widget();
+            WVisibilityCheckbox visible = table.add(new WVisibilityCheckbox(placer.visible.get())).widget();
             visible.tooltip = placer.visible.description;
             visible.action = () -> placer.visible.set(visible.checked);
 
@@ -202,13 +203,14 @@ public class Placer extends Module {
             active.tooltip = placer.active.description;
             active.action = () -> placer.active.set(active.checked);
 
-            WButton edit = table.add(theme.button("Edit")).expandX().widget();
+            WButton edit = table.add(theme.button(EDIT)).widget();
             edit.tooltip = "Edit the placer.";
             edit.action = () -> mc.setScreen(new PlacerScreen(theme, placer));
 
-            WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
             if (placers.size() > 1) {
+                WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
                 int index = placers.indexOf(placer);
+
                 if (index > 0) {
                     WButton moveUp = moveContainer.add(theme.button(ARROW_UP)).expandX().widget();
                     moveUp.tooltip = "Move placer up.";
@@ -249,6 +251,8 @@ public class Placer extends Module {
 
             table.row();
         }
+
+        if (!placers.isEmpty()) list.add(theme.horizontalSeparator()).expandX();
 
         WTable controls = list.add(theme.table()).expandX().widget();
         WButton create = controls.add(theme.button("New Placer")).expandX().widget();

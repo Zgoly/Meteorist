@@ -42,7 +42,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static zgoly.meteorist.Meteorist.*;
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
+import static zgoly.meteorist.Meteorist.ARROW_DOWN;
+import static zgoly.meteorist.Meteorist.ARROW_UP;
 import static zgoly.meteorist.utils.MeteoristUtils.calculateFov;
 
 public class RangeActions extends Module {
@@ -108,10 +110,13 @@ public class RangeActions extends Module {
             list.add(theme.settings(rangeAction.settings)).expandX();
 
             WContainer container = list.add(theme.horizontalList()).expandX().widget();
+
             if (rangeActions.size() > 1) {
+                WContainer moveContainer = container.add(theme.horizontalList()).expandX().widget();
                 int index = rangeActions.indexOf(rangeAction);
+
                 if (index > 0) {
-                    WButton moveUp = container.add(theme.button(ARROW_UP)).widget();
+                    WButton moveUp = moveContainer.add(theme.button(ARROW_UP)).widget();
                     moveUp.tooltip = "Move range action up.";
                     moveUp.action = () -> {
                         rangeActions.remove(index);
@@ -121,7 +126,7 @@ public class RangeActions extends Module {
                 }
 
                 if (index < rangeActions.size() - 1) {
-                    WButton moveDown = container.add(theme.button(ARROW_DOWN)).widget();
+                    WButton moveDown = moveContainer.add(theme.button(ARROW_DOWN)).widget();
                     moveDown.tooltip = "Move range action down.";
                     moveDown.action = () -> {
                         rangeActions.remove(index);
@@ -146,7 +151,8 @@ public class RangeActions extends Module {
             };
         }
 
-        list.add(theme.horizontalSeparator()).expandX();
+        if (!rangeActions.isEmpty()) list.add(theme.horizontalSeparator()).expandX();
+
         WTable controls = list.add(theme.table()).expandX().widget();
 
         WButton createInteraction = controls.add(theme.button("New Interaction")).expandX().widget();

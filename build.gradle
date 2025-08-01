@@ -1,0 +1,80 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+}
+
+base {
+    archivesName = project.archives_base_name
+    group = project.maven_group
+    version = "$minecraft_version-$mod_version"
+}
+
+repositories {
+    maven {
+        name = 'meteor-maven'
+        url = uri('https://maven.meteordev.org/releases')
+    }
+    maven {
+        name = 'meteor-maven-snapshots'
+        url = uri('https://maven.meteordev.org/snapshots')
+    }
+}
+
+sourceSets {
+    dev {
+        java.srcDir 'src/dev/java'
+        compileClasspath += main.output + configurations.runtimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+dependencies {
+    // Fabric
+    minecraft "com.mojang:minecraft:${project.properties['minecraft_version']}"
+    mappings "net.fabricmc:yarn:${project.properties['yarn_mappings']}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.properties['loader_version']}"
+
+    // Meteor
+    modImplementation "meteordevelopment:meteor-client:${project.properties['minecraft_version']}-SNAPSHOT"
+
+    // Baritone
+    modCompileOnly "meteordevelopment:baritone:${project.properties['baritone_version']}-SNAPSHOT"
+
+    // JavaParser
+    devImplementation 'com.github.javaparser:javaparser-core:3.27.0'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
+    filesMatching('fabric.mod.json') {
+        expand(version: project.version, mc_version: minecraft_version, commit: System.getenv('GITHUB_SHA') ?: '')
+    }
+}
+
+jar {
+    inputs.property "archivesName", project.base.archivesName
+
+    from('LICENSE') {
+        rename { "${it}_${inputs.properties.archivesName}" }
+    }
+
+    exclude('src/dev/**')
+}
+
+tasks.register('generateMeteoristInfo', JavaExec) {
+    description = 'Generates a JSON file with metadata about Meteorist modules, commands, and presets.'
+    group = 'development'
+
+    mainClass = 'MeteoristInfoParser'
+    classpath = sourceSets.dev.runtimeClasspath
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}

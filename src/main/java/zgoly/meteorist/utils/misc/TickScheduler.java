@@ -13,7 +13,9 @@ import java.util.List;
  * Each task will be executed once its delay reaches zero.
  */
 public class TickScheduler {
-    /** List of currently scheduled tasks. */
+    /**
+     * List of currently scheduled tasks.
+     */
     private final List<ScheduledTask> tasks = new ArrayList<>();
 
     /**
@@ -58,9 +60,13 @@ public class TickScheduler {
      * Represents a task that is scheduled to run after a certain delay.
      */
     private static class ScheduledTask {
-        /** The task to execute. */
+        /**
+         * The task to execute.
+         */
         private final Runnable runnable;
-        /** The remaining delay in ticks before execution. */
+        /**
+         * The remaining delay in ticks before execution.
+         */
         private int delay;
 
         /**

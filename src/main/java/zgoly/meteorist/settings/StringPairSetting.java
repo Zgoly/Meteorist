@@ -3,11 +3,11 @@ package zgoly.meteorist.settings;
 import meteordevelopment.meteorclient.gui.DefaultSettingsWidgetFactory;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
+import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 import meteordevelopment.meteorclient.settings.IVisible;
 import meteordevelopment.meteorclient.settings.Setting;
 import net.minecraft.nbt.NbtCompound;
@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static zgoly.meteorist.Meteorist.COPY;
+import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
+import static zgoly.meteorist.Meteorist.ARROW_DOWN;
+import static zgoly.meteorist.Meteorist.ARROW_UP;
 
 public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     private final Pair<String, String> placeholder;
@@ -44,20 +46,49 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
         Pair<String, String> placeholder = setting.placeholder;
 
         for (Pair<String, String> pair : pairs) {
-            WTextBox textBoxK = table.add(theme.textBox(pair.getLeft(), placeholder.getLeft())).minWidth(150).expandX().widget();
-            textBoxK.actionOnUnfocused = () -> pair.setLeft(textBoxK.get());
+            WContainer container = table.add(theme.horizontalList()).expandX().widget();
+            int index = pairs.indexOf(pair);
 
-            WTextBox textBoxV = table.add(theme.textBox(pair.getRight(), placeholder.getRight())).minWidth(150).expandX().widget();
-            textBoxV.actionOnUnfocused = () -> pair.setRight(textBoxV.get());
+            WTextBox textBoxKey = container.add(theme.textBox(pair.getLeft(), placeholder.getLeft())).minWidth(150).expandX().widget();
+            textBoxKey.actionOnUnfocused = () -> pair.setLeft(textBoxKey.get());
 
-            WButton copy = table.add(theme.button(COPY)).widget();
+            WTextBox textBoxValue = container.add(theme.textBox(pair.getRight(), placeholder.getRight())).minWidth(150).expandX().widget();
+            textBoxValue.actionOnUnfocused = () -> pair.setRight(textBoxValue.get());
+
+            if (pairs.size() > 1) {
+                WContainer moveContainer = container.add(theme.horizontalList()).expandX().widget();
+
+                if (index > 0) {
+                    WButton moveUp = moveContainer.add(theme.button(ARROW_UP)).expandX().widget();
+                    moveUp.tooltip = "Move pair up.";
+                    moveUp.action = () -> {
+                        pairs.remove(index);
+                        pairs.add(index - 1, pair);
+                        fillTable(theme, table, setting);
+                    };
+                }
+
+                if (index < pairs.size() - 1) {
+                    WButton moveDown = moveContainer.add(theme.button(ARROW_DOWN)).expandX().widget();
+                    moveDown.tooltip = "Move pair down.";
+                    moveDown.action = () -> {
+                        pairs.remove(index);
+                        pairs.add(index + 1, pair);
+                        fillTable(theme, table, setting);
+                    };
+                }
+            }
+
+            WButton copy = container.add(theme.button(COPY)).widget();
+            copy.tooltip = "Duplicate pair.";
             copy.action = () -> {
-                pairs.add(pairs.indexOf(pair), new Pair<>(pair.getLeft(), pair.getRight()));
+                pairs.add(index, new Pair<>(pair.getLeft(), pair.getRight()));
                 fillTable(theme, table, setting);
             };
 
-            WMinus delete = table.add(theme.minus()).widget();
-            delete.action = () -> {
+            WMinus remove = container.add(theme.minus()).widget();
+            remove.tooltip = "Remove pair.";
+            remove.action = () -> {
                 pairs.remove(pair);
                 fillTable(theme, table, setting);
             };
@@ -70,19 +101,25 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
             table.row();
         }
 
+        WButton add = table.add(theme.button("Add")).expandX().widget();
+        add.tooltip = "Add new pair to the list.";
+        add.action = () -> {
+            pairs.add(new Pair<>("", ""));
+            fillTable(theme, table, setting);
+        };
+
         WButton reset = table.add(theme.button(GuiRenderer.RESET)).widget();
         reset.action = () -> {
             setting.reset();
             fillTable(theme, table, setting);
         };
 
-        WPlus add = table.add(theme.plus()).widget();
-        add.action = () -> {
-            pairs.add(new Pair<>("", ""));
-            fillTable(theme, table, setting);
-        };
-
         table.row();
+    }
+
+    @Override
+    protected void resetImpl() {
+        value = new ArrayList<>(defaultValue);
     }
 
     @Override
@@ -104,11 +141,6 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     @Override
     protected boolean isValueValid(List<Pair<String, String>> value) {
         return true;
-    }
-
-    @Override
-    protected void resetImpl() {
-        value = new ArrayList<>(defaultValue);
     }
 
     @Override

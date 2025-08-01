@@ -1,6 +1,0 @@
-accessWidener v1 named
-
-accessible method net/minecraft/block/TrapdoorBlock getBlockSetType ()Lnet/minecraft/block/BlockSetType;
-accessible method net/minecraft/block/spawner/MobSpawnerLogic isPlayerInRange (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)Z
-accessible field net/minecraft/block/spawner/MobSpawnerLogic requiredPlayerRange I
-accessible field net/minecraft/block/spawner/MobSpawnerLogic spawnRange I

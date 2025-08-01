@@ -19,7 +19,6 @@ public class AutoFeed extends Module {
             .defaultValue("/feed")
             .build()
     );
-
     private final Setting<Integer> hungerLevel = sgGeneral.add(new IntSetting.Builder()
             .name("hunger-level")
             .description("Hunger level at which to send the command.")
@@ -28,7 +27,6 @@ public class AutoFeed extends Module {
             .sliderRange(1, 20)
             .build()
     );
-
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
             .name("delay")
             .description("Delay after sending a command in ticks (20 ticks = 1 sec).")

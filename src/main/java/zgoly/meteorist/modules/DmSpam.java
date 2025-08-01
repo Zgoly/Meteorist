@@ -1,6 +1,5 @@
 package zgoly.meteorist.modules;
 
-import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
@@ -10,6 +9,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import org.apache.commons.lang3.RandomStringUtils;
 import zgoly.meteorist.Meteorist;
+import zgoly.meteorist.utils.misc.DebugLogger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +21,6 @@ public class DmSpam extends Module {
     private final SettingGroup sgDelay = settings.createGroup("Delay");
     private final SettingGroup sgDisableSettings = settings.createGroup("Disable Settings");
     private final SettingGroup sgSpecialCases = settings.createGroup("Special Cases");
-    private final SettingGroup sgDebug = settings.createGroup("Debug");
 
     private final Setting<String> messageCommand = sgCommand.add(new StringSetting.Builder()
             .name("message-command")
@@ -122,29 +121,21 @@ public class DmSpam extends Module {
             .build()
     );
 
-    private final Setting<Boolean> printDebugInfo = sgDebug.add(new BoolSetting.Builder()
-            .name("print-debug-info")
-            .description("Logs debug information in the chat.")
-            .defaultValue(false)
-            .build()
-    );
-
     private final List<UUID> usedPlayerUUIDs = new ArrayList<>();
     private final List<Integer> usedMessageIds = new ArrayList<>();
     private long currentTick;
 
+    private final DebugLogger debugLogger;
+
     public DmSpam() {
         super(Meteorist.CATEGORY, "dm-spam", "Spams messages in players direct messages.");
+
+        debugLogger = new DebugLogger(this, settings);
     }
 
     @EventHandler
     private void onScreenOpen(OpenScreenEvent event) {
         if (disableOnDisconnect.get() && event.screen instanceof DisconnectedScreen) toggle();
-    }
-
-    @EventHandler
-    private void onGameLeft(GameLeftEvent event) {
-        if (disableOnExit.get()) toggle();
     }
 
     @Override
@@ -156,6 +147,7 @@ public class DmSpam extends Module {
     public void onDeactivate() {
         usedPlayerUUIDs.clear();
         usedMessageIds.clear();
+        if (disableOnExit.get()) toggle();
     }
 
     // I'm not sure if this is the best way to do it, but it seems to work like a charm
@@ -182,13 +174,13 @@ public class DmSpam extends Module {
 
             if (playerModeSetting.get() == PlayerMode.Blacklist) {
                 if (playerBlacklist.get().contains(playerName)) {
-                    if (printDebugInfo.get()) info("Skipping blacklisted player: " + playerName);
+                    debugLogger.info("Skipping blacklisted player: " + playerName);
                     usedPlayerUUIDs.add(selectedPlayerUUID);
                     return;
                 }
             } else if (playerModeSetting.get() == PlayerMode.Whitelist) {
                 if (!playerWhitelist.get().contains(playerName)) {
-                    if (printDebugInfo.get()) info("Skipping non-whitelisted player: " + playerName);
+                    debugLogger.info("Skipping non-whitelisted player: " + playerName);
                     usedPlayerUUIDs.add(selectedPlayerUUID);
                     return;
                 }
@@ -212,8 +204,7 @@ public class DmSpam extends Module {
                 selectedMessage += " " + RandomStringUtils.insecure().nextAlphabetic(bypassTextLength.get()).toLowerCase();
 
             ChatUtils.sendPlayerMsg(messageCommand.get().replace("{player}", playerName).replace("{message}", selectedMessage));
-            if (printDebugInfo.get())
-                info("Sent '" + selectedMessage + "' to '" + playerName + "'. Handling a delay of " + delayBetweenMessages.get() + " ticks.");
+            debugLogger.info("Sent '" + selectedMessage + "' to '" + playerName + "'. Handling a delay of " + delayBetweenMessages.get() + " ticks.");
 
             usedMessageIds.add(selectedMessageId);
             usedPlayerUUIDs.add(selectedPlayerUUID);
@@ -223,8 +214,7 @@ public class DmSpam extends Module {
             toggle();
         } else if (currentTick <= currentWorldTime) {
             currentTick = currentWorldTime + delayBetweenPlayers.get();
-            if (printDebugInfo.get())
-                info("The players ended, handling a delay of " + delayBetweenPlayers.get() + " ticks.");
+            debugLogger.info("The players ended, handling a delay of " + delayBetweenPlayers.get() + " ticks.");
             usedPlayerUUIDs.clear();
         }
     }

@@ -1,7 +1,6 @@
 package zgoly.meteorist.modules;
 
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
-import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -268,15 +267,6 @@ public class ItemSucker extends Module {
             return isPickupable && isWithinRange && isOnGround && isItemAllowed && canTeleport;
         }
         return false;
-    }
-
-    @EventHandler
-    private void onGameJoined(GameJoinedEvent event) {
-        timer = 0;
-        startPos = null;
-
-        pickedUpStacksCount = 0;
-        pickedUpItemsCount = 0;
     }
 
     @EventHandler

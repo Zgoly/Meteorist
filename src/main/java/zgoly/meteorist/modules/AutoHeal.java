@@ -12,6 +12,7 @@ import zgoly.meteorist.Meteorist;
 
 public class AutoHeal extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+
     private final Setting<String> healCommand = sgGeneral.add(new StringSetting.Builder()
             .name("heal-command")
             .description("Command to refill health bar.")

@@ -33,6 +33,7 @@ public class MeteoristConfigManager {
      * Reloads the currently displayed config screen.
      * If fromPrompt is true and the current screen is a child of another screen, the parent screen is reloaded instead.
      * This is used when the user is prompted to save a config and chooses not to, in which case the parent screen should be reloaded.
+     *
      * @param fromPrompt Whether the reload is from a prompt (i.e. the user was prompted to save a config and chose not to).
      */
     public static void reload(boolean fromPrompt) {
@@ -60,12 +61,14 @@ public class MeteoristConfigManager {
     /**
      * Adds a config manager to the given list for the given module, allowing the user to save and load configurations of the module.
      *
-     * @param theme The GuiTheme to use for the config manager.
-     * @param list The WVerticalList to add the config manager to.
+     * @param theme  The GuiTheme to use for the config manager.
+     * @param list   The WVerticalList to add the config manager to.
      * @param module The module for which to display the config manager.
      */
     public static void configManager(GuiTheme theme, WVerticalList list, Module module) {
         File folderPath = getFolderPath(module);
+
+        list.add(theme.horizontalSeparator()).expandX();
 
         WSection configSection = list.add(theme.section("Config Manager")).expandX().widget();
         WTable control = configSection.add(theme.table()).expandX().widget();
@@ -108,6 +111,7 @@ public class MeteoristConfigManager {
 
     /**
      * Converts a module into an NbtCompound, removing unnecessary tags that will be reset by Meteor on load.
+     *
      * @param module The module to convert.
      * @return An NbtCompound containing the module's settings.
      */
@@ -128,7 +132,7 @@ public class MeteoristConfigManager {
      * properties such as keybind, toggleOnBindRelease, chat feedback, favorite status, and active
      * status to prevent unintended changes by the NbtCompound data.
      *
-     * @param module The module whose settings are to be restored.
+     * @param module      The module whose settings are to be restored.
      * @param nbtCompound The NbtCompound containing the module's settings.
      */
     public static void fromTag(Module module, NbtCompound nbtCompound) {
@@ -154,9 +158,10 @@ public class MeteoristConfigManager {
      * Each WButton has a name of "Load" and an action that loads the given module from the corresponding .nbt file.
      * Each WMinus has an action that prompts the user to delete the corresponding .nbt file.
      * If the folderPath does not exist, this method does nothing.
-     * @param theme The GuiTheme to use for the WTable.
-     * @param module The module whose configurations should be saved/loaded.
-     * @param folderPath The folder path to search for .nbt files.
+     *
+     * @param theme       The GuiTheme to use for the WTable.
+     * @param module      The module whose configurations should be saved/loaded.
+     * @param folderPath  The folder path to search for .nbt files.
      * @param configTable The WTable to fill with the WLabels and WButtons.
      */
     private static void fillConfigTable(GuiTheme theme, Module module, File folderPath, WTable configTable) {
@@ -180,8 +185,8 @@ public class MeteoristConfigManager {
                     reload(false);
                 };
 
-                WMinus delete = configTable.add(theme.minus()).widget();
-                delete.action = () -> YesNoPrompt.create().title("Delete Config").message("Are you sure you want to delete \"" + file.getName() + "\"? This cannot be undone.").onYes(() -> {
+                WMinus remove = configTable.add(theme.minus()).widget();
+                remove.action = () -> YesNoPrompt.create().title("Delete Config").message("Are you sure you want to delete \"" + file.getName() + "\"? This cannot be undone.").onYes(() -> {
                     file.delete();
                     reload(true);
                 }).dontShowAgainCheckboxVisible(false).show();
@@ -196,8 +201,9 @@ public class MeteoristConfigManager {
      * If the file does not exist, this method will create it and save the module to it.
      * If the file does exist, this method will prompt the user to overwrite the file.
      * If an exception occurs while saving the module, this method will display an error toast.
+     *
      * @param module The module to save.
-     * @param file The file to save the module to.
+     * @param file   The file to save the module to.
      */
     private static void save(Module module, File file) {
         save(module, file, false);
@@ -209,8 +215,9 @@ public class MeteoristConfigManager {
      * If the file does exist and overwrite is false, this method will prompt the user to overwrite the file.
      * If the file does exist and overwrite is true, this method will overwrite the file without prompting the user.
      * If an exception occurs while saving the module, this method will display an error toast.
-     * @param module The module to save.
-     * @param file The file to save the module to.
+     *
+     * @param module    The module to save.
+     * @param file      The file to save the module to.
      * @param overwrite Whether to overwrite the file if it already exists.
      */
     private static void save(Module module, File file, boolean overwrite) {

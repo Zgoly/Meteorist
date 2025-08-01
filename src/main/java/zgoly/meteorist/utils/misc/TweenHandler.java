@@ -29,12 +29,12 @@ public class TweenHandler {
     /**
      * Plays a tween animation.
      *
-     * @param instant           Whether to play the tween instantly.
-     * @param reference         The atomic double reference to be tweened.
-     * @param endValue          The end value of the tween.
-     * @param duration          The duration of the tween.
-     * @param easingStyle       The easing style of the tween.
-     * @param easingDirection   The easing direction of the tween.
+     * @param instant         Whether to play the tween instantly.
+     * @param reference       The atomic double reference to be tweened.
+     * @param endValue        The end value of the tween.
+     * @param duration        The duration of the tween.
+     * @param easingStyle     The easing style of the tween.
+     * @param easingDirection The easing direction of the tween.
      */
     public void play(boolean instant, AtomicDouble reference, double endValue, double duration, EasingStyle easingStyle, EasingDirection easingDirection) {
         if (instant) {
@@ -48,11 +48,11 @@ public class TweenHandler {
     /**
      * Plays a tween animation.
      *
-     * @param reference         The atomic double reference to be tweened.
-     * @param endValue          The end value of the tween.
-     * @param duration          The duration of the tween.
-     * @param easingStyle       The easing style of the tween.
-     * @param easingDirection   The easing direction of the tween.
+     * @param reference       The atomic double reference to be tweened.
+     * @param endValue        The end value of the tween.
+     * @param duration        The duration of the tween.
+     * @param easingStyle     The easing style of the tween.
+     * @param easingDirection The easing direction of the tween.
      */
     public void play(AtomicDouble reference, double endValue, double duration, EasingStyle easingStyle, EasingDirection easingDirection) {
         stopPreviousTween(reference);
@@ -99,11 +99,11 @@ public class TweenHandler {
         /**
          * Constructs a new Tween.
          *
-         * @param reference         The atomic double reference to be tweened.
-         * @param endValue          The end value of the tween.
-         * @param duration          The duration of the tween.
-         * @param easingStyle       The easing style of the tween.
-         * @param easingDirection   The easing direction of the tween.
+         * @param reference       The atomic double reference to be tweened.
+         * @param endValue        The end value of the tween.
+         * @param duration        The duration of the tween.
+         * @param easingStyle     The easing style of the tween.
+         * @param easingDirection The easing direction of the tween.
          */
         public Tween(AtomicDouble reference, double endValue, double duration, EasingStyle easingStyle, EasingDirection easingDirection) {
             this.reference = reference;
@@ -139,10 +139,10 @@ public class TweenHandler {
         /**
          * Calculates the eased value based on the easing style and direction.
          *
-         * @param easingStyle       The easing style.
-         * @param easingDirection   The easing direction.
-         * @param x                 The input value.
-         * @return                  The eased value.
+         * @param easingStyle     The easing style.
+         * @param easingDirection The easing direction.
+         * @param x               The input value.
+         * @return The eased value.
          */
         public static double ease(EasingStyle easingStyle, EasingDirection easingDirection, double x) {
             return switch (easingDirection) {
@@ -159,7 +159,7 @@ public class TweenHandler {
          *
          * @param easingStyle The easing style.
          * @param x           The input value.
-         * @return            The eased value.
+         * @return The eased value.
          */
         private static double easeIn(EasingStyle easingStyle, double x) {
             switch (easingStyle) {

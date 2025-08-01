@@ -20,7 +20,6 @@ public class DespawnerRangeAction extends BaseRangeAction {
             .defaultValue(false)
             .build()
     );
-
     public final Setting<Double> upVelocity = sgDespawnerRangeAction.add(new DoubleSetting.Builder()
             .name("up-velocity")
             .description("Up velocity to apply to the player.")

@@ -83,21 +83,18 @@ public class AutoRepair extends Module {
                     .defaultValue(true)
                     .build()
             );
-
             this.repairCommand = group.add(new StringSetting.Builder()
                     .name("repair-command")
                     .description("Command to repair the " + slot.getName() + " slot.")
                     .defaultValue("/repair " + slot.getName().toLowerCase())
                     .build()
             );
-
             this.mode = group.add(new EnumSetting.Builder<Mode>()
                     .name("mode")
                     .description("Total - calculate item durability in numbers; Percentage - calculate item durability in percentage.")
                     .defaultValue(Mode.Percentage)
                     .build()
             );
-
             this.minDurability = group.add(new IntSetting.Builder()
                     .name("min-durability")
                     .description("Minimum durability for the " + slot.getName() + " slot.")
@@ -107,7 +104,6 @@ public class AutoRepair extends Module {
                     .visible(() -> mode.get() == Mode.Total)
                     .build()
             );
-
             this.minDurabilityPercentage = group.add(new IntSetting.Builder()
                     .name("min-durability-percentage")
                     .description("Minimum durability percentage for the " + slot.getName() + " slot.")
@@ -117,7 +113,6 @@ public class AutoRepair extends Module {
                     .visible(() -> mode.get() == Mode.Percentage)
                     .build()
             );
-
             this.delay = group.add(new IntSetting.Builder()
                     .name("delay")
                     .description("Delay after sending a command in ticks (20 ticks = 1 sec).")
