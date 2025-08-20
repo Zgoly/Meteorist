@@ -72,7 +72,7 @@ Info will be added soon.
 
 
 [meteorist-banner-download]: https://raw.githubusercontent.com/Zgoly/hosts/main/meteorist_banner.svg
-[meteorist-download]: https://zgoly.github.io/utils/download-latest-release?user=Zgoly&repo=Meteorist&file=.jar
+[meteorist-download]: https://github.com/Zgoly/Meteorist/releases/latest
 [meteor-download]: https://meteorclient.com
 [baritone-download]: https://meteorclient.com/api/downloadBaritone
 
