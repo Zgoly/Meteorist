@@ -1,5 +1,6 @@
 package zgoly.meteorist.modules;
 
+import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
@@ -147,6 +148,10 @@ public class DmSpam extends Module {
     public void onDeactivate() {
         usedPlayerUUIDs.clear();
         usedMessageIds.clear();
+    }
+
+    @EventHandler
+    private void onGameLeft(GameLeftEvent event) {
         if (disableOnExit.get()) toggle();
     }
 
