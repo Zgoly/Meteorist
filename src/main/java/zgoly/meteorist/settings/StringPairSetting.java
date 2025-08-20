@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.settings.Setting;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Pair;
 
 import java.util.ArrayList;
@@ -146,25 +147,30 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     @Override
     protected NbtCompound save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
+
         for (Pair<String, String> pair : get()) {
-            NbtCompound pairTag = new NbtCompound();
-            pairTag.putString("left", pair.getLeft());
-            pairTag.putString("right", pair.getRight());
+            NbtList pairTag = new NbtList();
+            pairTag.add(NbtString.of(pair.getLeft()));
+            pairTag.add(NbtString.of(pair.getRight()));
             valueTag.add(pairTag);
         }
-        tag.put("pairs", valueTag);
 
+        tag.put("value", valueTag);
         return tag;
     }
 
     @Override
     protected List<Pair<String, String>> load(NbtCompound tag) {
+        NbtList valueTag = tag.getListOrEmpty("value");
         get().clear();
 
-        NbtList valueTag = tag.getListOrEmpty("pairs");
         for (NbtElement nbtElement : valueTag) {
-            NbtCompound pairTag = (NbtCompound) nbtElement;
-            get().add(new Pair<>(pairTag.getString("left", ""), pairTag.getString("right", "")));
+            if (!(nbtElement instanceof NbtList pairList)) continue;
+
+            String left = pairList.get(0).asString().orElse("");
+            String right = pairList.get(1).asString().orElse("");
+
+            get().add(new Pair<>(left, right));
         }
 
         return get();

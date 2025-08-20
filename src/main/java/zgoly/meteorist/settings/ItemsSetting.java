@@ -17,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
@@ -52,12 +53,12 @@ public class ItemsSetting extends Setting<List<Item>> {
     @Override
     public NbtCompound save(NbtCompound tag) {
         NbtList listTag = new NbtList();
+
         for (Item item : get()) {
-            NbtCompound itemTag = new NbtCompound();
             Identifier id = Registries.ITEM.getId(item);
-            itemTag.putString("item", id.toString());
-            listTag.add(itemTag);
+            listTag.add(NbtString.of(id.toString()));
         }
+
         tag.put("value", listTag);
         return tag;
     }
@@ -66,12 +67,13 @@ public class ItemsSetting extends Setting<List<Item>> {
     public List<Item> load(NbtCompound tag) {
         NbtList listTag = tag.getListOrEmpty("value");
         get().clear();
+
         for (NbtElement element : listTag) {
-            if (!(element instanceof NbtCompound itemTag)) continue;
-            String idStr = itemTag.getString("item", "");
+            String idStr = element.asString().orElse("");
             Item item = Registries.ITEM.get(Identifier.of(idStr));
             if (item != Items.AIR) get().add(item);
         }
+
         return get();
     }
 
