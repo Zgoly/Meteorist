@@ -269,7 +269,7 @@ public class BoatControl extends Module {
     }
 
     private Box getBox(AbstractBoatEntity boat, Vector3d collisionOffset, Vector3d collisionSize) {
-        return getBoxInternal(boat, collisionOffset, collisionSize, boat.getPos());
+        return getBoxInternal(boat, collisionOffset, collisionSize, boat.getEntityPos());
     }
 
     private Box getBoxWithLerp(AbstractBoatEntity boat, Vector3d collisionOffset, Vector3d collisionSize, float deltaTime) {

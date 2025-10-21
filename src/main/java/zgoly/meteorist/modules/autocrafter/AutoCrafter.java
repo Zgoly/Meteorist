@@ -26,6 +26,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.screen.AbstractCraftingScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
+import org.jetbrains.annotations.Nullable;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.mixin.ClientRecipeBookAccessor;
 import zgoly.meteorist.mixin.IngredientAccessor;
@@ -33,7 +34,7 @@ import zgoly.meteorist.mixin.RecipeFinderAccessor;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
 import zgoly.meteorist.utils.misc.DebugLogger;
 
-import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

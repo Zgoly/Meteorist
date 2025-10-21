@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.utils.entity.TargetUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.player.Rotations;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +23,7 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import zgoly.meteorist.Meteorist;
+import zgoly.meteorist.mixin.MinecraftClientAccessor;
 
 import java.util.Set;
 
@@ -167,7 +169,7 @@ public class ZAimbot extends Module {
     }
 
     private boolean entityCheck(Entity entity) {
-        if (entity.equals(mc.player) || entity.equals(mc.cameraEntity)) return false;
+        if (entity.equals(mc.player) || entity.equals(((MinecraftClientAccessor) MinecraftClient.getInstance()).getCameraEntity())) return false;
         if ((entity instanceof LivingEntity livingEntity && livingEntity.isDead()) || !entity.isAlive()) return false;
 
         if (!PlayerUtils.isWithin(entity, range.get())) return false;
@@ -218,7 +220,7 @@ public class ZAimbot extends Module {
     }
 
     private void aim(LivingEntity player, Entity target) {
-        float targetYaw = (float) Rotations.getYaw(target.getPos().add(target.getVelocity().multiply(targetMovementPrediction.get())));
+        float targetYaw = (float) Rotations.getYaw(target.getEntityPos().add(target.getVelocity().multiply(targetMovementPrediction.get())));
         float targetPitch = (float) Rotations.getPitch(target, bodyTarget.get());
 
         float yawDifference = MathHelper.wrapDegrees(targetYaw - player.getYaw());

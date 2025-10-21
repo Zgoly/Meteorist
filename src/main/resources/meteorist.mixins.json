@@ -7,6 +7,7 @@
     "DisconnectedScreenMixin",
     "GameRendererMixin",
     "IngredientAccessor",
+    "MinecraftClientAccessor",
     "MobSpawnerLogicAccessor",
     "ModulesScreenMixin",
     "MouseMixin",

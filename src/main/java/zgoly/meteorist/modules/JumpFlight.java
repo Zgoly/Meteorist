@@ -75,9 +75,9 @@ public class JumpFlight extends Module {
     private void onKey(KeyEvent event) {
         if (event.action != KeyAction.Press) return;
         if (Modules.get().isActive(Freecam.class) || mc.currentScreen != null) return;
-        if (mc.options.jumpKey.matchesKey(event.key, 0)) {
+        if (mc.options.jumpKey.matchesKey(event.input)) {
             for (int i = 0; i < verticalSpeed.get(); i++) level++;
-        } else if (mc.options.sneakKey.matchesKey(event.key, 0)) {
+        } else if (mc.options.sneakKey.matchesKey(event.input)) {
             for (int i = 0; i < verticalSpeed.get(); i++) level--;
         }
     }
