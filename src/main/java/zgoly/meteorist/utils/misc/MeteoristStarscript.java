@@ -30,7 +30,7 @@ public class MeteoristStarscript {
     private static double getDistance(boolean max) {
         if (mc.player == null || mc.world == null) return 0;
 
-        double startY = mc.player.getPos().getY();
+        double startY = mc.player.getY();
         if (mc.player.isOnGround()) {
             maxStartY = startY;
             return 0;
@@ -38,7 +38,7 @@ public class MeteoristStarscript {
 
         if (startY > maxStartY) maxStartY = startY;
 
-        Vec3d start = mc.player.getPos();
+        Vec3d start = mc.player.getEntityPos();
         if (max) start = new Vec3d(start.x, maxStartY, start.z);
 
         BlockHitResult blockHitResult = mc.world.raycast(new RaycastContext(

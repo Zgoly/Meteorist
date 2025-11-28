@@ -172,8 +172,8 @@ public class DmSpam extends Module {
             UUID selectedPlayerUUID = playerMode.get() == Mode.Sequential ? unusedPlayerUUIDs.getFirst() : unusedPlayerUUIDs.get(new Random().nextInt(unusedPlayerUUIDs.size()));
 
             String playerName = mc.getNetworkHandler().getPlayerList().stream()
-                    .filter(player -> player.getProfile().getId().equals(selectedPlayerUUID))
-                    .map(player -> player.getProfile().getName())
+                    .filter(player -> player.getProfile().id().equals(selectedPlayerUUID))
+                    .map(player -> player.getProfile().name())
                     .findFirst()
                     .orElse("");
 

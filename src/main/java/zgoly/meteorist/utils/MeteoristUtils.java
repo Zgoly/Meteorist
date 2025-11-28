@@ -1,6 +1,6 @@
 package zgoly.meteorist.utils;
 
-import net.minecraft.client.gui.screen.recipebook.AbstractCraftingRecipeBookWidget;
+import net.minecraft.client.gui.screen.recipebook.CraftingRecipeBookWidget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -146,7 +146,7 @@ public class MeteoristUtils {
      */
     public static float calculateFov(LivingEntity player, Entity target) {
         Vec3d lookDirection = player.getRotationVec(1.0F);
-        Vec3d targetDirection = target.getPos().subtract(player.getPos()).normalize();
+        Vec3d targetDirection = target.getEntityPos().subtract(player.getEntityPos()).normalize();
 
         return (float) Math.toDegrees(Math.acos(lookDirection.dotProduct(targetDirection)));
     }
@@ -157,7 +157,7 @@ public class MeteoristUtils {
      * @param screenHandler The crafting screen handler providing the grid dimensions
      * @param display       The recipe to check
      * @return True if the recipe can be displayed in the current grid
-     * @see AbstractCraftingRecipeBookWidget
+     * @see CraftingRecipeBookWidget
      */
     public static boolean canDisplayRecipe(AbstractCraftingScreenHandler screenHandler, RecipeDisplay display) {
         int width = screenHandler.getWidth();

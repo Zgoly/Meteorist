@@ -19,6 +19,7 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
@@ -31,6 +32,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import zgoly.meteorist.Meteorist;
+import zgoly.meteorist.mixin.MinecraftClientAccessor;
 import zgoly.meteorist.modules.rangeactions.rangeactions.BaseRangeAction;
 import zgoly.meteorist.modules.rangeactions.rangeactions.CommandsRangeAction;
 import zgoly.meteorist.modules.rangeactions.rangeactions.DespawnerRangeAction;
@@ -246,7 +248,7 @@ public class RangeActions extends Module {
     }
 
     private boolean entityCheck(Entity entity, BaseRangeAction rangeAction) {
-        if (entity.equals(mc.player) || entity.equals(mc.cameraEntity)) return false;
+        if (entity.equals(mc.player) || entity.equals(((MinecraftClientAccessor) MinecraftClient.getInstance()).getCameraEntity())) return false;
         if ((entity instanceof LivingEntity livingEntity && livingEntity.isDead()) || !entity.isAlive()) return false;
 
         if (PlayerUtils.isWithin(entity, rangeAction.rangeFrom.get())

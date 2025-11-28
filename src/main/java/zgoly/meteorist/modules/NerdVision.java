@@ -814,7 +814,7 @@ public class NerdVision extends Module {
             if (turtleEggsRenderEnabled.get()) {
                 if (entity instanceof ZombieEntity && turtleEggsZombiesRangeEnabled.get()) {
                     Vector3d size = turtleEggsRangeSize.get();
-                    event.renderer.box(Box.of(entity.getPos(), size.x, size.y, size.z), turtleEggsZombiesRangeSideColor.get(), turtleEggsZombiesRangeLineColor.get(), turtleEggsZombiesRangeShapeMode.get(), 0);
+                    event.renderer.box(Box.of(entity.getEntityPos(), size.x, size.y, size.z), turtleEggsZombiesRangeSideColor.get(), turtleEggsZombiesRangeLineColor.get(), turtleEggsZombiesRangeShapeMode.get(), 0);
                 }
             }
 
@@ -822,13 +822,13 @@ public class NerdVision extends Module {
                 if (entity instanceof VillagerEntity villager) {
                     if (ironGolemsRenderDetectingZoneEnabled.get()) {
                         Vector3d size = ironGolemsRenderDetectingZoneSize.get();
-                        Box box = Box.of(villager.getPos(), size.x, size.y, size.z);
+                        Box box = Box.of(villager.getEntityPos(), size.x, size.y, size.z);
                         event.renderer.box(box, ironGolemsRenderDetectingZoneSideColor.get(), ironGolemsRenderDetectingZoneLineColor.get(), ironGolemsRenderDetectingZoneShapeMode.get(), 0);
                     }
 
                     if (ironGolemsRenderSpawningZoneEnabled.get()) {
                         Vector3d size = ironGolemsRenderSpawningZoneSize.get();
-                        Box box = Box.of(villager.getPos(), size.x, size.y, size.z);
+                        Box box = Box.of(villager.getEntityPos(), size.x, size.y, size.z);
                         event.renderer.box(box, ironGolemsRenderSpawningZoneSideColor.get(), ironGolemsRenderSpawningZoneLineColor.get(), ironGolemsRenderSpawningZoneShapeMode.get(), 0);
                     }
                 }
@@ -944,7 +944,7 @@ public class NerdVision extends Module {
 
                 pos = new Vec3d(centerPos.x, centerPos.y, centerPos.z);
                 if (centerPositionMode.get() == CenterPositionMode.Relative) {
-                    pos = pos.add(mc.player.getPos());
+                    pos = pos.add(mc.player.getEntityPos());
                 } else {
                     pos = pos.add(0.5, 1, 0.5);
                 }

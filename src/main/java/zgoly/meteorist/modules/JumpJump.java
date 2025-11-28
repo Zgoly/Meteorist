@@ -47,7 +47,7 @@ public class JumpJump extends Module {
     @EventHandler
     private void onKey(KeyEvent event) {
         if (event.action != KeyAction.Press) return;
-        if (mc.options.jumpKey.matchesKey(event.key, 0)) mult = 0;
+        if (mc.options.jumpKey.matchesKey(event.input)) mult = 0;
     }
 
     @EventHandler
