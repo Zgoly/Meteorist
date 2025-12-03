@@ -12,20 +12,20 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.NetworkRecipeId;
-import net.minecraft.recipe.RecipeDisplayEntry;
-import net.minecraft.recipe.RecipeFinder;
-import net.minecraft.recipe.display.SlotDisplayContexts;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.screen.AbstractCraftingScreenHandler;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.inventory.AbstractCraftingMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
+import net.minecraft.world.item.crafting.display.RecipeDisplayId;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.jetbrains.annotations.Nullable;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.mixin.ClientRecipeBookAccessor;
@@ -33,7 +33,6 @@ import zgoly.meteorist.mixin.IngredientAccessor;
 import zgoly.meteorist.mixin.RecipeFinderAccessor;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
 import zgoly.meteorist.utils.misc.DebugLogger;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +56,7 @@ public class AutoCrafter extends Module {
 
     public static List<BaseAutoCraft> autoCrafts = new ArrayList<>();
     public boolean shouldCraft = false;
-    public SlotActionType actionType;
+    public ClickType actionType;
 
     private final DebugLogger debugLogger;
 
@@ -67,12 +66,12 @@ public class AutoCrafter extends Module {
         debugLogger = new DebugLogger(this, settings);
     }
 
-    public NbtCompound toTag() {
-        NbtCompound tag = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag tag = super.toTag();
 
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         for (BaseAutoCraft autoCraft : autoCrafts) {
-            NbtCompound mTag = new NbtCompound();
+            CompoundTag mTag = new CompoundTag();
             mTag.put("autoCraft", autoCraft.toTag());
 
             list.add(mTag);
@@ -82,16 +81,16 @@ public class AutoCrafter extends Module {
         return tag;
     }
 
-    public Module fromTag(NbtCompound tag) {
+    public Module fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
         autoCrafts.clear();
-        NbtList list = tag.getListOrEmpty("autoCrafts");
-        for (NbtElement tagII : list) {
-            NbtCompound tagI = (NbtCompound) tagII;
+        ListTag list = tag.getListOrEmpty("autoCrafts");
+        for (Tag tagII : list) {
+            CompoundTag tagI = (CompoundTag) tagII;
 
             BaseAutoCraft autoCraft = new BaseAutoCraft();
-            NbtCompound autoCraftTag = (NbtCompound) tagI.get("autoCraft");
+            CompoundTag autoCraftTag = (CompoundTag) tagI.get("autoCraft");
 
             if (autoCraftTag != null) autoCraft.fromTag(autoCraftTag);
 
@@ -178,18 +177,18 @@ public class AutoCrafter extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.interactionManager == null) return;
-        if (!(mc.player.currentScreenHandler instanceof AbstractCraftingScreenHandler currentScreenHandler)) return;
+        if (mc.gameMode == null) return;
+        if (!(mc.player.containerMenu instanceof AbstractCraftingMenu currentScreenHandler)) return;
 
         if (shouldCraft) {
-            if (currentScreenHandler.slots.getFirst().hasStack()) {
-                mc.interactionManager.clickSlot(currentScreenHandler.syncId, 0, 1, actionType, mc.player);
+            if (currentScreenHandler.slots.getFirst().hasItem()) {
+                mc.gameMode.handleInventoryMouseClick(currentScreenHandler.containerId, 0, 1, actionType, mc.player);
                 debugLogger.info("Crafting...");
             }
             shouldCraft = false;
         } else {
             for (BaseAutoCraft autoCraft : autoCrafts) {
-                if (fixDesync.get()) mc.player.getInventory().updateItems();
+                if (fixDesync.get()) mc.player.getInventory().tick();
 
                 debugLogger.info(" ");
                 debugLogger.info(autoCraft.outputItem.get() + " searching...");
@@ -197,8 +196,8 @@ public class AutoCrafter extends Module {
                 debugLogger.info(autoCraft.outputItem.get() + " found: " + foundRecipe);
                 if (foundRecipe == null) continue;
 
-                mc.interactionManager.clickRecipe(currentScreenHandler.syncId, foundRecipe.id(), autoCraft.stackPerTick.get());
-                actionType = autoCraft.dropOnCraft.get() ? SlotActionType.THROW : SlotActionType.QUICK_MOVE;
+                mc.gameMode.handlePlaceRecipe(currentScreenHandler.containerId, foundRecipe.id(), autoCraft.stackPerTick.get());
+                actionType = autoCraft.dropOnCraft.get() ? ClickType.THROW : ClickType.QUICK_MOVE;
                 debugLogger.info("Selecting recipe...");
                 shouldCraft = true;
                 return;
@@ -219,24 +218,24 @@ public class AutoCrafter extends Module {
         ClientRecipeBookAccessor recipeBook = (ClientRecipeBookAccessor) mc.player.getRecipeBook();
 
         recipeLabel:
-        for (Map.Entry<NetworkRecipeId, RecipeDisplayEntry> mapEntry : recipeBook.getRecipes().entrySet()) {
+        for (Map.Entry<RecipeDisplayId, RecipeDisplayEntry> mapEntry : recipeBook.getRecipes().entrySet()) {
             RecipeDisplayEntry recipe = mapEntry.getValue();
 
             Optional<List<Ingredient>> craftingRequirements = recipe.craftingRequirements();
             if (craftingRequirements.isEmpty()) continue;
 
-            if (!canDisplayRecipe((AbstractCraftingScreenHandler) mc.player.currentScreenHandler, recipe.display()))
+            if (!canDisplayRecipe((AbstractCraftingMenu) mc.player.containerMenu, recipe.display()))
                 continue;
             debugLogger.info("Can display check passed");
 
-            RecipeFinder customRecipeFinder = new RecipeFinder();
-            mc.player.getInventory().populateRecipeFinder(customRecipeFinder);
-            if (!customRecipeFinder.isCraftable(craftingRequirements.get(), null)) continue;
+            StackedItemContents customRecipeFinder = new StackedItemContents();
+            mc.player.getInventory().fillStackedContents(customRecipeFinder);
+            if (!customRecipeFinder.canCraft(craftingRequirements.get(), null)) continue;
             debugLogger.info("Craftable check passed");
 
             // Output check
-            List<ItemStack> outputStacks = recipe.display().result().getStacks(SlotDisplayContexts.createParameters(mc.world));
-            if (!outputStacks.getFirst().isOf(baseAutoCraft.outputItem.get())) continue;
+            List<ItemStack> outputStacks = recipe.display().result().resolveForStacks(SlotDisplayContext.fromLevel(mc.level));
+            if (!outputStacks.getFirst().is(baseAutoCraft.outputItem.get())) continue;
             debugLogger.info("Output check passed");
 
             // Check input for extra item
@@ -249,8 +248,8 @@ public class AutoCrafter extends Module {
 
             // Blacklist
             for (Ingredient ingredient : craftingRequirements.get()) {
-                RegistryEntryList<Item> entries = ((IngredientAccessor) (Object) ingredient).getEntries();
-                for (RegistryEntry<Item> entry : entries) {
+                HolderSet<Item> entries = ((IngredientAccessor) (Object) ingredient).getEntries();
+                for (Holder<Item> entry : entries) {
                     if (inputBlacklist.contains(entry.value())) {
                         continue recipeLabel;
                     }
@@ -263,9 +262,9 @@ public class AutoCrafter extends Module {
                 List<Item> whitelistCopy = new ArrayList<>(inputWhitelist);
 
                 for (Ingredient ingredient : craftingRequirements.get()) {
-                    RegistryEntryList<Item> entries = ((IngredientAccessor) (Object) ingredient).getEntries();
+                    HolderSet<Item> entries = ((IngredientAccessor) (Object) ingredient).getEntries();
 
-                    for (RegistryEntry<Item> entry : entries) {
+                    for (Holder<Item> entry : entries) {
                         Item item = entry.value();
 
                         if (whitelistCopy.contains(item)) {

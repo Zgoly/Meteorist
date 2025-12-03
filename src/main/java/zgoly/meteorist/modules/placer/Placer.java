@@ -22,14 +22,14 @@ import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.AABB;
 import zgoly.meteorist.gui.screens.PlacerScreen;
 import zgoly.meteorist.gui.widgets.WVisibilityCheckbox;
 import zgoly.meteorist.utils.MeteoristUtils;
@@ -143,12 +143,12 @@ public class Placer extends Module {
         super(CATEGORY, "placer", "Places blocks in range.");
     }
 
-    public NbtCompound toTag() {
-        NbtCompound tag = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag tag = super.toTag();
 
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         for (BasePlacer placer : placers) {
-            NbtCompound mTag = new NbtCompound();
+            CompoundTag mTag = new CompoundTag();
             mTag.put("placer", placer.toTag());
 
             list.add(mTag);
@@ -158,16 +158,16 @@ public class Placer extends Module {
         return tag;
     }
 
-    public Module fromTag(NbtCompound tag) {
+    public Module fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
         placers.clear();
-        NbtList list = tag.getListOrEmpty("placers");
-        for (NbtElement tagII : list) {
-            NbtCompound tagI = (NbtCompound) tagII;
+        ListTag list = tag.getListOrEmpty("placers");
+        for (Tag tagII : list) {
+            CompoundTag tagI = (CompoundTag) tagII;
 
             BasePlacer placer = new BasePlacer();
-            NbtCompound placerTag = (NbtCompound) tagI.get("placer");
+            CompoundTag placerTag = (CompoundTag) tagI.get("placer");
 
             if (placerTag != null) placer.fromTag(placerTag);
 
@@ -274,7 +274,7 @@ public class Placer extends Module {
         MeteoristConfigManager.configManager(theme, list, this);
     }
 
-    private Pair<BlockPos, BlockPos> getPlacePos(BasePlacer placer) {
+    private Tuple<BlockPos, BlockPos> getPlacePos(BasePlacer placer) {
         BlockPos finalPos1 = rotateBlockPos(placer.cornerPos1.get(), placer.rotateY1.get());
 
         if (!placer.rotateX1.get())
@@ -282,7 +282,7 @@ public class Placer extends Module {
         if (!placer.rotateZ1.get())
             finalPos1 = new BlockPos(finalPos1.getX(), finalPos1.getY(), placer.cornerPos1.get().getZ());
 
-        finalPos1 = finalPos1.add(mc.player.getBlockPos());
+        finalPos1 = finalPos1.offset(mc.player.blockPosition());
 
         if (placer.anchorX1.get())
             finalPos1 = new BlockPos(placer.cornerPos1.get().getX(), finalPos1.getY(), finalPos1.getZ());
@@ -291,7 +291,7 @@ public class Placer extends Module {
         if (placer.anchorZ1.get())
             finalPos1 = new BlockPos(finalPos1.getX(), finalPos1.getY(), placer.cornerPos1.get().getZ());
 
-        finalPos1 = finalPos1.add(placer.cornerAnchorPos1.get());
+        finalPos1 = finalPos1.offset(placer.cornerAnchorPos1.get());
 
         BlockPos finalPos2 = rotateBlockPos(placer.cornerPos2.get(), placer.rotateY2.get());
 
@@ -300,7 +300,7 @@ public class Placer extends Module {
         if (!placer.rotateZ2.get())
             finalPos2 = new BlockPos(finalPos2.getX(), finalPos2.getY(), placer.cornerPos2.get().getZ());
 
-        finalPos2 = finalPos2.add(mc.player.getBlockPos());
+        finalPos2 = finalPos2.offset(mc.player.blockPosition());
 
         if (placer.anchorX2.get())
             finalPos2 = new BlockPos(placer.cornerPos2.get().getX(), finalPos2.getY(), finalPos2.getZ());
@@ -309,13 +309,13 @@ public class Placer extends Module {
         if (placer.anchorZ2.get())
             finalPos2 = new BlockPos(finalPos2.getX(), finalPos2.getY(), placer.cornerPos2.get().getZ());
 
-        finalPos2 = finalPos2.add(placer.cornerAnchorPos2.get());
+        finalPos2 = finalPos2.offset(placer.cornerAnchorPos2.get());
 
-        return new Pair<>(finalPos1, finalPos2);
+        return new Tuple<>(finalPos1, finalPos2);
     }
 
-    private Stream<BlockPos> getPlaceStream(Pair<BlockPos, BlockPos> finalPos) {
-        return BlockPos.stream(finalPos.getLeft(), finalPos.getRight());
+    private Stream<BlockPos> getPlaceStream(Tuple<BlockPos, BlockPos> finalPos) {
+        return BlockPos.betweenClosedStream(finalPos.getA(), finalPos.getB());
     }
 
     @Override
@@ -337,11 +337,11 @@ public class Placer extends Module {
                 if (placer.active.get()) {
                     // Block pos sorting and other stuff
                     List<BlockPos> blockPosList = new ArrayList<>();
-                    Pair<BlockPos, BlockPos> finalPos = getPlacePos(placer);
-                    BlockPos.stream(finalPos.getLeft(), finalPos.getRight()).filter(blockPos ->
-                            (!limitRange.get() || !(blockPos.toCenterPos().distanceTo(mc.player.getEyePos()) > maxRange.get()))
+                    Tuple<BlockPos, BlockPos> finalPos = getPlacePos(placer);
+                    BlockPos.betweenClosedStream(finalPos.getA(), finalPos.getB()).filter(blockPos ->
+                            (!limitRange.get() || !(blockPos.getCenter().distanceTo(mc.player.getEyePosition()) > maxRange.get()))
                     ).forEach(blockPos -> blockPosList.add(new BlockPos(blockPos)));
-                    blockPosList.sort(Comparator.comparingDouble(blockPos -> blockPos.toCenterPos().distanceTo(mc.player.getEyePos())));
+                    blockPosList.sort(Comparator.comparingDouble(blockPos -> blockPos.getCenter().distanceTo(mc.player.getEyePosition())));
 
                     for (BlockPos blockPos : blockPosList) {
                         if (useDelay.get() && loopCount >= maxBlocksPerTick.get()) {
@@ -382,7 +382,7 @@ public class Placer extends Module {
     // Probably the laziest way to do this
     public BlockPos rotateBlockPos(BlockPos pos, boolean rotateY) {
         if (rotateY) {
-            float pitch = mc.player.getPitch();
+            float pitch = mc.player.getXRot();
             if (pitch > 45) {
                 pos = new BlockPos(pos.getY(), -pos.getX(), pos.getZ());
             } else if (pitch < -45) {
@@ -390,7 +390,7 @@ public class Placer extends Module {
             }
         }
 
-        Direction direction = Direction.fromHorizontalDegrees(mc.player.getYaw());
+        Direction direction = Direction.fromYRot(mc.player.getYRot());
         return switch (direction) {
             case NORTH -> new BlockPos(pos.getZ(), pos.getY(), -pos.getX());
             case SOUTH -> new BlockPos(-pos.getZ(), pos.getY(), pos.getX());
@@ -406,8 +406,8 @@ public class Placer extends Module {
                 if (renderEachBlock.get()) {
                     getPlaceStream(getPlacePos(placer)).forEach(blockPos -> event.renderer.box(blockPos, placer.sideColor.get(), placer.lineColor.get(), ShapeMode.Both, 0));
                 } else {
-                    Pair<BlockPos, BlockPos> finalPos = getPlacePos(placer);
-                    event.renderer.box(Box.enclosing(finalPos.getLeft(), finalPos.getRight()), placer.sideColor.get(), placer.lineColor.get(), ShapeMode.Both, 0);
+                    Tuple<BlockPos, BlockPos> finalPos = getPlacePos(placer);
+                    event.renderer.box(AABB.encapsulatingFullBlocks(finalPos.getA(), finalPos.getB()), placer.sideColor.get(), placer.lineColor.get(), ShapeMode.Both, 0);
                 }
             }
         }

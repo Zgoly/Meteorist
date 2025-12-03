@@ -13,7 +13,7 @@ import meteordevelopment.meteorclient.systems.modules.render.Freecam;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 import zgoly.meteorist.Meteorist;
 
 public class JumpFlight extends Module {
@@ -60,24 +60,24 @@ public class JumpFlight extends Module {
 
     @Override
     public void onActivate() {
-        level = mc.player.getBlockPos().getY();
+        level = mc.player.blockPosition().getY();
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        Vec3d vel = PlayerUtils.getHorizontalVelocity(speed.get());
-        double velX = vel.getX();
-        double velZ = vel.getZ();
+        Vec3 vel = PlayerUtils.getHorizontalVelocity(speed.get());
+        double velX = vel.x();
+        double velZ = vel.z();
         ((IVec3d) event.movement).meteor$set(velX, event.movement.y, velZ);
     }
 
     @EventHandler
     private void onKey(KeyEvent event) {
         if (event.action != KeyAction.Press) return;
-        if (Modules.get().isActive(Freecam.class) || mc.currentScreen != null) return;
-        if (mc.options.jumpKey.matchesKey(event.input)) {
+        if (Modules.get().isActive(Freecam.class) || mc.screen != null) return;
+        if (mc.options.keyJump.matches(event.input)) {
             for (int i = 0; i < verticalSpeed.get(); i++) level++;
-        } else if (mc.options.sneakKey.matchesKey(event.input)) {
+        } else if (mc.options.keyShift.matches(event.input)) {
             for (int i = 0; i < verticalSpeed.get(); i++) level--;
         }
     }
@@ -91,10 +91,10 @@ public class JumpFlight extends Module {
     private void onTick(TickEvent.Post event) {
         if (work) {
             work = false;
-            level = mc.player.getBlockPos().getY();
+            level = mc.player.blockPosition().getY();
         }
-        if (mc.player.getBlockPos().getY() <= level) {
-            mc.player.jump();
+        if (mc.player.blockPosition().getY() <= level) {
+            mc.player.jumpFromGround();
         }
     }
 

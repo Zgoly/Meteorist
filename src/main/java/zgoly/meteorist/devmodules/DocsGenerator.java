@@ -22,7 +22,7 @@ import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.Utils;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.sounds.SoundEvent;
 import org.apache.commons.lang3.StringUtils;
 import zgoly.meteorist.Meteorist;
 
@@ -205,12 +205,12 @@ public class DocsGenerator extends Module {
 
         copyReadme.action = () -> {
             String readme = generateReadme();
-            mc.keyboard.setClipboard(readme);
+            mc.keyboardHandler.setClipboard(readme);
         };
 
         copyWiki.action = () -> {
             String wiki = generateWiki();
-            mc.keyboard.setClipboard(wiki);
+            mc.keyboardHandler.setClipboard(wiki);
         };
 
         return list;
@@ -484,7 +484,7 @@ public class DocsGenerator extends Module {
         } else if (value.getClass().getName().contains("$$Lambda")) {
             return "`Lambda expression (cannot be displayed)`";
         } else if (value instanceof SoundEvent soundEvent) {
-            return "`" + soundEvent.id().toTranslationKey() + "`";
+            return "`" + soundEvent.location().toLanguageKey() + "`";
         } else {
             String stringValue = String.valueOf(value);
             // Check if value has meaningful string representation

@@ -15,23 +15,23 @@ import meteordevelopment.meteorclient.utils.render.NametagUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.block.spawner.MobSpawnerLogic;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.mixin.MobSpawnerLogicAccessor;
@@ -758,245 +758,338 @@ public class NerdVision extends Module {
 
     @EventHandler
     private void onRender2D(Render2DEvent event) {
-        if (!nbtDataDisplays.isEmpty()) {
-            for (NbtDataDisplay display : nbtDataDisplays) {
+        if (nbtDataDisplays.isEmpty()) return;
 
-                if (!NametagUtils.to2D(display.pos, display.size)) continue;
+        for (NbtDataDisplay display : nbtDataDisplays) {
+            if (!NametagUtils.to2D(display.pos, display.size)) continue;
 
-                NametagUtils.begin(display.pos);
+            NametagUtils.begin(display.pos);
+            TextRenderer text = TextRenderer.get();
+            text.begin(display.size);
 
-                TextRenderer text = TextRenderer.get();
-                text.begin(display.size);
-
-                String longestPair = "";
-                String separator = ": ";
-
-                for (Map.Entry<String, String> entry : display.attributes.entrySet()) {
-                    String pair = entry.getKey() + separator + entry.getValue();
-                    if (text.getWidth(pair) > text.getWidth(longestPair)) {
-                        longestPair = pair;
-                    }
+            String longestPair = "";
+            String separator = ": ";
+            for (Map.Entry<String, String> entry : display.attributes.entrySet()) {
+                String pair = entry.getKey() + separator + entry.getValue();
+                if (text.getWidth(pair) > text.getWidth(longestPair)) {
+                    longestPair = pair;
                 }
-
-                double startX = -text.getWidth(longestPair) / 2;
-
-                double totalHeight = 0;
-                for (Map.Entry<String, String> ignored : display.attributes.entrySet()) {
-                    totalHeight += text.getHeight();
-                }
-                totalHeight += (display.attributes.size() - 1) * display.margin;
-
-                double yOffset = -totalHeight / 2;
-                for (Map.Entry<String, String> entry : display.attributes.entrySet()) {
-                    String key = entry.getKey();
-                    String value = entry.getValue();
-
-                    text.render(key + separator, startX, yOffset, Color.GREEN, true);
-                    text.render(value, startX + text.getWidth(key + separator), yOffset, Color.CYAN, true);
-
-                    yOffset += text.getHeight() + display.margin;
-                }
-
-                text.end();
-                NametagUtils.end();
             }
+
+            double startX = -text.getWidth(longestPair) / 2;
+            double totalHeight = 0;
+            for (Map.Entry<String, String> ignored : display.attributes.entrySet()) {
+                totalHeight += text.getHeight();
+            }
+            totalHeight += (display.attributes.size() - 1) * display.margin;
+
+            double yOffset = -totalHeight / 2;
+            for (Map.Entry<String, String> entry : display.attributes.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                text.render(key + separator, startX, yOffset, Color.GREEN, true);
+                text.render(value, startX + text.getWidth(key + separator), yOffset, Color.CYAN, true);
+                yOffset += text.getHeight() + display.margin;
+            }
+
+            text.end();
+            NametagUtils.end();
         }
     }
 
     @EventHandler
     private void onRender3D(Render3DEvent event) {
-        // YandereDev will be proud of me
-        // TODO: Rewrite to something readable
-
         nbtDataDisplays.clear();
+        renderEntities(event);
+        renderTrackedBlocks(event);
+        renderSpawnRanges(event);
+    }
 
-        mc.world.getEntities().forEach(entity -> {
-            if (turtleEggsRenderEnabled.get()) {
-                if (entity instanceof ZombieEntity && turtleEggsZombiesRangeEnabled.get()) {
-                    Vector3d size = turtleEggsRangeSize.get();
-                    event.renderer.box(Box.of(entity.getEntityPos(), size.x, size.y, size.z), turtleEggsZombiesRangeSideColor.get(), turtleEggsZombiesRangeLineColor.get(), turtleEggsZombiesRangeShapeMode.get(), 0);
-                }
+    private void renderEntities(Render3DEvent event) {
+        for (Entity entity : mc.level.entitiesForRendering()) {
+            if (turtleEggsRenderEnabled.get() && entity instanceof Zombie zombie) {
+                renderZombieForTurtleEggs(event, zombie);
             }
 
-            if (ironGolemsRenderEnabled.get()) {
-                if (entity instanceof VillagerEntity villager) {
-                    if (ironGolemsRenderDetectingZoneEnabled.get()) {
-                        Vector3d size = ironGolemsRenderDetectingZoneSize.get();
-                        Box box = Box.of(villager.getEntityPos(), size.x, size.y, size.z);
-                        event.renderer.box(box, ironGolemsRenderDetectingZoneSideColor.get(), ironGolemsRenderDetectingZoneLineColor.get(), ironGolemsRenderDetectingZoneShapeMode.get(), 0);
-                    }
-
-                    if (ironGolemsRenderSpawningZoneEnabled.get()) {
-                        Vector3d size = ironGolemsRenderSpawningZoneSize.get();
-                        Box box = Box.of(villager.getEntityPos(), size.x, size.y, size.z);
-                        event.renderer.box(box, ironGolemsRenderSpawningZoneSideColor.get(), ironGolemsRenderSpawningZoneLineColor.get(), ironGolemsRenderSpawningZoneShapeMode.get(), 0);
-                    }
-                }
-            }
-        });
-
-        trackedBlocks.forEach(blockPos -> {
-            Block block = mc.world.getBlockState(blockPos).getBlock();
-            Vec3d centerPos = blockPos.toCenterPos();
-
-            if (block == Blocks.TURTLE_EGG && turtleEggsRenderEnabled.get()) {
-                if (turtleEggsRangeEnabled.get()) {
-                    Vector3d size = turtleEggsRangeSize.get();
-                    Box box = Box.of(centerPos, size.x, size.y, size.z);
-                    event.renderer.box(box, turtleEggsRangeSideColor.get(), turtleEggsRangeLineColor.get(), turtleEggsRangeShapeMode.get(), 0);
-                }
-
-                if (turtleEggsAggressionRenderEnabled.get()) {
-                    Vector3d size = turtleEggsRangeSize.get();
-                    Box box = Box.of(centerPos, size.x, size.y, size.z);
-
-                    boolean isInDanger = false;
-                    for (Entity entity : mc.world.getEntities()) {
-                        if (entity instanceof ZombieEntity z) {
-                            Box boundingBox = entity.getBoundingBox();
-                            if (box.intersects(boundingBox)) {
-                                isInDanger = true;
-                                if (turtleEggsAggressionZombieRenderEnabled.get()) {
-                                    event.renderer.box(boundingBox, turtleEggsAggressionZombieRenderSideColor.get(), turtleEggsAggressionZombieRenderLineColor.get(), turtleEggsAggressionZombieRenderShapeMode.get(), 0);
-                                }
-                            }
-                        }
-                    }
-
-                    if (isInDanger && turtleEggsAggressionEggRenderEnabled.get()) {
-                        event.renderer.box(blockPos, turtleEggsAggressionEggRenderSideColor.get(), turtleEggsAggressionEggRenderLineColor.get(), turtleEggsAggressionEggRenderShapeMode.get(), 0);
-                    }
-                }
-            } else if (block == Blocks.SPAWNER && spawnersRenderEnabled.get()) {
-                BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
-                if (blockEntity instanceof MobSpawnerBlockEntity mobSpawner) {
-                    MobSpawnerLogic spawnerLogic = mobSpawner.getLogic();
-                    int spawnRange = ((MobSpawnerLogicAccessor) spawnerLogic).getSpawnRange();
-
-                    if (spawnersRenderSphereEnabled.get()) {
-                        int requiredPlayerRange = ((MobSpawnerLogicAccessor) spawnerLogic).getRequiredPlayerRange();
-                        if (spawnersRenderSphereType.get() == SphereType.Default) {
-                            renderQuadSphere(event, centerPos, requiredPlayerRange, spawnersRenderSpherePhiCount.get(), spawnersRenderSphereThetaCount.get(), spawnersRenderSphereSideColor.get(), spawnersRenderSphereLineColor.get(), spawnersRenderSphereShapeMode.get());
-                        } else {
-                            renderCubicSphere(event, centerPos, requiredPlayerRange, spawnersRenderSphereSideColor.get(), spawnersRenderSphereLineColor.get(), spawnersRenderSphereShapeMode.get());
-                        }
-                    }
-
-                    if (spawnersRenderDetectingZoneEnabled.get()) {
-                        Box box = new Box(blockPos).expand(spawnRange);
-                        event.renderer.box(box, spawnersRenderDetectingZoneSideColor.get(), spawnersRenderDetectingZoneLineColor.get(), spawnersRenderDetectingZoneShapeMode.get(), 0);
-                    }
-
-                    if (spawnersRenderSpawningZoneEnabled.get()) {
-                        Entity entity = spawnerLogic.getRenderedEntity(mc.world, blockPos);
-                        Vec3d size = new Vec3d(spawnRange, 1, spawnRange).multiply(2);
-
-                        if (entity != null) {
-                            Box spawnBox = entity.getBoundingBox();
-                            size = size.add(spawnBox.getLengthX(), spawnBox.getLengthY(), spawnBox.getLengthZ());
-                        }
-
-                        Vec3d bottomCenterPos = blockPos.toBottomCenterPos();
-                        if (spawnersRenderSpawningZoneRounding.get()) {
-                            size = new Vec3d(Math.ceil(size.x), Math.ceil(size.y), Math.ceil(size.z));
-                            if (size.x % 2 == 0) size = size.add(1, 0, 0);
-                            if (size.z % 2 == 0) size = size.add(0, 0, 1);
-                        }
-
-                        Vec3d pos = bottomCenterPos.add(0, -1 + (size.y / 2), 0);
-                        Box box = Box.of(pos, size.x, size.y, size.z);
-
-                        event.renderer.box(box, spawnersRenderSpawningZoneSideColor.get(), spawnersRenderSpawningZoneLineColor.get(), spawnersRenderSpawningZoneShapeMode.get(), 0);
-                    }
-
-                    boolean isPlayerInRange = ((MobSpawnerLogicAccessor) spawnerLogic).invokeIsPlayerInRange(mc.world, blockPos);
-
-                    if (isPlayerInRange && spawnersRenderActiveSpawnerEnabled.get()) {
-                        event.renderer.box(blockPos, spawnersRenderActiveSpawnerSideColor.get(), spawnersRenderActiveSpawnerLineColor.get(), spawnersRenderActiveSpawnerShapeMode.get(), 0);
-                    } else if (!isPlayerInRange && spawnersRenderInactiveSpawnerEnabled.get()) {
-                        event.renderer.box(blockPos, spawnersRenderInactiveSpawnerSideColor.get(), spawnersRenderInactiveSpawnerLineColor.get(), spawnersRenderInactiveSpawnerShapeMode.get(), 0);
-                    }
-
-                    if (spawnersRenderDebugInfoEnabled.get()) {
-                        Vector3d debugInfoOffset = spawnersRenderDebugInfoOffset.get();
-                        Vector3d debugInfoPos = new Vector3d(centerPos.x + debugInfoOffset.x, centerPos.y + debugInfoOffset.y, centerPos.z + debugInfoOffset.z);
-
-                        Map<String, String> debugInfo = new HashMap<>();
-                        NbtCompound nbt = mobSpawner.createNbtWithIdentifyingData(mc.world.getRegistryManager());
-
-                        spawnersRenderDebugInfoAllowedKeys.get().forEach(key -> {
-                            if (nbt.contains(key)) {
-                                debugInfo.put(key, String.valueOf(nbt.get(key).asString()));
-                            }
-                        });
-
-                        nbtDataDisplays.add(new NbtDataDisplay(spawnersRenderDebugInfoSize.get(), spawnersRenderDebugInfoMargin.get(), debugInfoPos, debugInfo));
-                    }
-                }
-            }
-        });
-
-        if (spawnRangesEnabled.get()) {
-            Vec3d pos;
-
-            if (centerPositionType.get() == CenterPositionType.Pos) {
-                Vector3d centerPos = centerPosition.get();
-
-                pos = new Vec3d(centerPos.x, centerPos.y, centerPos.z);
-                if (centerPositionMode.get() == CenterPositionMode.Relative) {
-                    pos = pos.add(mc.player.getEntityPos());
-                } else {
-                    pos = pos.add(0.5, 1, 0.5);
-                }
-            } else {
-                pos = centerBlockPosition.get().toBottomCenterPos();
-                if (centerPositionMode.get() == CenterPositionMode.Relative) {
-                    pos = pos.add(Vec3d.of(mc.player.getBlockPos()));
-                } else {
-                    pos = pos.add(0, 1, 0);
-                }
-            }
-
-            if (despawnRangeEnabled.get()) {
-                if (spawnRangesSphereType.get() == SphereType.Default) {
-                    renderQuadSphere(event, pos, despawnSphereRange.get(), despawnRangeSpherePhiCount.get(), despawnRangeSphereThetaCount.get(), despawnRangeSideColor.get(), despawnRangeLineColor.get(), despawnRangeShapeMode.get());
-                } else {
-                    renderCubicSphere(event, pos, despawnBlockSphereRange.get(), despawnRangeSideColor.get(), despawnRangeLineColor.get(), despawnRangeShapeMode.get());
-                }
-            }
-
-            if (idleRangeEnabled.get()) {
-                if (spawnRangesSphereType.get() == SphereType.Default) {
-                    renderQuadSphere(event, pos, idleSphereRange.get(), idleRangeSpherePhiCount.get(), idleRangeSphereThetaCount.get(), idleRangeSideColor.get(), idleRangeLineColor.get(), idleRangeShapeMode.get());
-                } else {
-                    renderCubicSphere(event, pos, idleBlockSphereRange.get(), idleRangeSideColor.get(), idleRangeLineColor.get(), idleRangeShapeMode.get());
-                }
-            }
-
-            if (spawnRangeEnabled.get()) {
-                if (spawnRangesSphereType.get() == SphereType.Default) {
-                    renderQuadSphere(event, pos, spawnSphereRange.get(), spawnRangeSpherePhiCount.get(), spawnRangeSphereThetaCount.get(), spawnRangeSideColor.get(), spawnRangeLineColor.get(), spawnRangeShapeMode.get());
-                } else {
-                    renderCubicSphere(event, pos, spawnBlockSphereRange.get(), spawnRangeSideColor.get(), spawnRangeLineColor.get(), spawnRangeShapeMode.get());
-                }
-            }
-
-            if (displayCenterPosition.get()) {
-                Vector3d centerPos = centerPositionSize.get();
-                event.renderer.box(Box.of(pos, centerPos.x, centerPos.y, centerPos.z), centerPositionSideColor.get(), centerPositionLineColor.get(), centerPositionShapeMode.get(), 0);
+            if (ironGolemsRenderEnabled.get() && entity instanceof Villager villager) {
+                renderVillagerForIronGolems(event, villager);
             }
         }
     }
 
-    private void renderCubicSphere(Render3DEvent event, Vec3d center, int radius, SettingColor sideColor, SettingColor lineColor, ShapeMode shapeMode) {
-        for (BlockPos blockPos : getSphereBlocks(BlockPos.ofFloored(center), radius)) {
+    private void renderZombieForTurtleEggs(Render3DEvent event, Zombie zombie) {
+        if (!turtleEggsZombiesRangeEnabled.get()) return;
+
+        Vector3d size = turtleEggsRangeSize.get();
+        event.renderer.box(AABB.ofSize(zombie.position(), size.x, size.y, size.z),
+                turtleEggsZombiesRangeSideColor.get(),
+                turtleEggsZombiesRangeLineColor.get(),
+                turtleEggsZombiesRangeShapeMode.get(), 0);
+    }
+
+    private void renderVillagerForIronGolems(Render3DEvent event, Villager villager) {
+        if (ironGolemsRenderDetectingZoneEnabled.get()) {
+            Vector3d size = ironGolemsRenderDetectingZoneSize.get();
+            AABB box = AABB.ofSize(villager.position(), size.x, size.y, size.z);
+            event.renderer.box(box,
+                    ironGolemsRenderDetectingZoneSideColor.get(),
+                    ironGolemsRenderDetectingZoneLineColor.get(),
+                    ironGolemsRenderDetectingZoneShapeMode.get(), 0);
+        }
+
+        if (ironGolemsRenderSpawningZoneEnabled.get()) {
+            Vector3d size = ironGolemsRenderSpawningZoneSize.get();
+            AABB box = AABB.ofSize(villager.position(), size.x, size.y, size.z);
+            event.renderer.box(box,
+                    ironGolemsRenderSpawningZoneSideColor.get(),
+                    ironGolemsRenderSpawningZoneLineColor.get(),
+                    ironGolemsRenderSpawningZoneShapeMode.get(), 0);
+        }
+    }
+
+    private void renderTrackedBlocks(Render3DEvent event) {
+        for (BlockPos blockPos : trackedBlocks) {
+            Block block = mc.level.getBlockState(blockPos).getBlock();
+            Vec3 centerPos = blockPos.getCenter();
+
+            if (block == Blocks.TURTLE_EGG && turtleEggsRenderEnabled.get()) {
+                renderTurtleEgg(event, blockPos, centerPos);
+            } else if (block == Blocks.SPAWNER && spawnersRenderEnabled.get()) {
+                renderSpawner(event, blockPos, centerPos);
+            }
+        }
+    }
+
+    private void renderTurtleEgg(Render3DEvent event, BlockPos blockPos, Vec3 centerPos) {
+        if (turtleEggsRangeEnabled.get()) {
+            Vector3d size = turtleEggsRangeSize.get();
+            AABB box = AABB.ofSize(centerPos, size.x, size.y, size.z);
+            event.renderer.box(box,
+                    turtleEggsRangeSideColor.get(),
+                    turtleEggsRangeLineColor.get(),
+                    turtleEggsRangeShapeMode.get(), 0);
+        }
+
+        if (!turtleEggsAggressionRenderEnabled.get()) return;
+
+        Vector3d size = turtleEggsRangeSize.get();
+        AABB dangerBox = AABB.ofSize(centerPos, size.x, size.y, size.z);
+        boolean isInDanger = false;
+
+        for (Entity entity : mc.level.entitiesForRendering()) {
+            if (!(entity instanceof Zombie zombie)) continue;
+
+            AABB boundingBox = entity.getBoundingBox();
+            if (!dangerBox.intersects(boundingBox)) continue;
+
+            isInDanger = true;
+            if (turtleEggsAggressionZombieRenderEnabled.get()) {
+                event.renderer.box(boundingBox,
+                        turtleEggsAggressionZombieRenderSideColor.get(),
+                        turtleEggsAggressionZombieRenderLineColor.get(),
+                        turtleEggsAggressionZombieRenderShapeMode.get(), 0);
+            }
+        }
+
+        if (isInDanger && turtleEggsAggressionEggRenderEnabled.get()) {
+            event.renderer.box(blockPos,
+                    turtleEggsAggressionEggRenderSideColor.get(),
+                    turtleEggsAggressionEggRenderLineColor.get(),
+                    turtleEggsAggressionEggRenderShapeMode.get(), 0);
+        }
+    }
+
+    private void renderSpawner(Render3DEvent event, BlockPos blockPos, Vec3 centerPos) {
+        BlockEntity blockEntity = mc.level.getBlockEntity(blockPos);
+        if (!(blockEntity instanceof SpawnerBlockEntity mobSpawner)) return;
+
+        BaseSpawner spawnerLogic = mobSpawner.getSpawner();
+        int spawnRange = ((MobSpawnerLogicAccessor) spawnerLogic).getSpawnRange();
+
+        if (spawnersRenderSphereEnabled.get()) {
+            int requiredPlayerRange = ((MobSpawnerLogicAccessor) spawnerLogic).getRequiredPlayerRange();
+            if (spawnersRenderSphereType.get() == SphereType.Default) {
+                renderQuadSphere(event, centerPos, requiredPlayerRange,
+                        spawnersRenderSpherePhiCount.get(),
+                        spawnersRenderSphereThetaCount.get(),
+                        spawnersRenderSphereSideColor.get(),
+                        spawnersRenderSphereLineColor.get(),
+                        spawnersRenderSphereShapeMode.get());
+            } else {
+                renderCubicSphere(event, centerPos, requiredPlayerRange,
+                        spawnersRenderSphereSideColor.get(),
+                        spawnersRenderSphereLineColor.get(),
+                        spawnersRenderSphereShapeMode.get());
+            }
+        }
+
+        if (spawnersRenderDetectingZoneEnabled.get()) {
+            AABB box = new AABB(blockPos).inflate(spawnRange);
+            event.renderer.box(box,
+                    spawnersRenderDetectingZoneSideColor.get(),
+                    spawnersRenderDetectingZoneLineColor.get(),
+                    spawnersRenderDetectingZoneShapeMode.get(), 0);
+        }
+
+        if (spawnersRenderSpawningZoneEnabled.get()) {
+            Entity entity = spawnerLogic.getOrCreateDisplayEntity(mc.level, blockPos);
+            Vec3 size = new Vec3(spawnRange, 1, spawnRange).scale(2);
+
+            if (entity != null) {
+                AABB spawnBox = entity.getBoundingBox();
+                size = size.add(spawnBox.getXsize(), spawnBox.getYsize(), spawnBox.getZsize());
+            }
+
+            Vec3 bottomCenterPos = blockPos.getBottomCenter();
+            if (spawnersRenderSpawningZoneRounding.get()) {
+                size = new Vec3(Math.ceil(size.x), Math.ceil(size.y), Math.ceil(size.z));
+                if (size.x % 2 == 0) size = size.add(1, 0, 0);
+                if (size.z % 2 == 0) size = size.add(0, 0, 1);
+            }
+
+            Vec3 pos = bottomCenterPos.add(0, -1 + (size.y / 2), 0);
+            AABB box = AABB.ofSize(pos, size.x, size.y, size.z);
+            event.renderer.box(box,
+                    spawnersRenderSpawningZoneSideColor.get(),
+                    spawnersRenderSpawningZoneLineColor.get(),
+                    spawnersRenderSpawningZoneShapeMode.get(), 0);
+        }
+
+        boolean isPlayerInRange = ((MobSpawnerLogicAccessor) spawnerLogic).invokeIsPlayerInRange(mc.level, blockPos);
+        if (isPlayerInRange && spawnersRenderActiveSpawnerEnabled.get()) {
+            event.renderer.box(blockPos,
+                    spawnersRenderActiveSpawnerSideColor.get(),
+                    spawnersRenderActiveSpawnerLineColor.get(),
+                    spawnersRenderActiveSpawnerShapeMode.get(), 0);
+        } else if (!isPlayerInRange && spawnersRenderInactiveSpawnerEnabled.get()) {
+            event.renderer.box(blockPos,
+                    spawnersRenderInactiveSpawnerSideColor.get(),
+                    spawnersRenderInactiveSpawnerLineColor.get(),
+                    spawnersRenderInactiveSpawnerShapeMode.get(), 0);
+        }
+
+        if (spawnersRenderDebugInfoEnabled.get()) {
+            Vector3d debugInfoOffset = spawnersRenderDebugInfoOffset.get();
+            Vector3d debugInfoPos = new Vector3d(centerPos.x + debugInfoOffset.x, centerPos.y + debugInfoOffset.y, centerPos.z + debugInfoOffset.z);
+            Map<String, String> debugInfo = new HashMap<>();
+            CompoundTag nbt = mobSpawner.saveWithFullMetadata(mc.level.registryAccess());
+
+            for (String key : spawnersRenderDebugInfoAllowedKeys.get()) {
+                if (nbt.contains(key)) {
+                    debugInfo.put(key, String.valueOf(nbt.get(key).asString()));
+                }
+            }
+
+            nbtDataDisplays.add(new NbtDataDisplay(
+                    spawnersRenderDebugInfoSize.get(),
+                    spawnersRenderDebugInfoMargin.get(),
+                    debugInfoPos,
+                    debugInfo
+            ));
+        }
+    }
+
+    private void renderSpawnRanges(Render3DEvent event) {
+        if (!spawnRangesEnabled.get()) return;
+
+        Vec3 pos = getCenterPosition();
+
+        if (despawnRangeEnabled.get()) {
+            renderDespawnRange(event, pos);
+        }
+
+        if (idleRangeEnabled.get()) {
+            renderIdleRange(event, pos);
+        }
+
+        if (spawnRangeEnabled.get()) {
+            renderSpawnRange(event, pos);
+        }
+
+        if (displayCenterPosition.get()) {
+            renderCenterPosition(event, pos);
+        }
+    }
+
+    private Vec3 getCenterPosition() {
+        if (centerPositionType.get() == CenterPositionType.Pos) {
+            Vector3d centerPos = centerPosition.get();
+            Vec3 pos = new Vec3(centerPos.x, centerPos.y, centerPos.z);
+            return centerPositionMode.get() == CenterPositionMode.Relative
+                    ? pos.add(mc.player.position())
+                    : pos.add(0.5, 1, 0.5);
+        } else {
+            Vec3 pos = centerBlockPosition.get().getBottomCenter();
+            return centerPositionMode.get() == CenterPositionMode.Relative
+                    ? pos.add(Vec3.atLowerCornerOf(mc.player.blockPosition()))
+                    : pos.add(0, 1, 0);
+        }
+    }
+
+    private void renderDespawnRange(Render3DEvent event, Vec3 pos) {
+        if (spawnRangesSphereType.get() == SphereType.Default) {
+            renderQuadSphere(event, pos, despawnSphereRange.get(),
+                    despawnRangeSpherePhiCount.get(),
+                    despawnRangeSphereThetaCount.get(),
+                    despawnRangeSideColor.get(),
+                    despawnRangeLineColor.get(),
+                    despawnRangeShapeMode.get());
+        } else {
+            renderCubicSphere(event, pos, despawnBlockSphereRange.get(),
+                    despawnRangeSideColor.get(),
+                    despawnRangeLineColor.get(),
+                    despawnRangeShapeMode.get());
+        }
+    }
+
+    private void renderIdleRange(Render3DEvent event, Vec3 pos) {
+        if (spawnRangesSphereType.get() == SphereType.Default) {
+            renderQuadSphere(event, pos, idleSphereRange.get(),
+                    idleRangeSpherePhiCount.get(),
+                    idleRangeSphereThetaCount.get(),
+                    idleRangeSideColor.get(),
+                    idleRangeLineColor.get(),
+                    idleRangeShapeMode.get());
+        } else {
+            renderCubicSphere(event, pos, idleBlockSphereRange.get(),
+                    idleRangeSideColor.get(),
+                    idleRangeLineColor.get(),
+                    idleRangeShapeMode.get());
+        }
+    }
+
+    private void renderSpawnRange(Render3DEvent event, Vec3 pos) {
+        if (spawnRangesSphereType.get() == SphereType.Default) {
+            renderQuadSphere(event, pos, spawnSphereRange.get(),
+                    spawnRangeSpherePhiCount.get(),
+                    spawnRangeSphereThetaCount.get(),
+                    spawnRangeSideColor.get(),
+                    spawnRangeLineColor.get(),
+                    spawnRangeShapeMode.get());
+        } else {
+            renderCubicSphere(event, pos, spawnBlockSphereRange.get(),
+                    spawnRangeSideColor.get(),
+                    spawnRangeLineColor.get(),
+                    spawnRangeShapeMode.get());
+        }
+    }
+
+    private void renderCenterPosition(Render3DEvent event, Vec3 pos) {
+        Vector3d size = centerPositionSize.get();
+        event.renderer.box(AABB.ofSize(pos, size.x, size.y, size.z),
+                centerPositionSideColor.get(),
+                centerPositionLineColor.get(),
+                centerPositionShapeMode.get(), 0);
+    }
+
+    private void renderCubicSphere(Render3DEvent event, Vec3 center, int radius, SettingColor sideColor, SettingColor lineColor, ShapeMode shapeMode) {
+        for (BlockPos blockPos : getSphereBlocks(BlockPos.containing(center), radius)) {
             event.renderer.box(blockPos, sideColor, lineColor, shapeMode, 0);
         }
     }
 
     private Set<BlockPos> getSphereBlocks(BlockPos center, int radius) {
         Set<BlockPos> blocks = new HashSet<>();
-
         double radiusDouble = radius + 0.5;
         final double invRadius = 1.0 / radiusDouble;
         final int ceilRadius = (int) Math.ceil(radiusDouble);
@@ -1007,26 +1100,28 @@ public class NerdVision extends Module {
                     double xn = x * invRadius;
                     double yn = y * invRadius;
                     double zn = z * invRadius;
-
                     double distanceSq = xn * xn + yn * yn + zn * zn;
+
                     if (distanceSq > 1) break;
 
                     double nextXSq = (x + 1) * invRadius * (x + 1) * invRadius;
                     double nextYSq = (y + 1) * invRadius * (y + 1) * invRadius;
                     double nextZSq = (z + 1) * invRadius * (z + 1) * invRadius;
 
-                    if (nextXSq + yn * yn + zn * zn <= 1 && xn * xn + nextYSq + zn * zn <= 1 && xn * xn + yn * yn + nextZSq <= 1) {
+                    if (nextXSq + yn * yn + zn * zn <= 1 &&
+                            xn * xn + nextYSq + zn * zn <= 1 &&
+                            xn * xn + yn * yn + nextZSq <= 1) {
                         continue;
                     }
 
-                    blocks.add(center.add(x, y, z));
-                    blocks.add(center.add(-x, y, z));
-                    blocks.add(center.add(x, -y, z));
-                    blocks.add(center.add(x, y, -z));
-                    blocks.add(center.add(-x, -y, z));
-                    blocks.add(center.add(x, -y, -z));
-                    blocks.add(center.add(-x, y, -z));
-                    blocks.add(center.add(-x, -y, -z));
+                    blocks.add(center.offset(x, y, z));
+                    blocks.add(center.offset(-x, y, z));
+                    blocks.add(center.offset(x, -y, z));
+                    blocks.add(center.offset(x, y, -z));
+                    blocks.add(center.offset(-x, -y, z));
+                    blocks.add(center.offset(x, -y, -z));
+                    blocks.add(center.offset(-x, y, -z));
+                    blocks.add(center.offset(-x, -y, -z));
                 }
             }
         }
@@ -1034,7 +1129,7 @@ public class NerdVision extends Module {
         return blocks;
     }
 
-    private void renderQuadSphere(Render3DEvent event, Vec3d center, double radius, int phiCount, int thetaCount, SettingColor sideColor, SettingColor lineColor, ShapeMode shapeMode) {
+    private void renderQuadSphere(Render3DEvent event, Vec3 center, double radius, int phiCount, int thetaCount, SettingColor sideColor, SettingColor lineColor, ShapeMode shapeMode) {
         double phiStep = Math.PI / phiCount;
         double thetaStep = 2 * Math.PI / thetaCount;
 
@@ -1047,22 +1142,19 @@ public class NerdVision extends Module {
                 double thetaNext = (j + 1) * thetaStep;
 
                 double y1 = center.y + radius * Math.cos(phi);
-
                 double x1 = center.x + radius * Math.sin(phi) * Math.cos(theta);
                 double z1 = center.z + radius * Math.sin(phi) * Math.sin(theta);
-
                 double x2 = center.x + radius * Math.sin(phi) * Math.cos(thetaNext);
                 double z2 = center.z + radius * Math.sin(phi) * Math.sin(thetaNext);
-
                 double y2 = center.y + radius * Math.cos(phiNext);
-
                 double x3 = center.x + radius * Math.sin(phiNext) * Math.cos(thetaNext);
                 double z3 = center.z + radius * Math.sin(phiNext) * Math.sin(thetaNext);
-
                 double x4 = center.x + radius * Math.sin(phiNext) * Math.cos(theta);
                 double z4 = center.z + radius * Math.sin(phiNext) * Math.sin(theta);
 
-                if (shapeMode.sides()) event.renderer.quad(x1, y1, z1, x2, y1, z2, x3, y2, z3, x4, y2, z4, sideColor);
+                if (shapeMode.sides()) {
+                    event.renderer.quad(x1, y1, z1, x2, y1, z2, x3, y2, z3, x4, y2, z4, sideColor);
+                }
 
                 if (shapeMode.lines()) {
                     event.renderer.line(x1, y1, z1, x2, y1, z2, lineColor);
@@ -1075,44 +1167,40 @@ public class NerdVision extends Module {
     @Override
     public void onActivate() {
         blocksToTrack.clear();
-
         if (turtleEggsRenderEnabled.get()) blocksToTrack.add(Blocks.TURTLE_EGG);
-
         if (spawnersRenderEnabled.get()) blocksToTrack.add(Blocks.SPAWNER);
 
-        if (!blocksToTrack.isEmpty() && mc.world != null) {
+        if (!blocksToTrack.isEmpty() && mc.level != null) {
             trackedBlocks.clear();
-
-            for (Chunk chunk : Utils.chunks()) {
+            for (ChunkAccess chunk : Utils.chunks()) {
                 searchChunk(chunk);
             }
-
-            lastDimension = mc.world.getDimension();
+            lastDimension = mc.level.dimensionType();
         }
     }
 
     @EventHandler
     private void onBlockUpdate(BlockUpdateEvent event) {
-        if (!blocksToTrack.isEmpty()) {
-            Block newBlock = event.newState.getBlock();
-            Block oldBlock = event.oldState.getBlock();
+        if (blocksToTrack.isEmpty()) return;
 
-            if (blocksToTrack.contains(newBlock)) {
-                trackedBlocks.add(event.pos);
-            } else if (blocksToTrack.contains(oldBlock)) {
-                trackedBlocks.remove(event.pos);
-            }
+        Block newBlock = event.newState.getBlock();
+        Block oldBlock = event.oldState.getBlock();
+
+        if (blocksToTrack.contains(newBlock)) {
+            trackedBlocks.add(event.pos);
+        } else if (blocksToTrack.contains(oldBlock)) {
+            trackedBlocks.remove(event.pos);
         }
     }
 
     @EventHandler
     private void onPostTick(TickEvent.Post event) {
-        if (!blocksToTrack.isEmpty()) {
-            DimensionType dimension = mc.world.getDimension();
-            if (lastDimension != dimension) {
-                lastDimension = dimension;
-                onActivate();
-            }
+        if (blocksToTrack.isEmpty() || mc.level == null) return;
+
+        DimensionType dimension = mc.level.dimensionType();
+        if (lastDimension != dimension) {
+            lastDimension = dimension;
+            onActivate();
         }
     }
 
@@ -1123,17 +1211,18 @@ public class NerdVision extends Module {
         }
     }
 
-    private void searchChunk(Chunk chunk) {
+    private void searchChunk(ChunkAccess chunk) {
         workerThread.submit(() -> {
             ChunkPos chunkPos = chunk.getPos();
+            int bottomY = mc.level.getMinY();
+            int topY = mc.level.getHeight(Heightmap.Types.WORLD_SURFACE, 0, 0);
 
-            for (int x = chunkPos.getStartX(); x <= chunkPos.getEndX(); x++) {
-                for (int z = chunkPos.getStartZ(); z <= chunkPos.getEndZ(); z++) {
-                    for (int y = mc.world.getBottomY(); y < mc.world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z); y++) {
+            for (int x = chunkPos.getMinBlockX(); x <= chunkPos.getMaxBlockX(); x++) {
+                for (int z = chunkPos.getMinBlockZ(); z <= chunkPos.getMaxBlockZ(); z++) {
+                    for (int y = bottomY; y < topY; y++) {
                         BlockPos pos = new BlockPos(x, y, z);
-                        if (blocksToTrack.contains(chunk.getBlockState(pos).getBlock())) {
-                            trackedBlocks.add(pos);
-                        }
+                        Block block = chunk.getBlockState(pos).getBlock();
+                        if (blocksToTrack.contains(block)) trackedBlocks.add(pos);
                     }
                 }
             }
@@ -1142,17 +1231,20 @@ public class NerdVision extends Module {
 
     @EventHandler
     private void onReceivePacket(PacketEvent.Receive event) {
-        if (!blocksToTrack.isEmpty() && event.packet instanceof UnloadChunkS2CPacket(ChunkPos pos)) {
-            int startX = pos.getStartX();
-            int startZ = pos.getStartZ();
-            int endX = pos.getEndX();
-            int endZ = pos.getEndZ();
+        if (blocksToTrack.isEmpty() || !(event.packet instanceof ClientboundForgetLevelChunkPacket(ChunkPos pos)))
+            return;
 
-            trackedBlocks.removeIf(blockPos -> blockPos.getX() >= startX && blockPos.getX() <= endX && blockPos.getZ() >= startZ && blockPos.getZ() <= endZ);
-        }
+        int startX = pos.getMinBlockX();
+        int startZ = pos.getMinBlockZ();
+        int endX = pos.getMaxBlockX();
+        int endZ = pos.getMaxBlockZ();
+
+        trackedBlocks.removeIf(blockPos ->
+                blockPos.getX() >= startX && blockPos.getX() <= endX &&
+                        blockPos.getZ() >= startZ && blockPos.getZ() <= endZ
+        );
     }
 
-    // Enums
     private enum CenterPositionMode {
         Relative,
         Absolute
@@ -1168,7 +1260,6 @@ public class NerdVision extends Module {
         Cubic
     }
 
-    // Settings
     public record NbtDataDisplay(Double size, Double margin, Vector3d pos, Map<String, String> attributes) {
     }
 }

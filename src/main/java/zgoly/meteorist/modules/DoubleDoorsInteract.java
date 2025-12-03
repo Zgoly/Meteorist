@@ -5,13 +5,13 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.block.enums.DoorHinge;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoorHingeSide;
+import net.minecraft.world.phys.BlockHitResult;
 import zgoly.meteorist.Meteorist;
 
 public class DoubleDoorsInteract extends Module {
@@ -27,24 +27,24 @@ public class DoubleDoorsInteract extends Module {
 
         isInteracting = true;
         BlockPos doorPos = event.result.getBlockPos();
-        BlockState blockState = mc.world.getBlockState(doorPos);
+        BlockState blockState = mc.level.getBlockState(doorPos);
         if (blockState.getBlock() instanceof DoorBlock) {
-            Direction doorFacing = blockState.get(DoorBlock.FACING);
+            Direction doorFacing = blockState.getValue(DoorBlock.FACING);
 
-            DoorHinge doorHinge = blockState.get(DoorBlock.HINGE);
+            DoorHingeSide doorHinge = blockState.getValue(DoorBlock.HINGE);
             BlockPos otherDoorPos;
-            if (doorHinge == DoorHinge.LEFT) {
-                otherDoorPos = doorPos.offset(doorFacing.rotateYClockwise());
+            if (doorHinge == DoorHingeSide.LEFT) {
+                otherDoorPos = doorPos.relative(doorFacing.getClockWise());
             } else {
-                otherDoorPos = doorPos.offset(doorFacing.rotateYCounterclockwise());
+                otherDoorPos = doorPos.relative(doorFacing.getCounterClockWise());
             }
 
-            BlockState otherBlockState = mc.world.getBlockState(otherDoorPos);
+            BlockState otherBlockState = mc.level.getBlockState(otherDoorPos);
             if (otherBlockState.getBlock() instanceof DoorBlock) {
-                if (blockState.get(DoorBlock.HALF) == otherBlockState.get(DoorBlock.HALF)
-                        && blockState.get(DoorBlock.HINGE) != otherBlockState.get(DoorBlock.HINGE)
-                        && blockState.get(DoorBlock.OPEN) == otherBlockState.get(DoorBlock.OPEN)) {
-                    BlockUtils.interact(new BlockHitResult(Utils.vec3d(otherDoorPos), Direction.UP, otherDoorPos, false), Hand.MAIN_HAND, false);
+                if (blockState.getValue(DoorBlock.HALF) == otherBlockState.getValue(DoorBlock.HALF)
+                        && blockState.getValue(DoorBlock.HINGE) != otherBlockState.getValue(DoorBlock.HINGE)
+                        && blockState.getValue(DoorBlock.OPEN) == otherBlockState.getValue(DoorBlock.OPEN)) {
+                    BlockUtils.interact(new BlockHitResult(Utils.vec3d(otherDoorPos), Direction.UP, otherDoorPos, false), InteractionHand.MAIN_HAND, false);
                 }
             }
         }

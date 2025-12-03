@@ -10,11 +10,11 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.settings.IVisible;
 import meteordevelopment.meteorclient.settings.Setting;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.util.Pair;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +24,10 @@ import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
 import static zgoly.meteorist.Meteorist.ARROW_DOWN;
 import static zgoly.meteorist.Meteorist.ARROW_UP;
 
-public class StringPairSetting extends Setting<List<Pair<String, String>>> {
-    private final Pair<String, String> placeholder;
+public class StringPairSetting extends Setting<List<Tuple<String, String>>> {
+    private final Tuple<String, String> placeholder;
 
-    public StringPairSetting(String name, String description, List<Pair<String, String>> defaultValue, Pair<String, String> placeholder, Consumer<List<Pair<String, String>>> onChanged, Consumer<Setting<List<Pair<String, String>>>> onModuleActivated, IVisible visible) {
+    public StringPairSetting(String name, String description, List<Tuple<String, String>> defaultValue, Tuple<String, String> placeholder, Consumer<List<Tuple<String, String>>> onChanged, Consumer<Setting<List<Tuple<String, String>>>> onModuleActivated, IVisible visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.placeholder = placeholder;
@@ -43,18 +43,18 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     public static void fillTable(GuiTheme theme, WTable table, StringPairSetting setting) {
         table.clear();
 
-        List<Pair<String, String>> pairs = setting.get();
-        Pair<String, String> placeholder = setting.placeholder;
+        List<Tuple<String, String>> pairs = setting.get();
+        Tuple<String, String> placeholder = setting.placeholder;
 
-        for (Pair<String, String> pair : pairs) {
+        for (Tuple<String, String> pair : pairs) {
             WContainer container = table.add(theme.horizontalList()).expandX().widget();
             int index = pairs.indexOf(pair);
 
-            WTextBox textBoxKey = container.add(theme.textBox(pair.getLeft(), placeholder.getLeft())).minWidth(150).expandX().widget();
-            textBoxKey.actionOnUnfocused = () -> pair.setLeft(textBoxKey.get());
+            WTextBox textBoxKey = container.add(theme.textBox(pair.getA(), placeholder.getA())).minWidth(150).expandX().widget();
+            textBoxKey.actionOnUnfocused = () -> pair.setA(textBoxKey.get());
 
-            WTextBox textBoxValue = container.add(theme.textBox(pair.getRight(), placeholder.getRight())).minWidth(150).expandX().widget();
-            textBoxValue.actionOnUnfocused = () -> pair.setRight(textBoxValue.get());
+            WTextBox textBoxValue = container.add(theme.textBox(pair.getB(), placeholder.getB())).minWidth(150).expandX().widget();
+            textBoxValue.actionOnUnfocused = () -> pair.setB(textBoxValue.get());
 
             if (pairs.size() > 1) {
                 WContainer moveContainer = container.add(theme.horizontalList()).expandX().widget();
@@ -83,7 +83,7 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
             WButton copy = container.add(theme.button(COPY)).widget();
             copy.tooltip = "Duplicate pair.";
             copy.action = () -> {
-                pairs.add(index, new Pair<>(pair.getLeft(), pair.getRight()));
+                pairs.add(index, new Tuple<>(pair.getA(), pair.getB()));
                 fillTable(theme, table, setting);
             };
 
@@ -105,7 +105,7 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
         WButton add = table.add(theme.button("Add")).expandX().widget();
         add.tooltip = "Add new pair to the list.";
         add.action = () -> {
-            pairs.add(new Pair<>("", ""));
+            pairs.add(new Tuple<>("", ""));
             fillTable(theme, table, setting);
         };
 
@@ -124,14 +124,14 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     }
 
     @Override
-    protected List<Pair<String, String>> parseImpl(String str) {
+    protected List<Tuple<String, String>> parseImpl(String str) {
         String[] values = str.split(",");
 
-        List<Pair<String, String>> pairs = new ArrayList<>(values.length / 2);
+        List<Tuple<String, String>> pairs = new ArrayList<>(values.length / 2);
 
         try {
             for (int i = 0; i < values.length; i += 2) {
-                pairs.add(new Pair<>(values[i], values[i + 1]));
+                pairs.add(new Tuple<>(values[i], values[i + 1]));
             }
         } catch (Exception ignored) {
         }
@@ -140,18 +140,18 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     }
 
     @Override
-    protected boolean isValueValid(List<Pair<String, String>> value) {
+    protected boolean isValueValid(List<Tuple<String, String>> value) {
         return true;
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
-        NbtList valueTag = new NbtList();
+    protected CompoundTag save(CompoundTag tag) {
+        ListTag valueTag = new ListTag();
 
-        for (Pair<String, String> pair : get()) {
-            NbtList pairTag = new NbtList();
-            pairTag.add(NbtString.of(pair.getLeft()));
-            pairTag.add(NbtString.of(pair.getRight()));
+        for (Tuple<String, String> pair : get()) {
+            ListTag pairTag = new ListTag();
+            pairTag.add(StringTag.valueOf(pair.getA()));
+            pairTag.add(StringTag.valueOf(pair.getB()));
             valueTag.add(pairTag);
         }
 
@@ -160,35 +160,35 @@ public class StringPairSetting extends Setting<List<Pair<String, String>>> {
     }
 
     @Override
-    protected List<Pair<String, String>> load(NbtCompound tag) {
-        NbtList valueTag = tag.getListOrEmpty("value");
+    protected List<Tuple<String, String>> load(CompoundTag tag) {
+        ListTag valueTag = tag.getListOrEmpty("value");
         get().clear();
 
-        for (NbtElement nbtElement : valueTag) {
-            if (!(nbtElement instanceof NbtList pairList)) continue;
+        for (Tag nbtElement : valueTag) {
+            if (!(nbtElement instanceof ListTag pairList)) continue;
 
             String left = pairList.get(0).asString().orElse("");
             String right = pairList.get(1).asString().orElse("");
 
-            get().add(new Pair<>(left, right));
+            get().add(new Tuple<>(left, right));
         }
 
         return get();
     }
 
-    public static class Builder extends SettingBuilder<Builder, List<Pair<String, String>>, StringPairSetting> {
-        private Pair<String, String> placeholder;
+    public static class Builder extends SettingBuilder<Builder, List<Tuple<String, String>>, StringPairSetting> {
+        private Tuple<String, String> placeholder;
 
         public Builder() {
             super(new ArrayList<>(0));
         }
 
-        public Builder defaultValue(List<Pair<String, String>> pairs) {
+        public Builder defaultValue(List<Tuple<String, String>> pairs) {
             this.defaultValue = pairs;
             return this;
         }
 
-        public Builder placeholder(Pair<String, String> pair) {
+        public Builder placeholder(Tuple<String, String> pair) {
             this.placeholder = pair;
             return this;
         }

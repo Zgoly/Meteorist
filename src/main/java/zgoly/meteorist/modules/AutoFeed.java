@@ -49,7 +49,7 @@ public class AutoFeed extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (timer >= delay.get() && mc.player.getHungerManager().getFoodLevel() <= hungerLevel.get()) {
+        if (timer >= delay.get() && mc.player.getFoodData().getFoodLevel() <= hungerLevel.get()) {
             ChatUtils.sendPlayerMsg(feedCommand.get());
             timer = 0;
         } else timer++;

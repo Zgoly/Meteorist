@@ -2,9 +2,9 @@ package zgoly.meteorist.utils;
 
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import org.meteordev.starscript.Script;
 import zgoly.meteorist.modules.instructions.InstructionFactory;
 import zgoly.meteorist.modules.instructions.instructions.BaseInstruction;
@@ -25,17 +25,17 @@ public class InstructionUtils {
      * @return A List of BaseInstruction objects created from the instructions
      * found in the NbtCompound tag.
      */
-    public static List<BaseInstruction> readInstructionsFromTag(NbtCompound tag, InstructionFactory factory) {
+    public static List<BaseInstruction> readInstructionsFromTag(CompoundTag tag, InstructionFactory factory) {
         List<BaseInstruction> instructions = new ArrayList<>();
-        NbtList list = tag.getListOrEmpty("instructions");
+        ListTag list = tag.getListOrEmpty("instructions");
 
-        for (NbtElement tagII : list) {
-            NbtCompound tagI = (NbtCompound) tagII;
-            String type = tagI.getString("type", "");
+        for (Tag tagII : list) {
+            CompoundTag tagI = (CompoundTag) tagII;
+            String type = tagI.getStringOr("type", "");
             BaseInstruction instruction = factory.createInstruction(type);
 
             if (instruction != null) {
-                NbtCompound instructionTag = (NbtCompound) tagI.get("instruction");
+                CompoundTag instructionTag = (CompoundTag) tagI.get("instruction");
                 if (instructionTag != null) instruction.fromTag(instructionTag);
                 instructions.add(instruction);
             }

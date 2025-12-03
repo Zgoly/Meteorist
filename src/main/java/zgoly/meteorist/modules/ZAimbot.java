@@ -11,19 +11,17 @@ import meteordevelopment.meteorclient.utils.entity.TargetUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.player.Rotations;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.player.Player;
 import zgoly.meteorist.Meteorist;
-import zgoly.meteorist.mixin.MinecraftClientAccessor;
 
 import java.util.Set;
 
@@ -125,32 +123,60 @@ public class ZAimbot extends Module {
             .defaultValue(0)
             .build()
     );
+    private final Setting<AimAxes> aimAxes = sgAim.add(new EnumSetting.Builder<AimAxes>()
+            .name("aim-axes")
+            .description("Which rotational axes to adjust when aiming.")
+            .defaultValue(AimAxes.Both)
+            .build()
+    );
     private final Setting<Target> bodyTarget = sgAim.add(new EnumSetting.Builder<Target>()
             .name("aim-target")
             .description("Part of the target entity's body to aim at.")
             .defaultValue(Target.Head)
             .build()
     );
-    private final Setting<Boolean> instantAim = sgAim.add(new BoolSetting.Builder()
-            .name("instant-aim")
-            .description("Aim at the target entity instantly.")
+    private final Setting<Boolean> instantYaw = sgAim.add(new BoolSetting.Builder()
+            .name("instant-yaw")
+            .description("Aim horizontally (yaw) at the target entity instantly.")
             .defaultValue(false)
             .build()
     );
-    private final Setting<Boolean> syncSpeedWithCooldown = sgAim.add(new BoolSetting.Builder()
-            .name("sync-speed-with-cooldown")
-            .description("Synchronize aim speed with attack cooldown progress.")
+    private final Setting<Boolean> instantPitch = sgAim.add(new BoolSetting.Builder()
+            .name("instant-pitch")
+            .description("Aim vertically (pitch) at the target entity instantly.")
             .defaultValue(false)
-            .visible(() -> !instantAim.get())
             .build()
     );
-    private final Setting<Double> speed = sgAim.add(new DoubleSetting.Builder()
-            .name("speed")
-            .description("Speed at which to adjust aim.")
+    private final Setting<Boolean> syncYawWithCooldown = sgAim.add(new BoolSetting.Builder()
+            .name("sync-yaw-with-cooldown")
+            .description("Synchronize yaw aim speed with attack cooldown progress.")
+            .defaultValue(false)
+            .visible(() -> !instantYaw.get())
+            .build()
+    );
+    private final Setting<Boolean> syncPitchWithCooldown = sgAim.add(new BoolSetting.Builder()
+            .name("sync-pitch-with-cooldown")
+            .description("Synchronize pitch aim speed with attack cooldown progress.")
+            .defaultValue(false)
+            .visible(() -> !instantPitch.get())
+            .build()
+    );
+    private final Setting<Double> speedYaw = sgAim.add(new DoubleSetting.Builder()
+            .name("speed-yaw")
+            .description("Speed at which to adjust horizontal (yaw) aim.")
             .min(0)
             .defaultValue(1)
             .sliderRange(0.1, 10)
-            .visible(() -> !instantAim.get())
+            .visible(() -> !instantYaw.get())
+            .build()
+    );
+    private final Setting<Double> speedPitch = sgAim.add(new DoubleSetting.Builder()
+            .name("speed-pitch")
+            .description("Speed at which to adjust vertical (pitch) aim.")
+            .min(0)
+            .defaultValue(1)
+            .sliderRange(0.1, 10)
+            .visible(() -> !instantPitch.get())
             .build()
     );
 
@@ -160,7 +186,7 @@ public class ZAimbot extends Module {
 
     @EventHandler
     private void onRender3D(Render3DEvent event) {
-        if (mc.player == null || mc.world == null) return;
+        if (mc.player == null || mc.level == null) return;
 
         Entity target = TargetUtils.get(this::entityCheck, priority.get());
 
@@ -169,8 +195,9 @@ public class ZAimbot extends Module {
     }
 
     private boolean entityCheck(Entity entity) {
-        if (entity.equals(mc.player) || entity.equals(((MinecraftClientAccessor) MinecraftClient.getInstance()).getCameraEntity())) return false;
-        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDead()) || !entity.isAlive()) return false;
+        if (entity.equals(mc.player) || entity.equals(mc.getCameraEntity())) return false;
+        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDeadOrDying()) || !entity.isAlive())
+            return false;
 
         if (!PlayerUtils.isWithin(entity, range.get())) return false;
 
@@ -178,7 +205,7 @@ public class ZAimbot extends Module {
         if (ignoreNamed.get() && entity.hasCustomName()) return false;
 
         if (ignoreTamed.get()) {
-            if (entity instanceof Tameable tameable
+            if (entity instanceof OwnableEntity tameable
                     && tameable.getOwner() != null
                     && tameable.getOwner().equals(mc.player)) {
                 return false;
@@ -187,13 +214,13 @@ public class ZAimbot extends Module {
 
         if (ignorePassive.get()) {
             switch (entity) {
-                case EndermanEntity enderman when !enderman.isAngry() -> {
+                case EnderMan enderman when !enderman.isCreepy() -> {
                     return false;
                 }
-                case ZombifiedPiglinEntity piglin when !piglin.isAttacking() -> {
+                case ZombifiedPiglin piglin when !piglin.isAggressive() -> {
                     return false;
                 }
-                case WolfEntity wolf when !wolf.isAttacking() -> {
+                case Wolf wolf when !wolf.isAggressive() -> {
                     return false;
                 }
                 default -> {
@@ -201,13 +228,13 @@ public class ZAimbot extends Module {
             }
         }
 
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof Player player) {
             if (ignoreCreative.get() && player.isCreative()) return false;
             if (ignoreFriends.get() && !Friends.get().shouldAttack(player)) return false;
             if (ignoreShield.get() && player.isBlocking()) return false;
         }
 
-        if (entity instanceof AnimalEntity animal) {
+        if (entity instanceof Animal animal) {
             return switch (mobAgeFilter.get()) {
                 case Baby -> animal.isBaby();
                 case Adult -> !animal.isBaby();
@@ -220,19 +247,36 @@ public class ZAimbot extends Module {
     }
 
     private void aim(LivingEntity player, Entity target) {
-        float targetYaw = (float) Rotations.getYaw(target.getEntityPos().add(target.getVelocity().multiply(targetMovementPrediction.get())));
+        float targetYaw = (float) Rotations.getYaw(target.position().add(target.getDeltaMovement().scale(targetMovementPrediction.get())));
         float targetPitch = (float) Rotations.getPitch(target, bodyTarget.get());
 
-        float yawDifference = MathHelper.wrapDegrees(targetYaw - player.getYaw());
-        float pitchDifference = MathHelper.wrapDegrees(targetPitch - player.getPitch());
+        float yawDifference = Mth.wrapDegrees(targetYaw - player.getYRot());
+        float pitchDifference = Mth.wrapDegrees(targetPitch - player.getXRot());
 
-        if (instantAim.get()) {
-            player.setYaw(targetYaw);
-            player.setPitch(targetPitch);
-        } else {
-            float cooldownProgress = syncSpeedWithCooldown.get() ? mc.player.getAttackCooldownProgress(0) : 1;
-            player.setYaw(player.getYaw() + yawDifference * cooldownProgress * speed.get().floatValue() / 10);
-            player.setPitch(player.getPitch() + pitchDifference * cooldownProgress * speed.get().floatValue() / 10);
+        if (instantYaw.get()) {
+            if (aimAxes.get() == AimAxes.Both || aimAxes.get() == AimAxes.OnlyYaw) {
+                player.setYRot(targetYaw);
+            }
+        } else if (aimAxes.get() == AimAxes.Both || aimAxes.get() == AimAxes.OnlyYaw) {
+            float cooldownProgress = syncYawWithCooldown.get() ? mc.player.getAttackStrengthScale(0) : 1;
+            float yawSpeedFactor = speedYaw.get().floatValue() / 10;
+            player.setYRot(player.getYRot() + yawDifference * cooldownProgress * yawSpeedFactor);
         }
+
+        if (instantPitch.get()) {
+            if (aimAxes.get() == AimAxes.Both || aimAxes.get() == AimAxes.OnlyPitch) {
+                player.setXRot(targetPitch);
+            }
+        } else if (aimAxes.get() == AimAxes.Both || aimAxes.get() == AimAxes.OnlyPitch) {
+            float cooldownProgress = syncPitchWithCooldown.get() ? mc.player.getAttackStrengthScale(0) : 1;
+            float pitchSpeedFactor = speedPitch.get().floatValue() / 10;
+            player.setXRot(player.getXRot() + pitchDifference * cooldownProgress * pitchSpeedFactor);
+        }
+    }
+
+    public enum AimAxes {
+        Both,
+        OnlyYaw,
+        OnlyPitch
     }
 }

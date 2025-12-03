@@ -13,12 +13,12 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.render.prompts.YesNoPrompt;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.Util;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.network.chat.Component;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -37,7 +37,7 @@ public class MeteoristConfigManager {
      * @param fromPrompt Whether the reload is from a prompt (i.e. the user was prompted to save a config and chose not to).
      */
     public static void reload(boolean fromPrompt) {
-        if (mc.currentScreen instanceof WidgetScreen screen) {
+        if (mc.screen instanceof WidgetScreen screen) {
             if (fromPrompt) {
                 if (screen.parent instanceof WidgetScreen screen1) screen1.reload();
             } else {
@@ -90,7 +90,7 @@ public class MeteoristConfigManager {
         WButton openFolder = buttons.add(theme.button("Open Folder")).expandX().widget();
         openFolder.action = () -> {
             if (!folderPath.exists()) folderPath.mkdirs();
-            Util.getOperatingSystem().open(folderPath);
+            Util.getPlatform().openFile(folderPath);
         };
 
         control.row();
@@ -115,8 +115,8 @@ public class MeteoristConfigManager {
      * @param module The module to convert.
      * @return An NbtCompound containing the module's settings.
      */
-    public static NbtCompound toTag(Module module) {
-        NbtCompound nbtCompound = module.toTag();
+    public static CompoundTag toTag(Module module) {
+        CompoundTag nbtCompound = module.toTag();
         nbtCompound.remove("name");
         nbtCompound.remove("keybind");
         nbtCompound.remove("toggleOnKeyRelease");
@@ -135,7 +135,7 @@ public class MeteoristConfigManager {
      * @param module      The module whose settings are to be restored.
      * @param nbtCompound The NbtCompound containing the module's settings.
      */
-    public static void fromTag(Module module, NbtCompound nbtCompound) {
+    public static void fromTag(Module module, CompoundTag nbtCompound) {
         Keybind keybind = module.keybind.copy();
         boolean toggleOnBindRelease = module.toggleOnBindRelease;
         boolean chatFeedback = module.chatFeedback;
@@ -174,13 +174,13 @@ public class MeteoristConfigManager {
                 WButton load = configTable.add(theme.button("Load")).widget();
                 load.action = () -> {
                     try (InputStream inputStream = new FileInputStream(file)) {
-                        NbtCompound nbtCompound = NbtIo.readCompressed(inputStream, NbtSizeTracker.ofUnlimitedBytes());
+                        CompoundTag nbtCompound = NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap());
                         fromTag(module, nbtCompound);
-                        mc.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.of("Config successfully loaded"), Text.of("Loaded as \"" + file.getName() + "\" with " + nbtCompound.getSize() + " entries.")));
+                        mc.getToastManager().addToast(new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION, Component.nullToEmpty("Config successfully loaded"), Component.nullToEmpty("Loaded as \"" + file.getName() + "\" with " + nbtCompound.size() + " entries.")));
                     } catch (FileNotFoundException e) {
-                        mc.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.of("Failed to load config"), Text.of("File not found. Did you delete/rename it?")));
+                        mc.getToastManager().addToast(new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION, Component.nullToEmpty("Failed to load config"), Component.nullToEmpty("File not found. Did you delete/rename it?")));
                     } catch (Exception e) {
-                        mc.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.of("Failed to load config"), Text.of(e.getMessage())));
+                        mc.getToastManager().addToast(new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION, Component.nullToEmpty("Failed to load config"), Component.nullToEmpty(e.getMessage())));
                     }
                     reload(false);
                 };
@@ -223,13 +223,13 @@ public class MeteoristConfigManager {
     private static void save(Module module, File file, boolean overwrite) {
         if (!file.exists() || overwrite) {
             try {
-                NbtCompound nbtCompound = toTag(module);
+                CompoundTag nbtCompound = toTag(module);
                 FileOutputStream outputStream = new FileOutputStream(file);
                 NbtIo.writeCompressed(nbtCompound, outputStream);
                 outputStream.close();
-                mc.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.of("Config successfully saved"), Text.of("Saved as \"" + file.getName() + "\" with " + nbtCompound.getSize() + " entries.")));
+                mc.getToastManager().addToast(new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION, Component.nullToEmpty("Config successfully saved"), Component.nullToEmpty("Saved as \"" + file.getName() + "\" with " + nbtCompound.size() + " entries.")));
             } catch (Exception e) {
-                mc.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.of("Failed to save config"), Text.of(e.getMessage())));
+                mc.getToastManager().addToast(new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION, Component.nullToEmpty("Failed to save config"), Component.nullToEmpty(e.getMessage())));
             }
             reload(false);
         } else {

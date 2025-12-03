@@ -7,12 +7,12 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import zgoly.meteorist.Meteorist;
 
 import java.util.List;
@@ -124,50 +124,50 @@ public class AutoSneak extends Module {
         super(Meteorist.CATEGORY, "auto-sneak", "Automatically sneaks at block edge (idea by kokqi).");
     }
 
-    private Box calcBox() {
+    private AABB calcBox() {
         assert mc.player != null;
-        Vec3d pos = mc.player.getEntityPos().add(mc.player.getVelocity().multiply(playerPosPrediction.get()));
-        pos = new Vec3d(pos.x, mc.player.getEntityPos().y, pos.z);
-        return new Box(
-                pos.getX() + (width.get() / 2), pos.getY(), pos.getZ() + (width.get() / 2),
-                pos.getX() - (width.get() / 2), pos.getY() - height.get(), pos.getZ() - (width.get() / 2)
+        Vec3 pos = mc.player.position().add(mc.player.getDeltaMovement().scale(playerPosPrediction.get()));
+        pos = new Vec3(pos.x, mc.player.position().y, pos.z);
+        return new AABB(
+                pos.x() + (width.get() / 2), pos.y(), pos.z() + (width.get() / 2),
+                pos.x() - (width.get() / 2), pos.y() - height.get(), pos.z() - (width.get() / 2)
         );
     }
 
     @Override
     public void onDeactivate() {
         sneaking = false;
-        if (mc.player != null) mc.player.setSneaking(false);
+        if (mc.player != null) mc.player.setShiftKeyDown(false);
     }
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
         if ((mc.player.getAbilities().flying || mc.player.fallDistance > 0) && sneaking) {
-            mc.options.sneakKey.setPressed(false);
+            mc.options.keyShift.setDown(false);
             sneaking = false;
         }
-        if (mc.player.isOnGround()) {
-            Box box = calcBox();
-            Iterable<VoxelShape> iterable = mc.world.getBlockCollisions(mc.player, box);
+        if (mc.player.onGround()) {
+            AABB box = calcBox();
+            Iterable<VoxelShape> iterable = mc.level.getBlockCollisions(mc.player, box);
             if (iterable.iterator().hasNext()) {
                 iterable.forEach(blockBox -> {
-                    BlockPos blockPos = BlockPos.ofFloored(blockBox.getMin(Direction.Axis.X), blockBox.getMin(Direction.Axis.Y), blockBox.getMin(Direction.Axis.Z));
-                    if (mc.world.getBlockState(blockPos) == mc.player.getSteppingBlockState()) {
+                    BlockPos blockPos = BlockPos.containing(blockBox.min(Direction.Axis.X), blockBox.min(Direction.Axis.Y), blockBox.min(Direction.Axis.Z));
+                    if (mc.level.getBlockState(blockPos) == mc.player.getBlockStateOn()) {
                         if (sneaking) {
-                            mc.options.sneakKey.setPressed(false);
+                            mc.options.keyShift.setDown(false);
                             sneaking = false;
                         }
-                    } else if (mc.world.getBlockState(blockPos).isReplaceable()) {
-                        mc.options.sneakKey.setPressed(true);
+                    } else if (mc.level.getBlockState(blockPos).canBeReplaced()) {
+                        mc.options.keyShift.setDown(true);
                         sneaking = true;
                     }
                 });
             } else {
-                mc.options.sneakKey.setPressed(true);
+                mc.options.keyShift.setDown(true);
                 sneaking = true;
             }
 
-            Block steppingBlock = mc.player.getSteppingBlockState().getBlock();
+            Block steppingBlock = mc.player.getBlockStateOn().getBlock();
 
             boolean shouldSneak = (sneakBlocksMode.get() == SneakBlocksMode.Whitelist)
                     ? sneakBlocksWhitelist.get().contains(steppingBlock)
@@ -178,12 +178,12 @@ public class AutoSneak extends Module {
                     : !ignoreBlocksBlacklist.get().contains(steppingBlock);
 
             if (shouldSneak) {
-                mc.options.sneakKey.setPressed(true);
+                mc.options.keyShift.setDown(true);
                 sneaking = true;
             }
 
             if (shouldIgnore) {
-                mc.options.sneakKey.setPressed(false);
+                mc.options.keyShift.setDown(false);
                 sneaking = false;
             }
         }

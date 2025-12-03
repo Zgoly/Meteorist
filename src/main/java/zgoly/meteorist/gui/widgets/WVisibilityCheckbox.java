@@ -3,7 +3,7 @@ package zgoly.meteorist.gui.widgets;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import static zgoly.meteorist.Meteorist.EYE;
 
@@ -30,7 +30,7 @@ public class WVisibilityCheckbox extends WCheckbox implements MeteorWidget {
         renderer.quad(x + width / 2 - ts / 2, y + pad, ts, ts, EYE, theme.textColor());
 
         animProgress += (checked ? -1 : 1) * delta * 14;
-        animProgress = MathHelper.clamp(animProgress, 0, 1);
+        animProgress = Mth.clamp(animProgress, 0, 1);
 
         renderBackground(renderer, this, pressed, mouseOver);
 

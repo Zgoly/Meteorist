@@ -1,8 +1,8 @@
 package zgoly.meteorist.modules.slotclick.selections;
 
 import meteordevelopment.meteorclient.settings.*;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Pair;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.inventory.MenuType;
 import zgoly.meteorist.settings.StringPairSetting;
 
 import java.util.Arrays;
@@ -17,10 +17,10 @@ public class DefaultSlotSelection extends BaseSlotSelection {
             .defaultValue(false)
             .build()
     );
-    public final Setting<List<ScreenHandlerType<?>>> containerType = sgGeneral.add(new ScreenHandlerListSetting.Builder()
+    public final Setting<List<MenuType<?>>> containerType = sgGeneral.add(new ScreenHandlerListSetting.Builder()
             .name("container-type")
             .description("Determines the type of containers that can be interacted with.")
-            .defaultValue(Arrays.asList(ScreenHandlerType.GENERIC_9X3, ScreenHandlerType.GENERIC_9X6))
+            .defaultValue(Arrays.asList(MenuType.GENERIC_9x3, MenuType.GENERIC_9x6))
             .visible(checkContainerType::get)
             .build()
     );
@@ -56,11 +56,11 @@ public class DefaultSlotSelection extends BaseSlotSelection {
             .defaultValue(false)
             .build()
     );
-    public final Setting<List<Pair<String, String>>> slotItemData = sgGeneral.add(new StringPairSetting.Builder()
+    public final Setting<List<Tuple<String, String>>> slotItemData = sgGeneral.add(new StringPairSetting.Builder()
             .name("slot-item-data")
             .description("Checks data of the slot item.")
-            .placeholder(new Pair<>("Path", "RegEx"))
-            .defaultValue(List.of(new Pair<>("", "")))
+            .placeholder(new Tuple<>("Path", "RegEx"))
+            .defaultValue(List.of(new Tuple<>("", "")))
             .visible(checkSlotItemData::get)
             .build()
     );

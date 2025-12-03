@@ -1,12 +1,12 @@
 package zgoly.meteorist.mixin;
 
-import net.minecraft.block.BlockSetType;
-import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(TrapdoorBlock.class)
+@Mixin(TrapDoorBlock.class)
 public interface TrapdoorBlockAccessor {
-    @Invoker("getBlockSetType")
+    @Invoker("getType")
     BlockSetType invokeGetBlockSetType();
 }

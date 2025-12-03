@@ -5,9 +5,9 @@ import meteordevelopment.meteorclient.systems.modules.movement.NoFall;
 import meteordevelopment.meteorclient.utils.entity.DamageUtils;
 import meteordevelopment.meteorclient.utils.entity.EntityUtils;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.meteordev.starscript.value.Value;
 import org.meteordev.starscript.value.ValueMap;
 
@@ -28,29 +28,29 @@ public class MeteoristStarscript {
     }
 
     private static double getDistance(boolean max) {
-        if (mc.player == null || mc.world == null) return 0;
+        if (mc.player == null || mc.level == null) return 0;
 
         double startY = mc.player.getY();
-        if (mc.player.isOnGround()) {
+        if (mc.player.onGround()) {
             maxStartY = startY;
             return 0;
         }
 
         if (startY > maxStartY) maxStartY = startY;
 
-        Vec3d start = mc.player.getEntityPos();
-        if (max) start = new Vec3d(start.x, maxStartY, start.z);
+        Vec3 start = mc.player.position();
+        if (max) start = new Vec3(start.x, maxStartY, start.z);
 
-        BlockHitResult blockHitResult = mc.world.raycast(new RaycastContext(
+        BlockHitResult blockHitResult = mc.level.clip(new ClipContext(
                 start,
-                new Vec3d(mc.player.getX(), mc.world.getBottomY(), mc.player.getZ()),
-                RaycastContext.ShapeType.OUTLINE,
-                RaycastContext.FluidHandling.ANY,
+                new Vec3(mc.player.getX(), mc.level.getMinY(), mc.player.getZ()),
+                ClipContext.Block.OUTLINE,
+                ClipContext.Fluid.ANY,
                 mc.player
         ));
 
         if (blockHitResult == null) return 0;
-        return blockHitResult.getPos().distanceTo(start);
+        return blockHitResult.getLocation().distanceTo(start);
     }
 
     private static double getFallDamage(boolean max) {
@@ -63,7 +63,7 @@ public class MeteoristStarscript {
 
         if (max) {
             maxFallDamage = Math.max(maxFallDamage, damageTaken);
-            if (mc.player.isOnGround()) maxFallDamage = 0;
+            if (mc.player.onGround()) maxFallDamage = 0;
             return maxFallDamage;
         }
 

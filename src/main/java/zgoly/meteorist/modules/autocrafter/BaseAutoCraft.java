@@ -2,9 +2,9 @@ package zgoly.meteorist.modules.autocrafter;
 
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import zgoly.meteorist.settings.ItemsSetting;
 
 import java.util.List;
@@ -62,15 +62,15 @@ public class BaseAutoCraft implements ISerializable<BaseAutoCraft> {
     );
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         tag.put("settings", settings.toTag());
         return tag;
     }
 
     @Override
-    public BaseAutoCraft fromTag(NbtCompound tag) {
-        NbtCompound settingsTag = (NbtCompound) tag.get("settings");
+    public BaseAutoCraft fromTag(CompoundTag tag) {
+        CompoundTag settingsTag = (CompoundTag) tag.get("settings");
         if (settingsTag != null) settings.fromTag(settingsTag);
 
         return this;

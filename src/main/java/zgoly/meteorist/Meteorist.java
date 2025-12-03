@@ -11,8 +11,8 @@ import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zgoly.meteorist.commands.DataCommand;
@@ -26,6 +26,7 @@ import zgoly.meteorist.modules.autocrafter.AutoCrafter;
 import zgoly.meteorist.modules.autologin.AutoLogin;
 import zgoly.meteorist.modules.autotrade.AutoTrade;
 import zgoly.meteorist.modules.instructions.Instructions;
+import zgoly.meteorist.modules.minescript.MinescriptIntegration;
 import zgoly.meteorist.modules.placer.Placer;
 import zgoly.meteorist.modules.rangeactions.RangeActions;
 import zgoly.meteorist.modules.slotclick.SlotClick;
@@ -39,8 +40,8 @@ import java.util.Random;
 public class Meteorist extends MeteorAddon {
     public static final Logger LOG = LoggerFactory.getLogger("Meteorist");
 
-    public static final Category CATEGORY = new Category("Meteorist", Items.FIRE_CHARGE.getDefaultStack());
-    public static final Category DEV_CATEGORY = new Category("MeteoristDev", Items.REPEATING_COMMAND_BLOCK.getDefaultStack());
+    public static final Category CATEGORY = new Category("Meteorist", Items.FIRE_CHARGE.getDefaultInstance());
+    public static final Category DEV_CATEGORY = new Category("MeteoristDev", Items.REPEATING_COMMAND_BLOCK.getDefaultInstance());
 
     public static final HudGroup HUD_GROUP = new HudGroup("Meteorist");
     private static final String[] MESSAGES = {
@@ -60,8 +61,8 @@ public class Meteorist extends MeteorAddon {
     public static GuiTexture ARROW_DOWN;
     public static GuiTexture EYE;
 
-    public static Identifier identifier(String path) {
-        return Identifier.of(MOD_ID, path);
+    public static ResourceLocation identifier(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     @Override
@@ -108,8 +109,10 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new JumpJump());
         Modules.get().add(new Placer());
         Modules.get().add(new SlotClick());
+        Modules.get().add(new MinescriptIntegration());
         Modules.get().add(new NerdVision());
         Modules.get().add(new RangeActions());
+        Modules.get().add(new SignSearch());
         Modules.get().add(new ZAimbot());
         Modules.get().add(new ZAutoTotem());
         Modules.get().add(new ZKillaura());

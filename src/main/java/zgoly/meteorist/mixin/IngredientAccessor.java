@@ -1,13 +1,13 @@
 package zgoly.meteorist.mixin;
 
-import net.minecraft.item.Item;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.core.HolderSet;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Ingredient.class)
 public interface IngredientAccessor {
-    @Accessor("entries")
-    RegistryEntryList<Item> getEntries();
+    @Accessor("values")
+    HolderSet<Item> getEntries();
 }

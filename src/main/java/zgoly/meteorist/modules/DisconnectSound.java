@@ -10,9 +10,9 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.SoundEventListSetting;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.events.DisconnectedScreenEvent;
 
@@ -24,7 +24,7 @@ public class DisconnectSound extends Module {
     private final Setting<List<SoundEvent>> sound = sgGeneral.add(new SoundEventListSetting.Builder()
             .name("sound")
             .description("Sound to play.")
-            .defaultValue(List.of(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value()))
+            .defaultValue(List.of(SoundEvents.NOTE_BLOCK_PLING.value()))
             .build()
     );
     private final Setting<Double> soundPitch = sgGeneral.add(new DoubleSetting.Builder()
@@ -50,7 +50,7 @@ public class DisconnectSound extends Module {
     }
 
     private void playSound() {
-        mc.getSoundManager().play(PositionedSoundInstance.master(sound.get().getFirst(), soundPitch.get().floatValue(), soundVolume.get().floatValue()));
+        mc.getSoundManager().play(SimpleSoundInstance.forUI(sound.get().getFirst(), soundPitch.get().floatValue(), soundVolume.get().floatValue()));
     }
 
     @Override

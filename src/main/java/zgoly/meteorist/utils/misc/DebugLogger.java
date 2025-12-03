@@ -5,7 +5,7 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class DebugLogger {
     private final Module module;
@@ -23,7 +23,7 @@ public class DebugLogger {
         );
     }
 
-    public void info(Text message) {
+    public void info(Component message) {
         if (printDebugInfo.get()) module.info(message);
     }
 

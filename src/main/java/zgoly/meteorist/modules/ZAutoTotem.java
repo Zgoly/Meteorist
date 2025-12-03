@@ -9,11 +9,11 @@ import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityEvent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Items;
 import zgoly.meteorist.Meteorist;
 
 public class ZAutoTotem extends Module {
@@ -98,16 +98,16 @@ public class ZAutoTotem extends Module {
         if (totems <= 0) locked = false;
         else if (ticks >= delay.get()) {
             boolean low = mc.player.getHealth() + mc.player.getAbsorptionAmount() - PlayerUtils.possibleHealthReductions(explosion.get(), fall.get()) <= health.get();
-            boolean ely = elytra.get() && mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() == Items.ELYTRA && mc.player.isGliding();
+            boolean ely = elytra.get() && mc.player.getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA && mc.player.isFallFlying();
 
             locked = mode.get() == Mode.Strict || (mode.get() == Mode.Smart && (low || ely));
 
-            if (locked && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) {
+            if (locked && mc.player.getOffhandItem().getItem() != Items.TOTEM_OF_UNDYING) {
                 // If the "only in inventory" option is enabled and the inventory is NOT open, do not move
-                if (onlyInInventory.get() && mc.currentScreen == null) return;
+                if (onlyInInventory.get() && mc.screen == null) return;
 
                 // If the "only when still" option is enabled and the player is moving, do not move
-                if (onlyWhenStill.get() && (mc.player.input.hasForwardMovement())) return;
+                if (onlyWhenStill.get() && (mc.player.input.hasForwardImpulse())) return;
 
                 // If all checks pass, move the totem to the offhand
                 InvUtils.move().from(result.slot()).toOffhand();
@@ -122,10 +122,10 @@ public class ZAutoTotem extends Module {
 
     @EventHandler(priority = EventPriority.HIGH)
     private void onReceivePacket(PacketEvent.Receive event) {
-        if (!(event.packet instanceof EntityStatusS2CPacket p)) return;
-        if (p.getStatus() != EntityStatuses.USE_TOTEM_OF_UNDYING) return;
+        if (!(event.packet instanceof ClientboundEntityEventPacket p)) return;
+        if (p.getEventId() != EntityEvent.PROTECTED_FROM_DEATH) return;
 
-        Entity entity = p.getEntity(mc.world);
+        Entity entity = p.getEntity(mc.level);
         if (entity == null || !(entity.equals(mc.player))) return;
 
         ticks = 0;

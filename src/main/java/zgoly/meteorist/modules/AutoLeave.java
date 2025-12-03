@@ -5,8 +5,8 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
 import zgoly.meteorist.Meteorist;
 
 import java.util.List;
@@ -45,12 +45,12 @@ public class AutoLeave extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        mc.world.getPlayers().stream()
+        mc.level.players().stream()
                 .filter(player -> !(ignoreFriends.get() && Friends.get().isFriend(player)))
                 .filter(player -> playerNames.get().contains(player.getName().getString()))
                 .findFirst()
                 .ifPresent(player -> {
-                    mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.of(message.get().replace("{player}", player.getName().getString()))));
+                    mc.player.connection.handleDisconnect(new ClientboundDisconnectPacket(Component.nullToEmpty(message.get().replace("{player}", player.getName().getString()))));
                     if (toggleOff.get()) this.toggle();
                 });
     }

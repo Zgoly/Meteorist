@@ -15,15 +15,15 @@ import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.render.prompts.OkPrompt;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.baritone.MeteoristBaritoneUtils;
 
@@ -204,7 +204,7 @@ public class ItemSucker extends Module {
     );
 
     int timer = 0;
-    Vec3d startPos = null;
+    Vec3 startPos = null;
 
     int pickedUpStacksCount = 0;
     int pickedUpItemsCount = 0;
@@ -231,15 +231,15 @@ public class ItemSucker extends Module {
         baritoneUtils.cancelEverything();
     }
 
-    public Box getBoundingBoxAtPosition(Vec3d pos) {
-        Vec3d offset = pos.subtract(mc.player.getBoundingBox().getHorizontalCenter());
-        return mc.player.getBoundingBox().offset(offset.getX(), offset.getY(), offset.getZ());
+    public AABB getBoundingBoxAtPosition(Vec3 pos) {
+        Vec3 offset = pos.subtract(mc.player.getBoundingBox().getBottomCenter());
+        return mc.player.getBoundingBox().move(offset.x(), offset.y(), offset.z());
     }
 
-    public boolean canTeleportToItem(Vec3d pos) {
-        Box box = getBoundingBoxAtPosition(pos);
+    public boolean canTeleportToItem(Vec3 pos) {
+        AABB box = getBoundingBoxAtPosition(pos);
 
-        Iterable<VoxelShape> collisions = mc.world.getBlockCollisions(mc.player, box);
+        Iterable<VoxelShape> collisions = mc.level.getBlockCollisions(mc.player, box);
         List<VoxelShape> collisionsList = StreamSupport.stream(collisions.spliterator(), false)
                 .filter(voxelShape -> !voxelShape.isEmpty()).toList();
 
@@ -250,18 +250,18 @@ public class ItemSucker extends Module {
         if (entity instanceof ItemEntity itemEntity) {
             boolean isPickupable = true;
             if (onlyPickupable.get()) {
-                isPickupable = !itemEntity.cannotPickup();
+                isPickupable = !itemEntity.hasPickUpDelay();
             }
             boolean isWithinRange = PlayerUtils.isWithin(entity, suckingRange.get());
             boolean isOnGround = true;
             if (onlyOnGround.get()) {
-                isOnGround = entity.isOnGround();
+                isOnGround = entity.onGround();
             }
-            boolean isItemAllowed = (itemFilteringMode.get() == OperationMode.Blacklist && !itemBlacklist.get().contains(itemEntity.getStack().getItem()))
-                    || (itemFilteringMode.get() == OperationMode.Whitelist && itemWhitelist.get().contains(itemEntity.getStack().getItem()));
+            boolean isItemAllowed = (itemFilteringMode.get() == OperationMode.Blacklist && !itemBlacklist.get().contains(itemEntity.getItem().getItem()))
+                    || (itemFilteringMode.get() == OperationMode.Whitelist && itemWhitelist.get().contains(itemEntity.getItem().getItem()));
             boolean canTeleport = true;
             if (moveMode.get() == MoveMode.Teleport) {
-                canTeleport = checkCollisions.get() && canTeleportToItem(itemEntity.getEntityPos());
+                canTeleport = checkCollisions.get() && canTeleportToItem(itemEntity.position());
             }
 
             return isPickupable && isWithinRange && isOnGround && isItemAllowed && canTeleport;
@@ -272,8 +272,8 @@ public class ItemSucker extends Module {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (modifySpeed.get() && baritoneUtils.isPathing()) {
-            Vec3d vel = PlayerUtils.getHorizontalVelocity(moveSpeed.get());
-            ((IVec3d) event.movement).meteor$set(vel.getX(), event.movement.y, vel.getZ());
+            Vec3 vel = PlayerUtils.getHorizontalVelocity(moveSpeed.get());
+            ((IVec3d) event.movement).meteor$set(vel.x(), event.movement.y, vel.z());
         }
     }
 
@@ -292,13 +292,13 @@ public class ItemSucker extends Module {
             if (target != null) {
                 if (tpToOrigin.get()) {
                     if (resetTimeAfterTp.get()) timer = waitTime.get();
-                    if (startPos == null) startPos = mc.player.getEntityPos();
+                    if (startPos == null) startPos = mc.player.position();
                 }
-                mc.player.setPosition(target.getX(), target.getY(), target.getZ());
+                mc.player.setPos(target.getX(), target.getY(), target.getZ());
             }
 
             if (timer <= 0 && tpToOrigin.get() && startPos != null) {
-                mc.player.setPosition(startPos.getX(), startPos.getY(), startPos.getZ());
+                mc.player.setPos(startPos.x(), startPos.y(), startPos.z());
                 startPos = null;
                 timer = waitTime.get();
             }
@@ -309,9 +309,9 @@ public class ItemSucker extends Module {
 
                 if (!targets.isEmpty()) {
                     baritoneUtils.setGoalNear(targets, itemRange.get());
-                    if (returnToOrigin.get() && startPos == null) startPos = mc.player.getBlockPos().toCenterPos();
+                    if (returnToOrigin.get() && startPos == null) startPos = mc.player.blockPosition().getCenter();
                 } else if (returnToOrigin.get() && startPos != null) {
-                    baritoneUtils.setGoalNear(BlockPos.ofFloored(startPos), returnRange.get());
+                    baritoneUtils.setGoalNear(BlockPos.containing(startPos), returnRange.get());
                     startPos = null;
                 }
             } else {
@@ -329,15 +329,15 @@ public class ItemSucker extends Module {
         if (moveMode.get() == MoveMode.Teleport) {
             List<Entity> entities = new ArrayList<>();
             TargetUtils.getList(entities, this::filter, SortPriority.LowestDistance, maxItemsAtOnce.get());
-            entities.forEach(entity -> event.renderer.box(getBoundingBoxAtPosition(entity.getEntityPos()), sideColor.get(), lineColor.get(), ShapeMode.Both, 0));
+            entities.forEach(entity -> event.renderer.box(getBoundingBoxAtPosition(entity.position()), sideColor.get(), lineColor.get(), ShapeMode.Both, 0));
         }
     }
 
     @EventHandler
     public void onItemPickup(PacketEvent.Receive event) {
-        if (event.packet instanceof ItemPickupAnimationS2CPacket packet) {
+        if (event.packet instanceof ClientboundTakeItemEntityPacket packet) {
             pickedUpStacksCount += 1;
-            pickedUpItemsCount += packet.getStackAmount();
+            pickedUpItemsCount += packet.getAmount();
         }
     }
 

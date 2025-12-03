@@ -5,8 +5,8 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 import zgoly.meteorist.Meteorist;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class AutoRepair extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         for (SlotConfig slotConfig : slotConfigs) {
-            ItemStack item = mc.player.getEquippedStack(slotConfig.slot);
+            ItemStack item = mc.player.getItemBySlot(slotConfig.slot);
 
             if (!slotConfig.enabled.get() || item.isEmpty() || item.getMaxDamage() <= 0) continue;
 
@@ -45,7 +45,7 @@ public class AutoRepair extends Module {
                 continue;
             }
 
-            int currentDurability = item.getMaxDamage() - item.getDamage();
+            int currentDurability = item.getMaxDamage() - item.getDamageValue();
 
             boolean shouldRepair = false;
             if (slotConfig.mode.get() == Mode.Total && currentDurability <= slotConfig.minDurability.get()) {

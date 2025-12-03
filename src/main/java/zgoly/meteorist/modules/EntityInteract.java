@@ -5,10 +5,10 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.Rotations;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import zgoly.meteorist.Meteorist;
 
 import java.util.ArrayList;
@@ -38,10 +38,10 @@ public class EntityInteract extends Module {
             .defaultValue(4)
             .build()
     );
-    private final Setting<Hand> hand = sgGeneral.add(new EnumSetting.Builder<Hand>()
+    private final Setting<InteractionHand> hand = sgGeneral.add(new EnumSetting.Builder<InteractionHand>()
             .name("hand")
             .description("The hand to use when interacting.")
-            .defaultValue(Hand.MAIN_HAND)
+            .defaultValue(InteractionHand.MAIN_HAND)
             .build()
     );
     private final Setting<Boolean> swingHand = sgGeneral.add(new BoolSetting.Builder()
@@ -82,19 +82,19 @@ public class EntityInteract extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        for (Entity entity : mc.world.getEntities()) {
+        for (Entity entity : mc.level.entitiesForRendering()) {
             if (!(entity instanceof LivingEntity)
                     || !(entities.get().contains(entity.getType()))
-                    || mc.player.getMainHandStack().isEmpty()
+                    || mc.player.getMainHandItem().isEmpty()
                     || oneTime.get() && used.contains(entity)
                     || mc.player.distanceTo(entity) > range.get()
                     || ignoreBabies.get() && ((LivingEntity) entity).isBaby()) continue;
 
             if (rotate.get()) Rotations.rotate(Rotations.getYaw(entity), Rotations.getPitch(entity), 10, null);
-            if (swingHand.get()) mc.player.swingHand(hand.get());
+            if (swingHand.get()) mc.player.swing(hand.get());
             if (oneTime.get()) used.add(entity);
 
-            mc.interactionManager.interactEntity(mc.player, entity, hand.get());
+            mc.gameMode.interact(mc.player, entity, hand.get());
 
             if (oneInteractionPerTick.get()) break;
         }

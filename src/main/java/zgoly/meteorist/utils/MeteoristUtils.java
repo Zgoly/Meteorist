@@ -1,19 +1,19 @@
 package zgoly.meteorist.utils;
 
-import net.minecraft.client.gui.screen.recipebook.CraftingRecipeBookWidget;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.recipe.display.RecipeDisplay;
-import net.minecraft.recipe.display.ShapedCraftingRecipeDisplay;
-import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
-import net.minecraft.screen.AbstractCraftingScreenHandler;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
+import net.minecraft.client.gui.screens.recipebook.CraftingRecipeBookComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.inventory.AbstractCraftingMenu;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -28,9 +28,9 @@ public class MeteoristUtils {
      * @param box the box to check for collisions
      * @return true if the box collides with any entities, false otherwise
      */
-    public static boolean isCollidesEntity(Box box) {
-        if (mc.world == null) return false;
-        for (Entity entity : mc.world.getEntities()) {
+    public static boolean isCollidesEntity(AABB box) {
+        if (mc.level == null) return false;
+        for (Entity entity : mc.level.entitiesForRendering()) {
             if (!(entity instanceof LivingEntity)) return false;
             if (box.intersects(entity.getBoundingBox())) return true;
         }
@@ -44,7 +44,7 @@ public class MeteoristUtils {
      * @return true if the block position collides with an entity, false otherwise
      */
     public static boolean isCollidesEntity(BlockPos blockPos) {
-        return isCollidesEntity(new Box(blockPos));
+        return isCollidesEntity(new AABB(blockPos));
     }
 
     /**
@@ -57,20 +57,20 @@ public class MeteoristUtils {
      * @return the hit result representing the target that the crosshair is pointing at, or null if no target is found
      */
     public static HitResult getCrosshairTarget(Entity entity, double range, boolean ignoreBlocks, Predicate<Entity> filter) {
-        if (entity == null || mc.world == null) return null;
+        if (entity == null || mc.level == null) return null;
 
-        Vec3d vec3d = entity.getCameraPosVec(1);
-        Vec3d vec3d2 = entity.getRotationVec(1);
-        Vec3d vec3d3 = vec3d.add(vec3d2.multiply(range));
-        Box box = entity.getBoundingBox().stretch(vec3d2.multiply(range)).expand(1);
+        Vec3 vec3d = entity.getEyePosition(1);
+        Vec3 vec3d2 = entity.getViewVector(1);
+        Vec3 vec3d3 = vec3d.add(vec3d2.scale(range));
+        AABB box = entity.getBoundingBox().expandTowards(vec3d2.scale(range)).inflate(1);
 
-        RaycastContext raycastContext = new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity);
-        HitResult hitResult = mc.world.raycast(raycastContext);
+        ClipContext raycastContext = new ClipContext(vec3d, vec3d3, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
+        HitResult hitResult = mc.level.clip(raycastContext);
 
         double e = range * range;
-        if (hitResult != null && !ignoreBlocks) e = hitResult.getPos().squaredDistanceTo(vec3d);
+        if (hitResult != null && !ignoreBlocks) e = hitResult.getLocation().distanceToSqr(vec3d);
 
-        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, filter.and(targetEntity -> !targetEntity.isSpectator()), e);
+        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(entity, vec3d, vec3d3, box, filter.and(targetEntity -> !targetEntity.isSpectator()), e);
         if (entityHitResult != null) {
             return entityHitResult;
         } else if (!ignoreBlocks) {
@@ -104,12 +104,16 @@ public class MeteoristUtils {
      * Converts a given number of ticks into a human-readable time format.
      * <p>
      * This method takes the number of ticks and converts it into hours, minutes, and seconds.
-     * It then formats the result into a string that highlights the time components.
+     * It supports both short (e.g., {@code 3h, 25m, 45s}) and long (e.g., {@code 3 hours, 25 minutes, 45 seconds})
+     * formats, and can optionally include formatting markers {@code (highlight)} and {@code (default)}.
+     * <p>
      *
-     * @param ticks the number of ticks to convert
+     * @param ticks       the number of ticks to convert (20 ticks = 1 second)
+     * @param shortFormat {@code true} to use short format like "3h, 25m, 45s"; {@code false} for long format like "3 hours, 25 minutes, 45 seconds"
+     * @param formatMsg   {@code true} to include "(highlight)" and "(default)" formatting markers; {@code false} for plain text
      * @return a formatted string representing the time in hours, minutes, and seconds
      */
-    public static String ticksToTime(int ticks) {
+    public static String ticksToTime(int ticks, boolean shortFormat, boolean formatMsg) {
         int ticksPerSecond = 20;
         int ticksPerMinute = ticksPerSecond * 60;
         int ticksPerHour = ticksPerMinute * 60;
@@ -118,20 +122,44 @@ public class MeteoristUtils {
         int minutes = (ticks % ticksPerHour) / ticksPerMinute;
         int seconds = (ticks % ticksPerMinute) / ticksPerSecond;
 
+        if (hours == 0 && minutes == 0 && seconds == 0) {
+            String highlight = formatMsg ? "(highlight)" : "";
+            String def = formatMsg ? "(default)" : "";
+            if (shortFormat) {
+                return highlight + "0" + def + "s";
+            } else {
+                return highlight + "0" + def + " seconds";
+            }
+        }
+
         StringBuilder result = new StringBuilder();
+        String highlight = formatMsg ? "(highlight)" : "";
+        String def = formatMsg ? "(default)" : "";
 
-        if (hours > 0) {
-            result.append(String.format("(highlight)%d(default) hour%s", hours, hours > 1 ? "s" : ""));
-            if (minutes > 0 || seconds > 0) result.append(", ");
-        }
-
-        if (minutes > 0) {
-            result.append(String.format("(highlight)%d(default) minute%s", minutes, minutes > 1 ? "s" : ""));
-            if (seconds > 0) result.append(", ");
-        }
-
-        if (seconds > 0) {
-            result.append(String.format("(highlight)%d(default) second%s", seconds, seconds > 1 ? "s" : ""));
+        if (shortFormat) {
+            if (hours > 0) {
+                result.append(highlight).append(hours).append(def).append("h");
+                if (minutes > 0 || seconds > 0) result.append(", ");
+            }
+            if (minutes > 0) {
+                result.append(highlight).append(minutes).append(def).append("m");
+                if (seconds > 0) result.append(", ");
+            }
+            if (seconds > 0) {
+                result.append(highlight).append(seconds).append(def).append("s");
+            }
+        } else {
+            if (hours > 0) {
+                result.append(highlight).append(hours).append(def).append(" hour").append(hours > 1 ? "s" : "");
+                if (minutes > 0 || seconds > 0) result.append(", ");
+            }
+            if (minutes > 0) {
+                result.append(highlight).append(minutes).append(def).append(" minute").append(minutes > 1 ? "s" : "");
+                if (seconds > 0) result.append(", ");
+            }
+            if (seconds > 0) {
+                result.append(highlight).append(seconds).append(def).append(" second").append(seconds > 1 ? "s" : "");
+            }
         }
 
         return result.toString();
@@ -145,10 +173,10 @@ public class MeteoristUtils {
      * @return the FOV angle in degrees
      */
     public static float calculateFov(LivingEntity player, Entity target) {
-        Vec3d lookDirection = player.getRotationVec(1.0F);
-        Vec3d targetDirection = target.getEntityPos().subtract(player.getEntityPos()).normalize();
+        Vec3 lookDirection = player.getViewVector(1.0F);
+        Vec3 targetDirection = target.position().subtract(player.position()).normalize();
 
-        return (float) Math.toDegrees(Math.acos(lookDirection.dotProduct(targetDirection)));
+        return (float) Math.toDegrees(Math.acos(lookDirection.dot(targetDirection)));
     }
 
     /**
@@ -157,11 +185,11 @@ public class MeteoristUtils {
      * @param screenHandler The crafting screen handler providing the grid dimensions
      * @param display       The recipe to check
      * @return True if the recipe can be displayed in the current grid
-     * @see CraftingRecipeBookWidget
+     * @see CraftingRecipeBookComponent
      */
-    public static boolean canDisplayRecipe(AbstractCraftingScreenHandler screenHandler, RecipeDisplay display) {
-        int width = screenHandler.getWidth();
-        int height = screenHandler.getHeight();
+    public static boolean canDisplayRecipe(AbstractCraftingMenu screenHandler, RecipeDisplay display) {
+        int width = screenHandler.getGridWidth();
+        int height = screenHandler.getGridHeight();
 
         if (display instanceof ShapedCraftingRecipeDisplay shaped) {
             return width >= shaped.width() && height >= shaped.height();

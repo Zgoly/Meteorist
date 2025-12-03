@@ -2,7 +2,7 @@ package zgoly.meteorist.modules.autologin;
 
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 
 public class BaseAutoLogin implements ISerializable<BaseAutoLogin> {
     Settings settings = new Settings();
@@ -48,16 +48,16 @@ public class BaseAutoLogin implements ISerializable<BaseAutoLogin> {
     );
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         tag.put("settings", settings.toTag());
 
         return tag;
     }
 
     @Override
-    public BaseAutoLogin fromTag(NbtCompound tag) {
-        NbtCompound settingsTag = (NbtCompound) tag.get("settings");
+    public BaseAutoLogin fromTag(CompoundTag tag) {
+        CompoundTag settingsTag = (CompoundTag) tag.get("settings");
         if (settingsTag != null) settings.fromTag(settingsTag);
 
         return this;

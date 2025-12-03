@@ -6,8 +6,8 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import zgoly.meteorist.gui.screens.OfferScreen;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -25,7 +25,7 @@ public class BaseOffer implements ISerializable<BaseOffer> {
     );
 
     public static void reloadParent() {
-        Screen screen = mc.currentScreen;
+        Screen screen = mc.screen;
         if (screen instanceof OfferScreen offerScreen) {
             if (offerScreen.parent instanceof WindowScreen windowScreen) {
                 windowScreen.reload();
@@ -34,16 +34,16 @@ public class BaseOffer implements ISerializable<BaseOffer> {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         tag.put("settings", settings.toTag());
 
         return tag;
     }
 
     @Override
-    public BaseOffer fromTag(NbtCompound tag) {
-        NbtCompound settingsTag = (NbtCompound) tag.get("settings");
+    public BaseOffer fromTag(CompoundTag tag) {
+        CompoundTag settingsTag = (CompoundTag) tag.get("settings");
         if (settingsTag != null) settings.fromTag(settingsTag);
 
         return this;

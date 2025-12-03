@@ -7,13 +7,14 @@ import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.*;
-import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.phys.BlockHitResult;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.mixin.TrapdoorBlockAccessor;
 
@@ -25,8 +26,8 @@ public class AutoInteract extends Module {
     private final Setting<List<Block>> blocks = sgGeneral.add(new BlockListSetting.Builder()
             .name("blocks")
             .description("The block to interact with.")
-            .filter(block -> block instanceof DoorBlock || block instanceof FenceGateBlock || block instanceof TrapdoorBlock || block instanceof ButtonBlock || block instanceof LeverBlock)
-            .defaultValue(Registries.BLOCK.stream().filter(block -> block instanceof DoorBlock || block instanceof FenceGateBlock).toList())
+            .filter(block -> block instanceof DoorBlock || block instanceof FenceGateBlock || block instanceof TrapDoorBlock || block instanceof ButtonBlock || block instanceof LeverBlock)
+            .defaultValue(BuiltInRegistries.BLOCK.stream().filter(block -> block instanceof DoorBlock || block instanceof FenceGateBlock).toList())
             .build()
     );
     private final Setting<Double> innerRange = sgGeneral.add(new DoubleSetting.Builder()
@@ -62,29 +63,29 @@ public class AutoInteract extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        for (BlockPos blockPos : BlockPos.iterateOutwards(mc.player.getBlockPos().add(rangePosOffset.get()), outerRange.get(), outerRange.get(), outerRange.get())) {
-            BlockState blockState = mc.world.getBlockState(blockPos);
+        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition().offset(rangePosOffset.get()), outerRange.get(), outerRange.get(), outerRange.get())) {
+            BlockState blockState = mc.level.getBlockState(blockPos);
 
-            if (blockState.getBlock() instanceof DoorBlock && blockState.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER)
+            if (blockState.getBlock() instanceof DoorBlock && blockState.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER)
                 continue;
-            if (blockState.getBlock() instanceof DoorBlock doorBlock && !doorBlock.getBlockSetType().canOpenByHand())
+            if (blockState.getBlock() instanceof DoorBlock doorBlock && !doorBlock.type().canOpenByHand())
                 continue;
-            if (blockState.getBlock() instanceof TrapdoorBlock trapdoorBlock && !((TrapdoorBlockAccessor) trapdoorBlock).invokeGetBlockSetType().canOpenByHand())
+            if (blockState.getBlock() instanceof TrapDoorBlock trapdoorBlock && !((TrapdoorBlockAccessor) trapdoorBlock).invokeGetBlockSetType().canOpenByHand())
                 continue;
 
             if (blocks.get().contains(blockState.getBlock())) {
-                boolean shouldOpen = PlayerUtils.distanceTo(blockPos.toCenterPos()) <= innerRange.get();
+                boolean shouldOpen = PlayerUtils.distanceTo(blockPos.getCenter()) <= innerRange.get();
                 boolean isOpen = switch (blockState.getBlock()) {
-                    case DoorBlock ignored -> blockState.get(DoorBlock.OPEN);
-                    case FenceGateBlock ignored -> blockState.get(FenceGateBlock.OPEN);
-                    case TrapdoorBlock ignored -> blockState.get(TrapdoorBlock.OPEN);
-                    case ButtonBlock ignored -> blockState.get(ButtonBlock.POWERED);
-                    case LeverBlock ignored -> blockState.get(LeverBlock.POWERED);
+                    case DoorBlock ignored -> blockState.getValue(DoorBlock.OPEN);
+                    case FenceGateBlock ignored -> blockState.getValue(FenceGateBlock.OPEN);
+                    case TrapDoorBlock ignored -> blockState.getValue(TrapDoorBlock.OPEN);
+                    case ButtonBlock ignored -> blockState.getValue(ButtonBlock.POWERED);
+                    case LeverBlock ignored -> blockState.getValue(LeverBlock.POWERED);
                     default -> false;
                 };
 
                 if (shouldOpen != isOpen) {
-                    BlockUtils.interact(new BlockHitResult(Utils.vec3d(blockPos), Direction.UP, blockPos, false), Hand.MAIN_HAND, swingHand.get());
+                    BlockUtils.interact(new BlockHitResult(Utils.vec3d(blockPos), Direction.UP, blockPos, false), InteractionHand.MAIN_HAND, swingHand.get());
                     break;
                 }
             }

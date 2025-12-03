@@ -12,14 +12,14 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.settings.IVisible;
 import meteordevelopment.meteorclient.settings.ItemSetting;
 import meteordevelopment.meteorclient.settings.Setting;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +51,12 @@ public class ItemsSetting extends Setting<List<Item>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
-        NbtList listTag = new NbtList();
+    public CompoundTag save(CompoundTag tag) {
+        ListTag listTag = new ListTag();
 
         for (Item item : get()) {
-            Identifier id = Registries.ITEM.getId(item);
-            listTag.add(NbtString.of(id.toString()));
+            ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+            listTag.add(StringTag.valueOf(id.toString()));
         }
 
         tag.put("value", listTag);
@@ -64,13 +64,13 @@ public class ItemsSetting extends Setting<List<Item>> {
     }
 
     @Override
-    public List<Item> load(NbtCompound tag) {
-        NbtList listTag = tag.getListOrEmpty("value");
+    public List<Item> load(CompoundTag tag) {
+        ListTag listTag = tag.getListOrEmpty("value");
         get().clear();
 
-        for (NbtElement element : listTag) {
+        for (Tag element : listTag) {
             String idStr = element.asString().orElse("");
-            Item item = Registries.ITEM.get(Identifier.of(idStr));
+            Item item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(idStr));
             if (item != Items.AIR) get().add(item);
         }
 
@@ -96,7 +96,7 @@ public class ItemsSetting extends Setting<List<Item>> {
 
             WContainer container = table.add(theme.horizontalList()).expandX().widget();
 
-            WWidget icon = container.add(theme.item(item.getDefaultStack())).widget();
+            WWidget icon = container.add(theme.item(item.getDefaultInstance())).widget();
             icon.tooltip = item.getName().getString();
 
             WButton edit = container.add(theme.button(EDIT)).widget();

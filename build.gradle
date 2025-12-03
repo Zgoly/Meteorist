@@ -11,11 +11,22 @@ base {
 repositories {
     maven {
         name = 'meteor-maven'
-        url = uri('https://maven.meteordev.org/releases')
+        url = 'https://maven.meteordev.org/releases'
     }
     maven {
         name = 'meteor-maven-snapshots'
-        url = uri('https://maven.meteordev.org/snapshots')
+        url = 'https://maven.meteordev.org/snapshots'
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
     }
 }
 
@@ -30,7 +41,7 @@ sourceSets {
 dependencies {
     // Fabric
     minecraft "com.mojang:minecraft:${project.properties['minecraft_version']}"
-    mappings "net.fabricmc:yarn:${project.properties['yarn_mappings']}:v2"
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.properties['loader_version']}"
 
     // Meteor
@@ -38,6 +49,9 @@ dependencies {
 
     // Baritone
     modCompileOnly "meteordevelopment:baritone:${project.properties['baritone_version']}-SNAPSHOT"
+
+    // Minescript
+    modCompileOnly "maven.modrinth:minescript:${project.properties['minescript_version']}"
 
     // JavaParser
     devImplementation 'com.github.javaparser:javaparser-core:3.27.0'

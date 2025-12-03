@@ -10,10 +10,10 @@ import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Heightmap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import zgoly.meteorist.Meteorist;
 
 import java.util.ArrayList;
@@ -132,20 +132,20 @@ public class Grid extends Module {
     }
 
     private BlockPos findNearest() {
-        Iterable<BlockPos> blockPosIterable = BlockPos.iterateOutwards(mc.player.getBlockPos(), switchRange.get(), switchRange.get(), switchRange.get());
+        Iterable<BlockPos> blockPosIterable = BlockPos.withinManhattan(mc.player.blockPosition(), switchRange.get(), switchRange.get(), switchRange.get());
         for (BlockPos blockPos : blockPosIterable) {
-            if (blocks.get().contains(mc.world.getBlockState(blockPos).getBlock())) return blockPos;
+            if (blocks.get().contains(mc.level.getBlockState(blockPos).getBlock())) return blockPos;
         }
         return null;
     }
 
     private BlockPos getHeight(BlockPos blockPos) {
-        while (!mc.world.getBlockState(blockPos).isReplaceable() && blockPos.getY() < mc.world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos.getX(), blockPos.getZ())) {
-            blockPos = blockPos.up(1);
+        while (!mc.level.getBlockState(blockPos).canBeReplaced() && blockPos.getY() < mc.level.getHeight(Heightmap.Types.WORLD_SURFACE, blockPos.getX(), blockPos.getZ())) {
+            blockPos = blockPos.above(1);
         }
 
-        while (mc.world.getBlockState(blockPos.down(1)).isReplaceable() && blockPos.getY() > mc.world.getBottomY()) {
-            blockPos = blockPos.down(1);
+        while (mc.level.getBlockState(blockPos.below(1)).canBeReplaced() && blockPos.getY() > mc.level.getMinY()) {
+            blockPos = blockPos.below(1);
         }
 
         return blockPos;
@@ -165,14 +165,14 @@ public class Grid extends Module {
                 if (filterMode.get() == FilterMode.StaggeredEven && (x & 1) == (z & 1)) continue;
                 if (filterMode.get() == FilterMode.StaggeredOdd && (x & 1) != (z & 1)) continue;
 
-                BlockPos finalBlockPos = centerPos.add(x * gridGap.get(), 0, z * gridGap.get());
+                BlockPos finalBlockPos = centerPos.offset(x * gridGap.get(), 0, z * gridGap.get());
                 if (dynamicHeight.get()) finalBlockPos = getHeight(finalBlockPos);
                 placements.add(finalBlockPos);
             }
         }
 
         for (BlockPos finalBlockPos : placements) {
-            if (place.get() && mc.world.getBlockState(finalBlockPos).isReplaceable() && finalBlockPos.isWithinDistance(mc.player.getBlockPos(), placeRange.get())) {
+            if (place.get() && mc.level.getBlockState(finalBlockPos).canBeReplaced() && finalBlockPos.closerThan(mc.player.blockPosition(), placeRange.get())) {
                 for (Block block : blocks.get()) {
                     FindItemResult item = InvUtils.findInHotbar(block.asItem());
                     BlockUtils.place(finalBlockPos, item, rotate.get(), 0);

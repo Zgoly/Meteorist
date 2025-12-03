@@ -8,22 +8,20 @@ import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import zgoly.meteorist.Meteorist;
-import zgoly.meteorist.mixin.MinecraftClientAccessor;
 import zgoly.meteorist.utils.MeteoristUtils;
 
 import java.util.Set;
@@ -286,7 +284,7 @@ public class ZKillaura extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        if (mc.player.isDead() || mc.world == null) return;
+        if (mc.player.isDeadOrDying() || mc.level == null) return;
 
         HitResult hitResult = MeteoristUtils.getCrosshairTarget(mc.player, range.get(), ignoreWalls.get(), this::entityCheck);
         if (hitResult == null || hitResult.getType() != HitResult.Type.ENTITY) return;
@@ -327,8 +325,8 @@ public class ZKillaura extends Module {
                 if (hitTimer-- > 0) break attackState;
 
                 if (livingEntity.isBlocking()) {
-                    mc.interactionManager.attackEntity(mc.player, livingEntity);
-                    if (swingHand.get()) mc.player.swingHand(Hand.MAIN_HAND);
+                    mc.gameMode.attack(mc.player, livingEntity);
+                    if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND);
 
                     shieldState = ShieldState.SwapBack;
                     swapBackTimer = calculateDelay(swapBackDelayMode.get(), swapBackDelayValue.get(),
@@ -361,22 +359,22 @@ public class ZKillaura extends Module {
 
         HitSpeedMode currHitSpeedMode = hitSpeedMode.get();
         float hitSpeed = currHitSpeedMode == HitSpeedMode.Value ? hitSpeedValue.get().floatValue() : randomHitSpeedFloat;
-        if (currHitSpeedMode != HitSpeedMode.None && (mc.player.getAttackCooldownProgress(hitSpeed) * 17.0F) < 16)
+        if (currHitSpeedMode != HitSpeedMode.None && (mc.player.getAttackStrengthScale(hitSpeed) * 17.0F) < 16)
             return;
 
-        mc.interactionManager.attackEntity(mc.player, livingEntity);
-        if (swingHand.get()) mc.player.swingHand(Hand.MAIN_HAND);
+        mc.gameMode.attack(mc.player, livingEntity);
+        if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND);
 
         if (currOnFallMode == OnFallMode.RandomValue) {
             float min = Math.min(onFallMinRandomValue.get().floatValue(), onFallMaxRandomValue.get().floatValue());
             float max = Math.max(onFallMinRandomValue.get().floatValue(), onFallMaxRandomValue.get().floatValue());
-            randomOnFallFloat = min + mc.world.random.nextFloat() * (max - min);
+            randomOnFallFloat = min + mc.level.random.nextFloat() * (max - min);
         }
 
         if (currHitSpeedMode == HitSpeedMode.RandomValue) {
             float min = Math.min(hitSpeedMinRandomValue.get().floatValue(), hitSpeedMaxRandomValue.get().floatValue());
             float max = Math.max(hitSpeedMinRandomValue.get().floatValue(), hitSpeedMaxRandomValue.get().floatValue());
-            randomHitSpeedFloat = min + mc.world.random.nextFloat() * (max - min);
+            randomHitSpeedFloat = min + mc.level.random.nextFloat() * (max - min);
         }
     }
 
@@ -389,19 +387,20 @@ public class ZKillaura extends Module {
     private int calculateDelay(DelayMode mode, int value, int minRandom, int maxRandom) {
         return switch (mode) {
             case Value -> value;
-            case RandomValue -> minRandom + mc.world.random.nextInt(maxRandom - minRandom + 1);
+            case RandomValue -> minRandom + mc.level.random.nextInt(maxRandom - minRandom + 1);
         };
     }
 
     private boolean entityCheck(Entity entity) {
-        if (entity.equals(mc.player) || entity.equals(((MinecraftClientAccessor) MinecraftClient.getInstance()).getCameraEntity())) return false;
-        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDead()) || !entity.isAlive()) return false;
+        if (entity.equals(mc.player) || entity.equals(mc.getCameraEntity())) return false;
+        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDeadOrDying()) || !entity.isAlive())
+            return false;
 
         if (!entities.get().contains(entity.getType())) return false;
         if (ignoreNamed.get() && entity.hasCustomName()) return false;
 
         if (ignoreTamed.get()) {
-            if (entity instanceof Tameable tameable
+            if (entity instanceof OwnableEntity tameable
                     && tameable.getOwner() != null
                     && tameable.getOwner().equals(mc.player)
             ) return false;
@@ -409,13 +408,13 @@ public class ZKillaura extends Module {
 
         if (ignorePassive.get()) {
             switch (entity) {
-                case EndermanEntity enderman when !enderman.isAngry() -> {
+                case EnderMan enderman when !enderman.isCreepy() -> {
                     return false;
                 }
-                case ZombifiedPiglinEntity piglin when !piglin.isAttacking() -> {
+                case ZombifiedPiglin piglin when !piglin.isAggressive() -> {
                     return false;
                 }
-                case WolfEntity wolf when !wolf.isAttacking() -> {
+                case Wolf wolf when !wolf.isAggressive() -> {
                     return false;
                 }
                 default -> {
@@ -423,13 +422,13 @@ public class ZKillaura extends Module {
             }
         }
 
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof Player player) {
             if (ignoreCreative.get() && player.isCreative()) return false;
             if (ignoreFriends.get() && !Friends.get().shouldAttack(player)) return false;
             if (shieldMode.get() == ShieldMode.Ignore && player.isBlocking()) return false;
         }
 
-        if (entity instanceof AnimalEntity animal) {
+        if (entity instanceof Animal animal) {
             return switch (mobAgeFilter.get()) {
                 case Baby -> animal.isBaby();
                 case Adult -> !animal.isBaby();

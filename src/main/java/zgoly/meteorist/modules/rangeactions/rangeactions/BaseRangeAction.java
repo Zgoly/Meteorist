@@ -4,8 +4,8 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
 import meteordevelopment.meteorclient.utils.entity.SortPriority;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.EntityType;
 
 import java.util.Set;
 
@@ -105,15 +105,15 @@ public class BaseRangeAction implements ISerializable<BaseRangeAction> {
     );
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         tag.put("settings", settings.toTag());
         return tag;
     }
 
     @Override
-    public BaseRangeAction fromTag(NbtCompound tag) {
-        NbtCompound settingsTag = (NbtCompound) tag.get("settings");
+    public BaseRangeAction fromTag(CompoundTag tag) {
+        CompoundTag settingsTag = (CompoundTag) tag.get("settings");
         if (settingsTag != null) settings.fromTag(settingsTag);
         return this;
     }

@@ -47,7 +47,7 @@ public class JumpJump extends Module {
     @EventHandler
     private void onKey(KeyEvent event) {
         if (event.action != KeyAction.Press) return;
-        if (mc.options.jumpKey.matchesKey(event.input)) mult = 0;
+        if (mc.options.keyJump.matches(event.input)) mult = 0;
     }
 
     @EventHandler
@@ -56,7 +56,7 @@ public class JumpJump extends Module {
             if (timer >= delay.get()) {
                 mult++;
                 mc.player.fallDistance = 0;
-                mc.player.jump();
+                mc.player.jumpFromGround();
                 timer = 0;
             } else timer++;
         }

@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import zgoly.meteorist.modules.instructions.Instructions;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
 
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class InstructionArgumentType implements ArgumentType<String> {
-    private static final DynamicCommandExceptionType UNKNOWN_INSTRUCTION_EXCEPTION = new DynamicCommandExceptionType(name -> Text.of("Instruction \"" + name + "\" is not found"));
+    private static final DynamicCommandExceptionType UNKNOWN_INSTRUCTION_EXCEPTION = new DynamicCommandExceptionType(name -> Component.nullToEmpty("Instruction \"" + name + "\" is not found"));
 
     public static InstructionArgumentType instruction() {
         return new InstructionArgumentType();

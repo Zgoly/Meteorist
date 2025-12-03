@@ -1,7 +1,7 @@
 package zgoly.meteorist.utils.config;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 
 import java.io.File;
@@ -21,7 +21,7 @@ public class MeteoristConfig {
      * @param fileName   The name of the file (without extension).
      * @param data       The data to be saved.
      */
-    public static void save(String folderName, String fileName, NbtCompound data) {
+    public static void save(String folderName, String fileName, CompoundTag data) {
         String gameDir = FabricLoader.getInstance().getGameDir().toString();
         String path = Paths.get(gameDir, MOD_ID, removeInvalidChars(folderName), fileName + ".nbt").toString();
 
@@ -44,10 +44,10 @@ public class MeteoristConfig {
      * @param fileName   the file name without the extension
      * @return the loaded NBTCompound or an empty one if the file does not exist
      */
-    public static NbtCompound load(String folderName, String fileName) {
+    public static CompoundTag load(String folderName, String fileName) {
         String gameDir = FabricLoader.getInstance().getGameDir().toString();
         String path = Paths.get(gameDir, MOD_ID, removeInvalidChars(folderName), fileName + ".nbt").toString();
-        NbtCompound data = new NbtCompound();
+        CompoundTag data = new CompoundTag();
 
         try {
             File file = new File(path);

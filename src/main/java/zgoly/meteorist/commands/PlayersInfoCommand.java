@@ -3,9 +3,9 @@ package zgoly.meteorist.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import meteordevelopment.meteorclient.commands.Command;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.command.CommandSource;
-import net.minecraft.util.AssetInfo;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.ClientAsset;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
@@ -21,7 +21,7 @@ public class PlayersInfoCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<CommandSource> builder) {
+    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
         builder.then(literal("copy")
                 .executes(this::copyPlayersInfo)
                 .then(argument("properties", PlayerPropertiesArgumentType.create()).executes(this::copyPlayersInfo)));
@@ -30,7 +30,7 @@ public class PlayersInfoCommand extends Command {
                 .then(argument("properties", PlayerPropertiesArgumentType.create()).executes(this::savePlayersInfo)));
     }
 
-    private int savePlayersInfo(CommandContext<CommandSource> context) {
+    private int savePlayersInfo(CommandContext<SharedSuggestionProvider> context) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             PointerBuffer filterBuffer = stack.mallocPointer(1);
             filterBuffer.put(stack.UTF8("*.csv"));
@@ -50,13 +50,13 @@ public class PlayersInfoCommand extends Command {
         return SINGLE_SUCCESS;
     }
 
-    private int copyPlayersInfo(CommandContext<CommandSource> context) {
-        mc.keyboard.setClipboard(getPlayersInfo(context));
+    private int copyPlayersInfo(CommandContext<SharedSuggestionProvider> context) {
+        mc.keyboardHandler.setClipboard(getPlayersInfo(context));
         info("Players info was copied to clipboard");
         return SINGLE_SUCCESS;
     }
 
-    private String getPlayersInfo(CommandContext<CommandSource> context) {
+    private String getPlayersInfo(CommandContext<SharedSuggestionProvider> context) {
         List<String> properties;
 
         try {
@@ -67,11 +67,11 @@ public class PlayersInfoCommand extends Command {
 
         StringBuilder info = new StringBuilder();
         info.append(String.join(",", properties.isEmpty() ? PlayerPropertiesArgumentType.PROPERTIES : properties)).append("\n");
-        if (mc.getNetworkHandler() != null) {
-            List<PlayerListEntry> sortedPlayerList = mc.getNetworkHandler().getPlayerList().stream()
+        if (mc.getConnection() != null) {
+            List<PlayerInfo> sortedPlayerList = mc.getConnection().getOnlinePlayers().stream()
                     .sorted((p1, p2) -> p1.getProfile().name().compareToIgnoreCase(p2.getProfile().name()))
                     .toList();
-            for (PlayerListEntry player : sortedPlayerList) {
+            for (PlayerInfo player : sortedPlayerList) {
                 info.append(String.join(",", getProperties(player, properties))).append("\n");
             }
         }
@@ -79,7 +79,7 @@ public class PlayersInfoCommand extends Command {
         return info.toString();
     }
 
-    private List<String> getProperties(PlayerListEntry player, List<String> properties) {
+    private List<String> getProperties(PlayerInfo player, List<String> properties) {
         List<String> finalString = new ArrayList<>();
         for (String property : properties) {
             switch (property.toLowerCase()) {
@@ -87,7 +87,7 @@ public class PlayersInfoCommand extends Command {
                 case "uuid" -> finalString.add(String.valueOf(player.getProfile().id()));
                 case "gamemode" -> finalString.add(String.valueOf(player.getGameMode()));
                 case "skin_url" -> {
-                    String string2 = player.getSkinTextures().body() instanceof AssetInfo.SkinAssetInfo skinAssetInfo ? skinAssetInfo.url() : null;
+                    String string2 = player.getSkin().body() instanceof ClientAsset.DownloadedTexture skinAssetInfo ? skinAssetInfo.url() : null;
                     finalString.add(string2);
                 }
                 case "latency" -> finalString.add(String.valueOf(player.getLatency()));

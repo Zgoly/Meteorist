@@ -3,18 +3,18 @@ package zgoly.meteorist.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.commands.arguments.PlayerArgumentType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.text.Text;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 
 public class DataCommand extends Command {
     public DataCommand() {
@@ -22,13 +22,13 @@ public class DataCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<CommandSource> builder) {
+    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
         builder.executes(context -> getDataOrStates(false));
         buildCommand(builder, "get", false);
         buildCommand(builder, "copy", true);
     }
 
-    private void buildCommand(LiteralArgumentBuilder<CommandSource> builder, String commandName, boolean copy) {
+    private void buildCommand(LiteralArgumentBuilder<SharedSuggestionProvider> builder, String commandName, boolean copy) {
         builder.then(literal(commandName)
                 .executes(context -> getDataOrStates(copy))
                 .then(literal("player")
@@ -46,12 +46,12 @@ public class DataCommand extends Command {
 
     public int getEntityData(Entity entity, boolean copy) {
         // NBT entity text
-        NbtCompound nbt = NbtPredicate.entityToNbt(entity);
+        CompoundTag nbt = NbtPredicate.getEntityTagToCompare(entity);
         if (copy) {
-            mc.keyboard.setClipboard(nbt.asString().orElse(""));
+            mc.keyboardHandler.setClipboard(nbt.asString().orElse(""));
             info("Entity data was copied to your clipboard");
         } else {
-            info(Text.literal("Entity data: ").append(NbtHelper.toPrettyPrintedText(nbt)));
+            info(Component.literal("Entity data: ").append(NbtUtils.toPrettyComponent(nbt)));
         }
         return SINGLE_SUCCESS;
     }
@@ -77,19 +77,19 @@ public class DataCommand extends Command {
     }
 
     public WarningType getData(boolean copy) {
-        if (mc.crosshairTarget.getType() == HitResult.Type.ENTITY) {
-            getEntityData(((EntityHitResult) mc.crosshairTarget).getEntity(), copy);
-        } else if (mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockPos = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
-            BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
+        if (mc.hitResult.getType() == HitResult.Type.ENTITY) {
+            getEntityData(((EntityHitResult) mc.hitResult).getEntity(), copy);
+        } else if (mc.hitResult.getType() == HitResult.Type.BLOCK) {
+            BlockPos blockPos = ((BlockHitResult) mc.hitResult).getBlockPos();
+            BlockEntity blockEntity = mc.level.getBlockEntity(blockPos);
             if (blockEntity != null) {
                 // NBT block entity text
-                NbtCompound nbt = blockEntity.createNbtWithIdentifyingData(mc.world.getRegistryManager());
+                CompoundTag nbt = blockEntity.saveWithFullMetadata(mc.level.registryAccess());
                 if (copy) {
-                    mc.keyboard.setClipboard(nbt.asString().orElse(""));
+                    mc.keyboardHandler.setClipboard(nbt.asString().orElse(""));
                     info("Block data was copied to your clipboard");
                 } else {
-                    info(Text.literal("Block data: ").append(NbtHelper.toPrettyPrintedText(nbt)));
+                    info(Component.literal("Block data: ").append(NbtUtils.toPrettyComponent(nbt)));
                 }
             } else {
                 return WarningType.NOT_A_BLOCK_ENTITY;
@@ -101,18 +101,18 @@ public class DataCommand extends Command {
     }
 
     public WarningType getStates(boolean copy) {
-        if (mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockPos = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
-            BlockState blockState = mc.world.getBlockState(blockPos);
+        if (mc.hitResult.getType() == HitResult.Type.BLOCK) {
+            BlockPos blockPos = ((BlockHitResult) mc.hitResult).getBlockPos();
+            BlockState blockState = mc.level.getBlockState(blockPos);
             // NBT block states text
-            NbtCompound nbt = NbtHelper.fromBlockState(blockState);
+            CompoundTag nbt = NbtUtils.writeBlockState(blockState);
             if (copy) {
-                mc.keyboard.setClipboard(nbt.asString().orElse(""));
+                mc.keyboardHandler.setClipboard(nbt.asString().orElse(""));
                 info("Block states were copied to your clipboard");
             } else {
-                info(Text.literal("Block states: ").append(NbtHelper.toPrettyPrintedText(nbt)));
+                info(Component.literal("Block states: ").append(NbtUtils.toPrettyComponent(nbt)));
             }
-        } else if (mc.crosshairTarget.getType() == HitResult.Type.ENTITY) {
+        } else if (mc.hitResult.getType() == HitResult.Type.ENTITY) {
             return WarningType.NOT_A_BLOCK;
         } else {
             return WarningType.NO_TARGET;

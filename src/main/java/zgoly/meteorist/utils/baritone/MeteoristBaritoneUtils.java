@@ -6,8 +6,8 @@ import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalComposite;
 import baritone.api.pathing.goals.GoalNear;
 import meteordevelopment.meteorclient.pathing.BaritoneUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class MeteoristBaritoneUtils {
         }
 
         public void setGoalNear(List<Entity> entities, int range) {
-            baritone.getCustomGoalProcess().setGoalAndPath(new GoalComposite(entities.stream().map(entity -> new GoalNear(entity.getBlockPos(), range)).toArray(Goal[]::new)));
+            baritone.getCustomGoalProcess().setGoalAndPath(new GoalComposite(entities.stream().map(entity -> new GoalNear(entity.blockPosition(), range)).toArray(Goal[]::new)));
         }
     }
 

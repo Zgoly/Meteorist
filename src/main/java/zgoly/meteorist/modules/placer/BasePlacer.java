@@ -4,11 +4,11 @@ import meteordevelopment.meteorclient.gui.WindowScreen;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import zgoly.meteorist.gui.screens.PlacerScreen;
 
 import java.util.List;
@@ -169,7 +169,7 @@ public class BasePlacer implements ISerializable<BasePlacer> {
     }
 
     public static void reloadParent() {
-        Screen screen = mc.currentScreen;
+        Screen screen = mc.screen;
         if (screen instanceof PlacerScreen placerScreen) {
             if (placerScreen.parent instanceof WindowScreen windowScreen) {
                 windowScreen.reload();
@@ -178,16 +178,16 @@ public class BasePlacer implements ISerializable<BasePlacer> {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         tag.put("settings", settings.toTag());
 
         return tag;
     }
 
     @Override
-    public BasePlacer fromTag(NbtCompound tag) {
-        NbtCompound settingsTag = (NbtCompound) tag.get("settings");
+    public BasePlacer fromTag(CompoundTag tag) {
+        CompoundTag settingsTag = (CompoundTag) tag.get("settings");
         if (settingsTag != null) settings.fromTag(settingsTag);
 
         return this;

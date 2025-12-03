@@ -13,10 +13,10 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.config.MeteoristConfig;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
@@ -132,13 +132,13 @@ public class AutoLogin extends Module {
         debugLogger = new DebugLogger(this, settings);
     }
 
-    public NbtCompound toTag() {
-        NbtCompound superTag = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag superTag = super.toTag();
 
-        NbtCompound tag = new NbtCompound();
-        NbtList list = new NbtList();
+        CompoundTag tag = new CompoundTag();
+        ListTag list = new ListTag();
         for (BaseAutoLogin autoLogin : autoLogins) {
-            NbtCompound mTag = new NbtCompound();
+            CompoundTag mTag = new CompoundTag();
             mTag.put("autoLogin", autoLogin.toTag());
 
             list.add(mTag);
@@ -149,17 +149,17 @@ public class AutoLogin extends Module {
         return superTag;
     }
 
-    public Module fromTag(NbtCompound superTag) {
-        NbtCompound tag = MeteoristConfig.load(this.name, "default");
+    public Module fromTag(CompoundTag superTag) {
+        CompoundTag tag = MeteoristConfig.load(this.name, "default");
 
         autoLogins.clear();
-        NbtList list = tag.getListOrEmpty("autoLogins");
+        ListTag list = tag.getListOrEmpty("autoLogins");
 
-        for (NbtElement tagII : list) {
-            NbtCompound tagI = (NbtCompound) tagII;
+        for (Tag tagII : list) {
+            CompoundTag tagI = (CompoundTag) tagII;
 
             BaseAutoLogin autoLogin = new BaseAutoLogin();
-            NbtCompound autoLoginTag = (NbtCompound) tagI.get("autoLogin");
+            CompoundTag autoLoginTag = (CompoundTag) tagI.get("autoLogin");
 
             if (autoLoginTag != null) autoLogin.fromTag(autoLoginTag);
 
@@ -261,11 +261,11 @@ public class AutoLogin extends Module {
         }
 
         if (shouldContinueProcessing) {
-            if (loginStartTime == -1) loginStartTime = mc.world.getTime();
+            if (loginStartTime == -1) loginStartTime = mc.level.getGameTime();
             boolean hasRemainingAutoLogins = false;
             for (BaseAutoLogin autoLogin : List.copyOf(autoLogins)) {
                 // Check delay
-                if (mc.world.getTime() < loginStartTime + autoLogin.delay.get()) {
+                if (mc.level.getGameTime() < loginStartTime + autoLogin.delay.get()) {
                     hasRemainingAutoLogins = true;
                     continue;
                 }
@@ -273,8 +273,8 @@ public class AutoLogin extends Module {
 
                 // Check execution mode
                 BaseAutoLogin.ExecutionMode executionMode = autoLogin.executionMode.get();
-                if (executionMode == BaseAutoLogin.ExecutionMode.Multiplayer && mc.isInSingleplayer()) continue;
-                if (executionMode == BaseAutoLogin.ExecutionMode.Singleplayer && !mc.isInSingleplayer()) continue;
+                if (executionMode == BaseAutoLogin.ExecutionMode.Multiplayer && mc.isLocalServer()) continue;
+                if (executionMode == BaseAutoLogin.ExecutionMode.Singleplayer && !mc.isLocalServer()) continue;
                 debugLogger.info("Execution mode check passed");
 
                 // Check server ip
@@ -287,7 +287,7 @@ public class AutoLogin extends Module {
                 // Check username
                 String usernameFilter = autoLogin.usernameFilter.get();
                 if (!usernameFilter.isEmpty()) {
-                    if (!mc.getSession().getUsername().equals(usernameFilter)) continue;
+                    if (!mc.getUser().getName().equals(usernameFilter)) continue;
                     debugLogger.info("Username check passed");
                 }
 
@@ -307,7 +307,7 @@ public class AutoLogin extends Module {
 
     @EventHandler
     private void onPacketSend(PacketEvent.Send event) {
-        if (autoSave.get() && event.packet instanceof CommandExecutionC2SPacket(String command)) {
+        if (autoSave.get() && event.packet instanceof ServerboundChatCommandPacket(String command)) {
             if (ignoreSelf.get() && isSendingChatMessage) return;
 
             String[] args = command.split(" ");
@@ -317,8 +317,9 @@ public class AutoLogin extends Module {
                 autoLogin.loginCommand.set(loginCommand.get() + " " + args[1]);
 
                 // Save username and server ip
-                if (saveUsername.get()) autoLogin.usernameFilter.set(mc.getSession().getUsername());
-                if (saveServerIp.get() && mc.getServer() != null) autoLogin.serverIpFilter.set(Utils.getWorldName());
+                if (saveUsername.get()) autoLogin.usernameFilter.set(mc.getUser().getName());
+                if (saveServerIp.get() && mc.getSingleplayerServer() != null)
+                    autoLogin.serverIpFilter.set(Utils.getWorldName());
 
                 if (!exists(autoLogin)) autoLogins.add(autoLogin);
             }

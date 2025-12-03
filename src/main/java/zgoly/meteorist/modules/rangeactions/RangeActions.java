@@ -19,20 +19,18 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.player.Player;
 import zgoly.meteorist.Meteorist;
-import zgoly.meteorist.mixin.MinecraftClientAccessor;
 import zgoly.meteorist.modules.rangeactions.rangeactions.BaseRangeAction;
 import zgoly.meteorist.modules.rangeactions.rangeactions.CommandsRangeAction;
 import zgoly.meteorist.modules.rangeactions.rangeactions.DespawnerRangeAction;
@@ -61,12 +59,12 @@ public class RangeActions extends Module {
         super(Meteorist.CATEGORY, "range-actions", "Combined functionality of different range actions.");
     }
 
-    public NbtCompound toTag() {
-        NbtCompound tag = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag tag = super.toTag();
 
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         for (BaseRangeAction rangeAction : rangeActions) {
-            NbtCompound mTag = new NbtCompound();
+            CompoundTag mTag = new CompoundTag();
             mTag.putString("type", rangeAction.getTypeName());
             mTag.put("rangeAction", rangeAction.toTag());
 
@@ -76,20 +74,20 @@ public class RangeActions extends Module {
         return tag;
     }
 
-    public Module fromTag(NbtCompound tag) {
+    public Module fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
         rangeActions.clear();
 
-        NbtList list = tag.getListOrEmpty("rangeActions");
+        ListTag list = tag.getListOrEmpty("rangeActions");
 
-        for (NbtElement tagII : list) {
-            NbtCompound tagI = (NbtCompound) tagII;
-            String type = tagI.getString("type", "");
+        for (Tag tagII : list) {
+            CompoundTag tagI = (CompoundTag) tagII;
+            String type = tagI.getStringOr("type", "");
             BaseRangeAction rangeAction = factory.createRangeAction(type);
 
             if (rangeAction != null) {
-                NbtCompound rangeActionTag = (NbtCompound) tagI.get("rangeAction");
+                CompoundTag rangeActionTag = (CompoundTag) tagI.get("rangeAction");
                 if (rangeActionTag != null) rangeAction.fromTag(rangeActionTag);
                 rangeActions.add(rangeAction);
             }
@@ -212,9 +210,9 @@ public class RangeActions extends Module {
                         shouldSneak = true;
                 }
                 case DespawnerRangeAction despawnerAction -> {
-                    if (despawnerAction.checkRoof.get() && !mc.world.isSkyVisible(mc.player.getBlockPos().up()))
+                    if (despawnerAction.checkRoof.get() && !mc.level.canSeeSky(mc.player.blockPosition().above()))
                         continue;
-                    mc.player.setVelocity(mc.player.getVelocity().add(0, despawnerAction.upVelocity.get(), 0));
+                    mc.player.setDeltaMovement(mc.player.getDeltaMovement().add(0, despawnerAction.upVelocity.get(), 0));
                 }
                 case CommandsRangeAction commandsAction -> {
                     int delay = commandsAction.delay.get();
@@ -244,12 +242,13 @@ public class RangeActions extends Module {
             }
         }
 
-        if (shouldSneak) mc.options.sneakKey.setPressed(true);
+        if (shouldSneak) mc.options.keyShift.setDown(true);
     }
 
     private boolean entityCheck(Entity entity, BaseRangeAction rangeAction) {
-        if (entity.equals(mc.player) || entity.equals(((MinecraftClientAccessor) MinecraftClient.getInstance()).getCameraEntity())) return false;
-        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDead()) || !entity.isAlive()) return false;
+        if (entity.equals(mc.player) || entity.equals(mc.getCameraEntity())) return false;
+        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDeadOrDying()) || !entity.isAlive())
+            return false;
 
         if (PlayerUtils.isWithin(entity, rangeAction.rangeFrom.get())
                 || !PlayerUtils.isWithin(entity, rangeAction.rangeTo.get())) return false;
@@ -258,7 +257,7 @@ public class RangeActions extends Module {
         if (rangeAction.ignoreNamed.get() && entity.hasCustomName()) return false;
 
         if (rangeAction.ignoreTamed.get()) {
-            if (entity instanceof Tameable tameable
+            if (entity instanceof OwnableEntity tameable
                     && tameable.getOwner() != null
                     && tameable.getOwner().equals(mc.player)) {
                 return false;
@@ -267,13 +266,13 @@ public class RangeActions extends Module {
 
         if (rangeAction.ignorePassive.get()) {
             switch (entity) {
-                case EndermanEntity enderman when !enderman.isAngry() -> {
+                case EnderMan enderman when !enderman.isCreepy() -> {
                     return false;
                 }
-                case ZombifiedPiglinEntity piglin when !piglin.isAttacking() -> {
+                case ZombifiedPiglin piglin when !piglin.isAggressive() -> {
                     return false;
                 }
-                case WolfEntity wolf when !wolf.isAttacking() -> {
+                case Wolf wolf when !wolf.isAggressive() -> {
                     return false;
                 }
                 default -> {
@@ -281,13 +280,13 @@ public class RangeActions extends Module {
             }
         }
 
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof Player player) {
             if (rangeAction.ignoreCreative.get() && player.isCreative()) return false;
             if (rangeAction.ignoreFriends.get() && !Friends.get().shouldAttack(player)) return false;
             if (rangeAction.ignoreShield.get() && player.isBlocking()) return false;
         }
 
-        if (entity instanceof AnimalEntity animal) {
+        if (entity instanceof Animal animal) {
             return switch (rangeAction.mobAgeFilter.get()) {
                 case Baby -> animal.isBaby();
                 case Adult -> !animal.isBaby();

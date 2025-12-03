@@ -10,8 +10,8 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.modules.instructions.instructions.BaseInstruction;
 import zgoly.meteorist.modules.instructions.instructions.CommandInstruction;
@@ -37,12 +37,12 @@ public class Instructions extends Module {
         super(Meteorist.CATEGORY, "instructions", "Runs commands with different delays and number of cycles. Supports Starscript.");
     }
 
-    public NbtCompound toTag() {
-        NbtCompound tag = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag tag = super.toTag();
 
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         for (BaseInstruction instruction : instructions) {
-            NbtCompound mTag = new NbtCompound();
+            CompoundTag mTag = new CompoundTag();
             mTag.putString("type", instruction.getTypeName());
             mTag.put("instruction", instruction.toTag());
 
@@ -52,7 +52,7 @@ public class Instructions extends Module {
         return tag;
     }
 
-    public Module fromTag(NbtCompound tag) {
+    public Module fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
         instructions.clear();
@@ -149,7 +149,7 @@ public class Instructions extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Post event) {
-        int currentTick = (int) mc.world.getTime();
+        int currentTick = (int) mc.level.getGameTime();
         if (startTick == -1) startTick = currentTick;
 
         Map<Integer, List<String>> map = new HashMap<>();

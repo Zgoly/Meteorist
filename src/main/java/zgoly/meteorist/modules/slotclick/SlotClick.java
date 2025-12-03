@@ -15,15 +15,15 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.nbt.*;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Pair;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.gui.screens.SlotSelectionScreen;
 import zgoly.meteorist.modules.slotclick.selections.*;
@@ -69,12 +69,12 @@ public class SlotClick extends Module {
         return (start > end) ? list.reversed() : list;
     }
 
-    public NbtCompound toTag() {
-        NbtCompound tag = super.toTag();
+    public CompoundTag toTag() {
+        CompoundTag tag = super.toTag();
 
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         for (BaseSlotSelection slotSelection : slotSelections) {
-            NbtCompound mTag = new NbtCompound();
+            CompoundTag mTag = new CompoundTag();
             mTag.putString("type", slotSelection.getTypeName());
             mTag.put("slotSelection", slotSelection.toTag());
 
@@ -84,20 +84,20 @@ public class SlotClick extends Module {
         return tag;
     }
 
-    public Module fromTag(NbtCompound tag) {
+    public Module fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
         slotSelections.clear();
-        NbtList list = tag.getListOrEmpty("slotSelections");
+        ListTag list = tag.getListOrEmpty("slotSelections");
 
-        for (NbtElement tagII : list) {
-            NbtCompound tagI = (NbtCompound) tagII;
+        for (Tag tagII : list) {
+            CompoundTag tagI = (CompoundTag) tagII;
 
-            String type = tagI.getString("type", "");
+            String type = tagI.getStringOr("type", "");
             BaseSlotSelection slotSelection = factory.createSelection(type);
 
             if (slotSelection != null) {
-                NbtCompound slotSelectionTag = (NbtCompound) tagI.get("slotSelection");
+                CompoundTag slotSelectionTag = (CompoundTag) tagI.get("slotSelection");
                 if (slotSelectionTag != null) slotSelection.fromTag(slotSelectionTag);
 
                 slotSelections.add(slotSelection);
@@ -246,7 +246,7 @@ public class SlotClick extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Pre event) {
-        int currentTick = (int) mc.world.getTime();
+        int currentTick = (int) mc.level.getGameTime();
         if (startTick == -1) startTick = currentTick;
 
         Map<Integer, List<BaseSlotSelection>> map = new HashMap<>();
@@ -275,8 +275,8 @@ public class SlotClick extends Module {
                 for (BaseSlotSelection baseSlotSelection : entry.getValue()) {
                     if (baseSlotSelection instanceof DefaultSlotSelection defaultSlotSelection) {
                         debugLogger.info("Slot selection: (highlight)%s", defaultSlotSelection.getTypeName());
-                        Screen screen = mc.currentScreen;
-                        ScreenHandler screenHandler = mc.player.currentScreenHandler;
+                        Screen screen = mc.screen;
+                        AbstractContainerMenu screenHandler = mc.player.containerMenu;
 
                         if (defaultSlotSelection.checkContainerType.get()) {
                             debugLogger.info("Checking container type...");
@@ -331,28 +331,28 @@ public class SlotClick extends Module {
                             }
 
                             try {
-                                ItemStack itemStack = screenHandler.getSlot(slot).getStack();
+                                ItemStack itemStack = screenHandler.getSlot(slot).getItem();
                                 if (!itemStack.isEmpty()) {
-                                    DataResult<NbtElement> dataResult = ItemStack.CODEC.encodeStart(mc.player.getRegistryManager().getOps(NbtOps.INSTANCE), itemStack);
+                                    DataResult<Tag> dataResult = ItemStack.CODEC.encodeStart(mc.player.registryAccess().createSerializationContext(NbtOps.INSTANCE), itemStack);
                                     if (dataResult.result().isPresent()) {
-                                        NbtElement element = dataResult.result().get();
-                                        debugLogger.info(Text.literal("Item data: ").formatted(Formatting.GRAY).append(NbtHelper.toPrettyPrintedText(element)));
+                                        Tag element = dataResult.result().get();
+                                        debugLogger.info(Component.literal("Item data: ").withStyle(ChatFormatting.GRAY).append(NbtUtils.toPrettyComponent(element)));
 
                                         boolean matchedAny = false;
                                         boolean matchedAll = true;
 
-                                        for (Pair<String, String> pair : defaultSlotSelection.slotItemData.get()) {
+                                        for (Tuple<String, String> pair : defaultSlotSelection.slotItemData.get()) {
                                             try {
-                                                Pattern pattern = Pattern.compile(pair.getRight());
-                                                NbtElement value = NbtPathArgumentType.NbtPath.parse(pair.getLeft()).get(element).getFirst();
-                                                debugLogger.info(Text.literal("Found element for path \"" + pair.getLeft() + "\": ").formatted(Formatting.GRAY).append(NbtHelper.toPrettyPrintedText(value)));
+                                                Pattern pattern = Pattern.compile(pair.getB());
+                                                Tag value = NbtPathArgument.NbtPath.of(pair.getA()).get(element).getFirst();
+                                                debugLogger.info(Component.literal("Found element for path \"" + pair.getA() + "\": ").withStyle(ChatFormatting.GRAY).append(NbtUtils.toPrettyComponent(value)));
 
                                                 if (pattern.matcher(value.toString()).find()) {
                                                     matchedAny = true;
-                                                    debugLogger.info("Pattern (highlight)%s(default) matched!", pair.getRight());
+                                                    debugLogger.info("Pattern (highlight)%s(default) matched!", pair.getB());
                                                 } else {
                                                     matchedAll = false;
-                                                    debugLogger.warning("Pattern (highlight)%s(default) not matched!", pair.getRight());
+                                                    debugLogger.warning("Pattern (highlight)%s(default) not matched!", pair.getB());
                                                 }
                                             } catch (Exception e) {
                                                 debugLogger.error(e.getMessage());
@@ -372,17 +372,17 @@ public class SlotClick extends Module {
                             }
                         }
 
-                        if (mc.interactionManager != null && screenHandler != null) {
+                        if (mc.gameMode != null && screenHandler != null) {
                             try {
                                 switch (defaultSlotSelection) {
                                     case SingleSlotSelection singleSlotSelection ->
-                                            mc.interactionManager.clickSlot(screenHandler.syncId, singleSlotSelection.slot.get(), singleSlotSelection.button.get(), singleSlotSelection.action.get(), mc.player);
+                                            mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, singleSlotSelection.slot.get(), singleSlotSelection.button.get(), singleSlotSelection.action.get(), mc.player);
                                     case SwapSlotSelection swapSlotSelection -> {
-                                        mc.interactionManager.clickSlot(screenHandler.syncId, swapSlotSelection.fromSlot.get(), 0, SlotActionType.PICKUP, mc.player);
-                                        mc.interactionManager.clickSlot(screenHandler.syncId, swapSlotSelection.toSlot.get(), 0, SlotActionType.PICKUP, mc.player);
+                                        mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, swapSlotSelection.fromSlot.get(), 0, ClickType.PICKUP, mc.player);
+                                        mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, swapSlotSelection.toSlot.get(), 0, ClickType.PICKUP, mc.player);
                                     }
                                     case SlotRangeSelection slotRangeSelection ->
-                                            mc.interactionManager.clickSlot(screenHandler.syncId, slotRangeSelection.calculatedSlot, slotRangeSelection.button.get(), slotRangeSelection.action.get(), mc.player);
+                                            mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, slotRangeSelection.calculatedSlot, slotRangeSelection.button.get(), slotRangeSelection.action.get(), mc.player);
                                     default -> {
                                     }
                                 }

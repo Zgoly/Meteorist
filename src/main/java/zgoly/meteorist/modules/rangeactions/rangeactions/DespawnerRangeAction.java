@@ -4,7 +4,7 @@ import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.DoubleSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 
 import java.util.HashSet;
 import java.util.Set;

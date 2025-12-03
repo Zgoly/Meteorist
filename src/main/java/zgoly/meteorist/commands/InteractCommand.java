@@ -4,16 +4,16 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.systems.modules.player.Reach;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
-import net.minecraft.block.Block;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.ItemStackArgumentType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class InteractCommand extends Command {
     public InteractCommand() {
@@ -21,13 +21,13 @@ public class InteractCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("block", ItemStackArgumentType.itemStack(REGISTRY_ACCESS)).executes(context -> {
-            Item item = ItemStackArgumentType.getItemStackArgument(context, "block").getItem();
+    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
+        builder.then(argument("block", ItemArgument.item(REGISTRY_ACCESS)).executes(context -> {
+            Item item = ItemArgument.getItem(context, "block").getItem();
             if (item instanceof BlockItem blockItem) {
                 BlockPos blockPos = findClosestBlock(blockItem.getBlock());
                 if (blockPos != null) {
-                    BlockUtils.interact(new BlockHitResult(Vec3d.ofCenter(blockPos), Direction.UP, blockPos, true), Hand.MAIN_HAND, true);
+                    BlockUtils.interact(new BlockHitResult(Vec3.atCenterOf(blockPos), Direction.UP, blockPos, true), InteractionHand.MAIN_HAND, true);
                 } else {
                     error("No block found");
                 }
@@ -40,8 +40,8 @@ public class InteractCommand extends Command {
 
     public BlockPos findClosestBlock(Block block) {
         int reach = (int) new Reach().blockReach();
-        for (BlockPos pos : BlockPos.iterateOutwards(mc.player.getBlockPos(), reach, reach, reach)) {
-            if (mc.world.getBlockState(pos).getBlock() == block) {
+        for (BlockPos pos : BlockPos.withinManhattan(mc.player.blockPosition(), reach, reach, reach)) {
+            if (mc.level.getBlockState(pos).getBlock() == block) {
                 return pos;
             }
         }

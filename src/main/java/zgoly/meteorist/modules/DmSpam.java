@@ -7,7 +7,7 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.gui.screens.DisconnectedScreen;
 import org.apache.commons.lang3.RandomStringUtils;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.misc.DebugLogger;
@@ -141,7 +141,7 @@ public class DmSpam extends Module {
 
     @Override
     public void onActivate() {
-        currentTick = mc.world.getTime();
+        currentTick = mc.level.getGameTime();
     }
 
     @EventHandler
@@ -158,20 +158,20 @@ public class DmSpam extends Module {
     // I'm not sure if this is the best way to do it, but it seems to work like a charm
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        List<UUID> allPlayerUUIDs = new ArrayList<>(mc.getNetworkHandler().getPlayerUuids());
+        List<UUID> allPlayerUUIDs = new ArrayList<>(mc.getConnection().getOnlinePlayerIds());
         if (allPlayerUUIDs.isEmpty() || messageCommand.get().isEmpty()) return;
 
         List<UUID> unusedPlayerUUIDs = new ArrayList<>(allPlayerUUIDs);
         unusedPlayerUUIDs.removeAll(usedPlayerUUIDs);
 
-        if (excludeSelf.get()) unusedPlayerUUIDs.remove(mc.player.getUuid());
+        if (excludeSelf.get()) unusedPlayerUUIDs.remove(mc.player.getUUID());
 
-        long currentWorldTime = mc.world.getTime();
+        long currentWorldTime = mc.level.getGameTime();
 
         if (!unusedPlayerUUIDs.isEmpty() && currentTick <= currentWorldTime) {
             UUID selectedPlayerUUID = playerMode.get() == Mode.Sequential ? unusedPlayerUUIDs.getFirst() : unusedPlayerUUIDs.get(new Random().nextInt(unusedPlayerUUIDs.size()));
 
-            String playerName = mc.getNetworkHandler().getPlayerList().stream()
+            String playerName = mc.getConnection().getOnlinePlayers().stream()
                     .filter(player -> player.getProfile().id().equals(selectedPlayerUUID))
                     .map(player -> player.getProfile().name())
                     .findFirst()

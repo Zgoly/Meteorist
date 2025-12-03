@@ -8,10 +8,10 @@ import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
 import zgoly.meteorist.commands.arguments.InstructionArgumentType;
 import zgoly.meteorist.modules.instructions.InstructionFactory;
 import zgoly.meteorist.modules.instructions.Instructions;
@@ -41,7 +41,7 @@ public class InstructionsCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<CommandSource> builder) {
+    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
         builder.then(literal("run")
                 .then(argument("instruction", InstructionArgumentType.instruction())
                         .then(argument("count", IntegerArgumentType.integer(1))
@@ -86,11 +86,11 @@ public class InstructionsCommand extends Command {
 
         try {
             try (InputStream inputStream = new FileInputStream(file)) {
-                NbtCompound tag = NbtIo.readCompressed(inputStream, NbtSizeTracker.ofUnlimitedBytes());
+                CompoundTag tag = NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap());
                 instructions = InstructionUtils.readInstructionsFromTag(tag, factory);
             }
 
-            int worldTime = (int) mc.world.getTime() + 1; // +1 for the first instruction
+            int worldTime = (int) mc.level.getGameTime() + 1; // +1 for the first instruction
             int tick = worldTime;
 
             for (int r = 0; r < runs; r++) {
@@ -102,7 +102,7 @@ public class InstructionsCommand extends Command {
             String runsMessage = (runs > 1) ? " for (highlight)" + runs + "(default) runs" : "";
             info("Loaded (highlight)%d(default) instructions from (highlight)%s(default)%s", instructions.size(), file.getName(), runsMessage);
             int totalTicks = tick - worldTime;
-            info("Total ticks to run: (highlight)%d(default) (approximately %s)", totalTicks, MeteoristUtils.ticksToTime(totalTicks));
+            info("Total ticks to run: (highlight)%d(default) (approximately %s)", totalTicks, MeteoristUtils.ticksToTime(totalTicks, false, true));
         } catch (Exception e) {
             error("Error loading instructions: (highlight)%d(default)", e.getMessage());
         }
@@ -111,8 +111,8 @@ public class InstructionsCommand extends Command {
 
     @EventHandler
     public void onTick(TickEvent.Post event) {
-        if (mc.world == null) return;
-        int worldTime = (int) mc.world.getTime();
+        if (mc.level == null) return;
+        int worldTime = (int) mc.level.getGameTime();
 
         if (!map.isEmpty()) {
             debugLogger.info("Running (highlight)%d(default) instructions", map.size());

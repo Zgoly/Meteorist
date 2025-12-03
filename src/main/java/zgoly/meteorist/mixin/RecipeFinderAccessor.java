@@ -1,21 +1,21 @@
 package zgoly.meteorist.mixin;
 
-import net.minecraft.item.Item;
-import net.minecraft.recipe.RecipeFinder;
-import net.minecraft.recipe.RecipeMatcher;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.Holder;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.List;
 
-@Mixin(RecipeFinder.class)
+@Mixin(StackedItemContents.class)
 public interface RecipeFinderAccessor {
-    @Invoker("isCraftable")
+    @Invoker("canCraft")
     boolean invokeIsCraftable(
-            List<? extends RecipeMatcher.RawIngredient<RegistryEntry<Item>>> rawIngredients,
+            List<? extends StackedContents.IngredientInfo<Holder<Item>>> rawIngredients,
             int quantity,
-            @Nullable RecipeMatcher.ItemCallback<RegistryEntry<Item>> itemCallback
+            @Nullable StackedContents.Output<Holder<Item>> itemCallback
     );
 }

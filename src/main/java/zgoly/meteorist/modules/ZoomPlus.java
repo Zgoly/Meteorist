@@ -7,9 +7,9 @@ import meteordevelopment.meteorclient.events.render.GetFovEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.events.*;
 import zgoly.meteorist.utils.misc.TweenHandler;
@@ -269,7 +269,7 @@ public class ZoomPlus extends Module {
     private final Setting<List<SoundEvent>> scrollInSound = sgScrollIn.add(new SoundEventListSetting.Builder()
             .name("sound")
             .description("Sound to play.")
-            .defaultValue(List.of(SoundEvents.ITEM_SPYGLASS_USE))
+            .defaultValue(List.of(SoundEvents.SPYGLASS_USE))
             .visible(scrollInPlaySound::get)
             .build()
     );
@@ -329,7 +329,7 @@ public class ZoomPlus extends Module {
     private final Setting<List<SoundEvent>> scrollOutSound = sgScrollOut.add(new SoundEventListSetting.Builder()
             .name("sound")
             .description("Sound to play.")
-            .defaultValue(List.of(SoundEvents.ITEM_SPYGLASS_STOP_USING))
+            .defaultValue(List.of(SoundEvents.SPYGLASS_STOP_USING))
             .visible(scrollOutPlaySound::get)
             .build()
     );
@@ -371,14 +371,14 @@ public class ZoomPlus extends Module {
         deactivated = false;
 
         if (!isSubscribed) {
-            if (hideHud.get()) mc.options.hudHidden = true;
+            if (hideHud.get()) mc.options.hideGui = true;
             MeteorClient.EVENT_BUS.subscribe(this);
             MeteorClient.EVENT_BUS.subscribe(tweenHandler);
             isSubscribed = true;
         }
 
         if (zoomInPlaySound.get()) {
-            mc.getSoundManager().play(PositionedSoundInstance.master(zoomInSound.get().getFirst(), zoomInSoundPitch.get().floatValue(), zoomInSoundVolume.get().floatValue()));
+            mc.getSoundManager().play(SimpleSoundInstance.forUI(zoomInSound.get().getFirst(), zoomInSoundPitch.get().floatValue(), zoomInSoundVolume.get().floatValue()));
         }
 
         tweenHandler.play(instantZoomIn.get(), currentZoomFactor, zoomFactor.get(), zoomInEasingDuration.get(), zoomInEasingStyle.get(), zoomInEasingDirection.get());
@@ -397,7 +397,7 @@ public class ZoomPlus extends Module {
         deactivated = true;
 
         if (zoomOutPlaySound.get()) {
-            mc.getSoundManager().play(PositionedSoundInstance.master(zoomOutSound.get().getFirst(), zoomOutSoundPitch.get().floatValue(), zoomOutSoundVolume.get().floatValue()));
+            mc.getSoundManager().play(SimpleSoundInstance.forUI(zoomOutSound.get().getFirst(), zoomOutSoundPitch.get().floatValue(), zoomOutSoundVolume.get().floatValue()));
         }
 
         tweenHandler.play(instantZoomOut.get(), currentZoomFactor, 1, zoomOutEasingDuration.get(), zoomOutEasingStyle.get(), zoomOutEasingDirection.get());
@@ -416,7 +416,7 @@ public class ZoomPlus extends Module {
             SoundEvent sound = scrollIn ? scrollInSound.get().getFirst() : scrollOutSound.get().getFirst();
             float soundPitch = scrollIn ? scrollInSoundPitch.get().floatValue() : scrollOutSoundPitch.get().floatValue();
             float soundVolume = scrollIn ? scrollInSoundVolume.get().floatValue() : scrollOutSoundVolume.get().floatValue();
-            mc.getSoundManager().play(PositionedSoundInstance.master(sound, soundPitch, soundVolume));
+            mc.getSoundManager().play(SimpleSoundInstance.forUI(sound, soundPitch, soundVolume));
         }
 
         boolean instantScroll = scrollIn ? instantScrollIn.get() : instantScrollOut.get();
@@ -457,7 +457,7 @@ public class ZoomPlus extends Module {
     @EventHandler
     public void onTweenEnd(TweenEndEvent event) {
         if (currentZoomFactor.get() == 1) {
-            if (hideHud.get()) mc.options.hudHidden = false;
+            if (hideHud.get()) mc.options.hideGui = false;
             MeteorClient.EVENT_BUS.unsubscribe(this);
             MeteorClient.EVENT_BUS.unsubscribe(tweenHandler);
             isSubscribed = false;

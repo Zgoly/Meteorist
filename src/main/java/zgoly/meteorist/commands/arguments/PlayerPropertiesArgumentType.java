@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public class PlayerPropertiesArgumentType implements ArgumentType<List<String>> {
     public static final List<String> PROPERTIES = Arrays.asList("Player", "UUID", "GameMode", "Skin_URL", "Latency");
     private static final PlayerPropertiesArgumentType INSTANCE = new PlayerPropertiesArgumentType();
-    private static final DynamicCommandExceptionType INVALID_KEYWORD_EXCEPTION = new DynamicCommandExceptionType(o -> Text.of("Invalid keyword: " + o));
+    private static final DynamicCommandExceptionType INVALID_KEYWORD_EXCEPTION = new DynamicCommandExceptionType(o -> Component.nullToEmpty("Invalid keyword: " + o));
 
     public static PlayerPropertiesArgumentType create() {
         return INSTANCE;

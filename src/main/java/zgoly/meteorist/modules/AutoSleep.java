@@ -6,15 +6,15 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.BedBlock;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.text.TranslatableTextContent;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import zgoly.meteorist.Meteorist;
 
 import java.util.Objects;
@@ -94,15 +94,15 @@ public class AutoSleep extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.world == null) return;
-        if (dimensionRestrict.get() && !mc.world.getDimension().natural()) return;
+        if (mc.level == null) return;
+        if (dimensionRestrict.get() && !mc.level.dimensionType().natural()) return;
 
         if (mc.player.isSleeping()) {
             if (useMaxSleepTime.get()) {
                 sleepTimer++;
                 if (sleepTimer >= maxSleepTime.get()) {
                     sleepTimer = 0;
-                    mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.STOP_SLEEPING));
+                    mc.getConnection().send(new ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.STOP_SLEEPING));
                 }
             }
         } else if (sleepMode.get() == SleepMode.Default) {
@@ -112,11 +112,11 @@ public class AutoSleep extends Module {
             sleepDelayTimer = sleepDelay.get();
 
             if (atNight.get() && atThunderstorm.get()) {
-                if (isDay() && !mc.world.isThundering()) return;
+                if (isDay() && !mc.level.isThundering()) return;
             } else if (atNight.get()) {
                 if (isDay()) return;
             } else if (atThunderstorm.get()) {
-                if (!mc.world.isThundering()) return;
+                if (!mc.level.isThundering()) return;
             }
 
             if (sleepInNearestBed(bedSearchRadius.get())) sleepDelayTimer = 0;
@@ -125,16 +125,16 @@ public class AutoSleep extends Module {
 
     // Yeah, hacky, but looks like `world.isDay()` and `world.isNight()` doesn't work on the client
     private boolean isDay() {
-        if (mc.world == null) return true;
-        float time = mc.world.getTimeOfDay() % 24000;
-        return mc.world.isRaining() ? (!(time > 12010) || !(time < 23991)) : (!(time > 12542) || !(time < 23459));
+        if (mc.level == null) return true;
+        float time = mc.level.getDayTime() % 24000;
+        return mc.level.isRaining() ? (!(time > 12010) || !(time < 23991)) : (!(time > 12542) || !(time < 23459));
     }
 
     private boolean sleepInNearestBed(int radius) {
-        for (BlockPos blockPos : BlockPos.iterateOutwards(mc.player.getBlockPos(), radius, radius, radius)) {
-            if (mc.world.getBlockState(blockPos).getBlock() instanceof BedBlock) {
+        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition(), radius, radius, radius)) {
+            if (mc.level.getBlockState(blockPos).getBlock() instanceof BedBlock) {
                 sleepTimer = 0;
-                BlockUtils.interact(new BlockHitResult(Vec3d.ofCenter(blockPos), Direction.UP, blockPos, true), Hand.MAIN_HAND, false);
+                BlockUtils.interact(new BlockHitResult(Vec3.atCenterOf(blockPos), Direction.UP, blockPos, true), InteractionHand.MAIN_HAND, false);
                 return true;
             }
         }
@@ -143,8 +143,8 @@ public class AutoSleep extends Module {
 
     @EventHandler
     public void onReceiveMessage(PacketEvent.Receive event) {
-        if (sleepMode.get() == SleepMode.WhenPlayerLiesOnBed && event.packet instanceof GameMessageS2CPacket packet) {
-            if (packet.content().getContent() instanceof TranslatableTextContent translatableText) {
+        if (sleepMode.get() == SleepMode.WhenPlayerLiesOnBed && event.packet instanceof ClientboundSystemChatPacket packet) {
+            if (packet.content().getContents() instanceof TranslatableContents translatableText) {
                 if (Objects.equals(translatableText.getKey(), "sleep.players_sleeping")) {
                     sleepInNearestBed(bedSearchRadius.get());
                 }
