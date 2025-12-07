@@ -16,9 +16,11 @@ jobs:
           path: ./website-repo
 
       - name: Write Release Info to File
+        env:
+          RELEASE_JSON: ${{ toJSON(github.event.release) }}
         run: |
           mkdir -p ./website-repo/meteorist/generated
-          echo '${{ toJSON(github.event.release) }}' > ./website-repo/meteorist/generated/release-info.json
+          echo "$RELEASE_JSON" > ./website-repo/meteorist/generated/release-info.json
 
       - name: Commit and Push Release Info to Website
         run: |
