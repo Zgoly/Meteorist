@@ -36,43 +36,14 @@ Add-on for Meteor that adds modules, commands and other useful stuff for primary
   </picture>
 </a>
 
-## ⬇️ Download
+<div align="center">
 
-[![Join Discord][shield-discord-server]][discord]
-[![Join Discord][shield-discord-members]][discord]
+# [Download from website ⬇️][meteorist-download]
 
-To download the addon, follow these steps:
+</div>
 
-1. If you still haven't downloaded latest Meteor dev build, [download it first][meteor-download].
-2. **[Download latest meteorist-xx.jar][meteorist-download]**.
-3. You can also [download Baritone][baritone-download] to unlock baritone related features.
-4. Move the downloaded `.jar` files into your `.minecraft/mods` folder.
-
-## 🧩 Modules
-
-[![Join Discord][shield-discord-server]][discord]
-[![Join Discord][shield-discord-members]][discord]
-
-Info will be added soon.
-
-## 📘 Commands
-
-[![Join Discord][shield-discord-server]][discord]
-[![Join Discord][shield-discord-members]][discord]
-
-Info will be added soon.
-
-## 🎨 Presets
-
-[![Join Discord][shield-discord-server]][discord]
-[![Join Discord][shield-discord-members]][discord]
-
-Info will be added soon.
-
-
-
-[meteorist-banner-download]: https://raw.githubusercontent.com/Zgoly/hosts/main/meteorist_banner.svg
-[meteorist-download]: https://github.com/Zgoly/Meteorist/releases/latest
+[meteorist-banner-download]: website/banner.svg
+[meteorist-download]: https://meteorist.pages.dev
 [meteor-download]: https://meteorclient.com
 [baritone-download]: https://meteorclient.com/api/downloadBaritone
 
