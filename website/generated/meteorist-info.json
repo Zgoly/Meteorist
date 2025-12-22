@@ -1,0 +1,4395 @@
+{
+  "modules": [
+    {
+      "name": "generator",
+      "description": "Generate documentation for Meteor and its add-ons.",
+      "category": "MeteoristDev",
+      "className": "DocsGenerator",
+      "classPath": "src/main/java/zgoly/meteorist/devmodules/DocsGenerator.java",
+      "lineNumber": 75,
+      "settings": {
+        "Wiki": [
+          {
+            "type": "StringSetting",
+            "lineNumber": 41,
+            "properties": {
+              "defaultValue": "../../wiki/modules",
+              "description": "Link to the modules page on the GitHub wiki. Keep empty to disable.",
+              "name": "modules-page-link"
+            }
+          },
+          {
+            "type": "StringSetting",
+            "lineNumber": 47,
+            "properties": {
+              "defaultValue": "../../wiki/commands",
+              "description": "Link to the commands page on the GitHub wiki. Keep empty to disable.",
+              "name": "commands-page-link"
+            }
+          },
+          {
+            "type": "StringSetting",
+            "lineNumber": 53,
+            "properties": {
+              "defaultValue": "../../wiki/presets",
+              "description": "Link to the presets page on the GitHub wiki. Keep empty to disable.",
+              "name": "presets-page-link"
+            }
+          }
+        ],
+        "Source": [
+          {
+            "type": "StringSetting",
+            "lineNumber": 59,
+            "properties": {
+              "defaultValue": "../blob/main/src/main/java",
+              "description": "Link to the java source directory. Keep empty to disable.",
+              "name": "source-link"
+            }
+          },
+          {
+            "type": "StringSetting",
+            "lineNumber": 65,
+            "properties": {
+              "defaultValue": ".java",
+              "description": "File extension of the java source files.",
+              "name": "source-file-extension"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-sneak",
+      "description": "Automatically sneaks at block edge (idea by kokqi).",
+      "category": "Meteorist",
+      "className": "AutoSneak",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoSneak.java",
+      "lineNumber": 124,
+      "settings": {
+        "General": [
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 25,
+            "properties": {
+              "sliderRange": [
+                "`0.05`",
+                "1"
+              ],
+              "range": [
+                "`0.05`",
+                "1"
+              ],
+              "defaultValue": "`0.25`",
+              "description": "Width of the box.",
+              "name": "width"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 33,
+            "properties": {
+              "sliderRange": [
+                "`0.05`",
+                "1"
+              ],
+              "range": [
+                "`0.05`",
+                "1"
+              ],
+              "defaultValue": "`0.6`",
+              "description": "Height of the box.",
+              "name": "height"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 41,
+            "properties": {
+              "sliderRange": [
+                "0",
+                "5"
+              ],
+              "defaultValue": "1",
+              "description": "Predict player position based on velocity to move box to it.",
+              "name": "player-pos-prediction"
+            }
+          }
+        ],
+        "Filter": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 49,
+            "properties": {
+              "defaultValue": "`SneakBlocksMode.Whitelist`",
+              "description": "Sneak blocks mode.",
+              "name": "sneak-blocks-mode"
+            }
+          },
+          {
+            "type": "BlockListSetting",
+            "lineNumber": 55,
+            "properties": {
+              "visible": "`() -\u003e sneakBlocksMode.get() \u003d\u003d SneakBlocksMode.Whitelist`",
+              "description": "Sneak on blocks from list, but not others.",
+              "name": "sneak-blocks-whitelist"
+            }
+          },
+          {
+            "type": "BlockListSetting",
+            "lineNumber": 61,
+            "properties": {
+              "visible": "`() -\u003e sneakBlocksMode.get() \u003d\u003d SneakBlocksMode.Blacklist`",
+              "description": "Sneak on other blocks, but not from list.",
+              "name": "sneak-blocks-blacklist"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 67,
+            "properties": {
+              "defaultValue": "`IgnoreBlocksMode.Whitelist`",
+              "description": "Ignore blocks mode.",
+              "name": "ignore-blocks-mode"
+            }
+          },
+          {
+            "type": "BlockListSetting",
+            "lineNumber": 73,
+            "properties": {
+              "visible": "`() -\u003e ignoreBlocksMode.get() \u003d\u003d IgnoreBlocksMode.Whitelist`",
+              "description": "Ignore blocks from list, but not others.",
+              "name": "ignore-blocks-whitelist"
+            }
+          },
+          {
+            "type": "BlockListSetting",
+            "lineNumber": 79,
+            "properties": {
+              "visible": "`() -\u003e ignoreBlocksMode.get() \u003d\u003d IgnoreBlocksMode.Blacklist`",
+              "description": "Ignore other blocks, but not from list.",
+              "name": "ignore-blocks-blacklist"
+            }
+          }
+        ],
+        "Render": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 86,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Show box.",
+              "name": "show-box"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 92,
+            "properties": {
+              "visible": "`showBox::get`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 40)`",
+              "description": "The color of the sides of box when not sneaking.",
+              "name": "side-color-off"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 99,
+            "properties": {
+              "visible": "`showBox::get`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 100)`",
+              "description": "The color of the lines of box when not sneaking.",
+              "name": "line-color-off"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 106,
+            "properties": {
+              "visible": "`showBox::get`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 40)`",
+              "description": "The color of the sides of box when sneaking.",
+              "name": "side-color-on"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 113,
+            "properties": {
+              "visible": "`showBox::get`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 100)`",
+              "description": "The color of the lines of box when sneaking.",
+              "name": "line-color-on"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-heal",
+      "description": "Writes command in chat when health level is low.",
+      "category": "Meteorist",
+      "className": "AutoHeal",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoHeal.java",
+      "lineNumber": 41,
+      "settings": {
+        "General": [
+          {
+            "type": "StringSetting",
+            "lineNumber": 16,
+            "properties": {
+              "defaultValue": "/heal",
+              "description": "Command to refill health bar.",
+              "name": "heal-command"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 22,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "20"
+              ],
+              "min": "1",
+              "defaultValue": "10",
+              "description": "Health level at which to send the command.",
+              "name": "health-level"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 30,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "40"
+              ],
+              "min": "1",
+              "defaultValue": "20",
+              "description": "Delay after sending a command in ticks (20 ticks \u003d 1 sec).",
+              "name": "delay"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "jump-jump",
+      "description": "Makes you jump higher than normal using multiple jumps.",
+      "category": "Meteorist",
+      "className": "JumpJump",
+      "classPath": "src/main/java/zgoly/meteorist/modules/JumpJump.java",
+      "lineNumber": 38,
+      "settings": {
+        "General": [
+          {
+            "type": "IntSetting",
+            "lineNumber": 16,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "10"
+              ],
+              "range": [
+                "1",
+                "1200"
+              ],
+              "defaultValue": "3",
+              "description": "Delay between jumps in ticks (20 ticks \u003d 1 sec).",
+              "name": "delay"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 24,
+            "properties": {
+              "onChanged": "`a -\u003e onActivate()`",
+              "sliderRange": [
+                "1",
+                "10"
+              ],
+              "range": [
+                "1",
+                "1200"
+              ],
+              "defaultValue": "2",
+              "description": "Number of jumps to be made.",
+              "name": "jumps-number"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-sleep",
+      "description": "Gets into bed automatically for you.",
+      "category": "Meteorist",
+      "className": "AutoSleep",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoSleep.java",
+      "lineNumber": 86,
+      "settings": {
+        "General": [
+          {
+            "type": "IntSetting",
+            "lineNumber": 24,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "4"
+              ],
+              "min": "1",
+              "defaultValue": "3",
+              "description": "Radius to search for beds.",
+              "name": "bed-search-radius"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 32,
+            "properties": {
+              "defaultValue": "`SleepMode.Default`",
+              "description": "\u0027Default\u0027 - sleep every amount of ticks; \u0027WhenPlayerLiesOnBed\u0027 - sleep when other player lies down on bed.",
+              "name": "sleep-mode"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 38,
+            "properties": {
+              "visible": "`() -\u003e sleepMode.get() \u003d\u003d SleepMode.Default`",
+              "sliderRange": [
+                "1",
+                "1200"
+              ],
+              "min": "1",
+              "defaultValue": "200",
+              "description": "Delay between tries to sleep in ticks (20 ticks \u003d 1 sec).",
+              "name": "sleep-delay"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 47,
+            "properties": {
+              "visible": "`() -\u003e sleepMode.get() \u003d\u003d SleepMode.Default`",
+              "defaultValue": "true",
+              "description": "Sleep only at night.",
+              "name": "at-night"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 54,
+            "properties": {
+              "visible": "`() -\u003e sleepMode.get() \u003d\u003d SleepMode.Default`",
+              "defaultValue": "true",
+              "description": "Sleep only at thunderstorm.",
+              "name": "at-thunderstorm"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 61,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Use maximum sleep time.",
+              "name": "use-max-sleep-time"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 67,
+            "properties": {
+              "visible": "`useMaxSleepTime::get`",
+              "sliderRange": [
+                "1",
+                "1200"
+              ],
+              "min": "1",
+              "defaultValue": "200",
+              "description": "Maximum time to sleep in ticks (20 ticks \u003d 1 sec).",
+              "name": "max-sleep-time"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 76,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Don\u0027t go to bed if you\u0027re in a dimension like nether/end.",
+              "name": "dimension-restrict"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-interact",
+      "description": "Automatically interacts with interactable blocks like doors, trapdoors, etc.",
+      "category": "Meteorist",
+      "className": "AutoInteract",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoInteract.java",
+      "lineNumber": 61,
+      "settings": {
+        "General": [
+          {
+            "type": "BlockListSetting",
+            "lineNumber": 26,
+            "properties": {
+              "defaultValue": "`BuiltInRegistries.BLOCK.stream().filter(block -\u003e block instanceof DoorBlock || block instanceof FenceGateBlock).toList()`",
+              "filter": "`block -\u003e block instanceof DoorBlock || block instanceof FenceGateBlock || block instanceof TrapDoorBlock || block instanceof ButtonBlock || block instanceof LeverBlock`",
+              "description": "The block to interact with.",
+              "name": "blocks"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 33,
+            "properties": {
+              "min": "0",
+              "defaultValue": "3",
+              "description": "The range to interact with blocks.",
+              "name": "inner-range"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 40,
+            "properties": {
+              "min": "1",
+              "defaultValue": "4",
+              "description": "The range to stop interacting with blocks.",
+              "name": "outer-range"
+            }
+          },
+          {
+            "type": "BlockPosSetting",
+            "lineNumber": 47,
+            "properties": {
+              "defaultValue": "`new BlockPos(0, 1, 0)`",
+              "description": "The offset of the range position.",
+              "name": "range-pos-offset"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 53,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Swing hand client-side.",
+              "name": "swing-hand"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "grid",
+      "description": "Allows you to place blocks on a grid.",
+      "category": "Meteorist",
+      "className": "Grid",
+      "classPath": "src/main/java/zgoly/meteorist/modules/Grid.java",
+      "lineNumber": 125,
+      "settings": {
+        "General": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 28,
+            "properties": {
+              "defaultValue": "`FilterMode.StaggeredOdd`",
+              "description": "Filter placements based on mode.",
+              "name": "filter-mode"
+            }
+          },
+          {
+            "type": "BlockListSetting",
+            "lineNumber": 34,
+            "properties": {
+              "defaultValue": [
+                "`Blocks.TORCH`",
+                "`Blocks.WALL_TORCH`"
+              ],
+              "description": "Blocks to use for placements.",
+              "name": "blocks"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 40,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Place blocks.",
+              "name": "place"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 46,
+            "properties": {
+              "visible": "`place::get`",
+              "defaultValue": "true",
+              "description": "Rotate head when placing a block.",
+              "name": "rotate"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 53,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Attaches placements to the surface.",
+              "name": "dynamic-height"
+            }
+          }
+        ],
+        "Grid": [
+          {
+            "type": "IntSetting",
+            "lineNumber": 60,
+            "properties": {
+              "min": "1",
+              "defaultValue": "2",
+              "description": "Grid size.",
+              "name": "grid-size"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 67,
+            "properties": {
+              "min": "1",
+              "defaultValue": "13",
+              "description": "Gap between placements.",
+              "name": "grid-gap"
+            }
+          }
+        ],
+        "Range": [
+          {
+            "type": "IntSetting",
+            "lineNumber": 75,
+            "properties": {
+              "min": "1",
+              "defaultValue": "3",
+              "description": "Range to switch to the nearest placement of grid.",
+              "name": "switch-range"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 82,
+            "properties": {
+              "min": "1",
+              "defaultValue": "3",
+              "description": "Range to place blocks.",
+              "name": "place-range"
+            }
+          }
+        ],
+        "Render": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 90,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Show placements.",
+              "name": "show"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 96,
+            "properties": {
+              "defaultValue": "`new SettingColor(0, 255, 0, 40)`",
+              "description": "The color of the sides of the blocks being rendered.",
+              "name": "main-placement-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 102,
+            "properties": {
+              "defaultValue": "`new SettingColor(0, 255, 0, 100)`",
+              "description": "The color of the lines of the blocks being rendered.",
+              "name": "main-placement-line-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 108,
+            "properties": {
+              "defaultValue": "`new SettingColor(255, 255, 0, 40)`",
+              "description": "The color of the sides of the blocks being rendered.",
+              "name": "placement-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 114,
+            "properties": {
+              "defaultValue": "`new SettingColor(255, 255, 0, 100)`",
+              "description": "The color of the lines of the blocks being rendered.",
+              "name": "placement-line-color"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "z-auto-totem",
+      "description": "Auto totem with some extra options (by Rapou7)",
+      "category": "Meteorist",
+      "className": "ZAutoTotem",
+      "classPath": "src/main/java/zgoly/meteorist/modules/ZAutoTotem.java",
+      "lineNumber": 90,
+      "settings": {
+        "General": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 23,
+            "properties": {
+              "defaultValue": "`Mode.Smart`",
+              "description": "Determines when to hold a totem, strict will always hold.",
+              "name": "mode"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 30,
+            "properties": {
+              "min": "0",
+              "defaultValue": "0",
+              "description": "The ticks between slot movements.",
+              "name": "delay"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 38,
+            "properties": {
+              "visible": "`() -\u003e mode.get() \u003d\u003d Mode.Smart`",
+              "sliderMax": "36",
+              "range": [
+                "0",
+                "36"
+              ],
+              "defaultValue": "10",
+              "description": "The health to hold a totem at.",
+              "name": "health"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 48,
+            "properties": {
+              "visible": "`() -\u003e mode.get() \u003d\u003d Mode.Smart`",
+              "defaultValue": "true",
+              "description": "Will always hold a totem when flying with elytra.",
+              "name": "elytra"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 56,
+            "properties": {
+              "visible": "`() -\u003e mode.get() \u003d\u003d Mode.Smart`",
+              "defaultValue": "true",
+              "description": "Will hold a totem when fall damage could kill you.",
+              "name": "fall"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 64,
+            "properties": {
+              "visible": "`() -\u003e mode.get() \u003d\u003d Mode.Smart`",
+              "defaultValue": "true",
+              "description": "Will hold a totem when explosion damage could kill you.",
+              "name": "explosion"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 72,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Only moves the totem if your inventory is open.",
+              "name": "only-in-inventory"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 79,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Only moves the totem if you stop moving",
+              "name": "only-when-still"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-mud",
+      "description": "Automatically uses water bottle on dirt variants to get mud.",
+      "category": "Meteorist",
+      "className": "AutoMud",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoMud.java",
+      "lineNumber": 59,
+      "settings": {
+        "General": [
+          {
+            "type": "IntSetting",
+            "lineNumber": 31,
+            "properties": {
+              "sliderRange": [
+                "0",
+                "10"
+              ],
+              "min": "0",
+              "defaultValue": "4",
+              "description": "Range to use water bottle.",
+              "name": "range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 39,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Fill bottle with water when there are no water bottles remaining.",
+              "name": "fill-bottle"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 45,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Swing hand client-side.",
+              "name": "swing-hand"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 51,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Swap back when everything is done.",
+              "name": "swap-back"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-leave",
+      "description": "Automatically leaves if player with specific name joins the server.",
+      "category": "Meteorist",
+      "className": "AutoLeave",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoLeave.java",
+      "lineNumber": 43,
+      "settings": {
+        "General": [
+          {
+            "type": "StringListSetting",
+            "lineNumber": 17,
+            "properties": {
+              "defaultValue": "Notch",
+              "description": "Player names to react on.",
+              "name": "player-names"
+            }
+          },
+          {
+            "type": "StringSetting",
+            "lineNumber": 23,
+            "properties": {
+              "defaultValue": "[AutoLeave] Player joined: {player}",
+              "description": "Message to show after logging out.",
+              "name": "message"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 29,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Don\u0027t react to players added as friends.",
+              "name": "ignore-friends"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 35,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Disables Auto Leave after usage.",
+              "name": "toggle-off"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "dm-spam",
+      "description": "Spams messages in players direct messages.",
+      "category": "Meteorist",
+      "className": "DmSpam",
+      "classPath": "src/main/java/zgoly/meteorist/modules/DmSpam.java",
+      "lineNumber": 132,
+      "settings": {
+        "Command": [
+          {
+            "type": "StringSetting",
+            "lineNumber": 26,
+            "properties": {
+              "defaultValue": "/msg {player} {message}",
+              "description": "Specified command to direct message a player.",
+              "name": "message-command"
+            }
+          }
+        ],
+        "Selection": [
+          {
+            "type": "StringListSetting",
+            "lineNumber": 33,
+            "properties": {
+              "defaultValue": "`List.of(\"Meteorist :handshake: Meteor\")`",
+              "description": "List of messages that can be sent to the players.",
+              "name": "spam-messages"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 39,
+            "properties": {
+              "defaultValue": "`Mode.Sequential`",
+              "description": "\u0027Sequential\u0027 - send messages in the order they appear in the list; \u0027Random\u0027 - pick a random message from the list.",
+              "name": "message-mode"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 45,
+            "properties": {
+              "defaultValue": "`Mode.Sequential`",
+              "description": "\u0027Sequential\u0027 - select players in the order they appear; \u0027Random\u0027 - pick a random player.",
+              "name": "player-mode"
+            }
+          }
+        ],
+        "Delay": [
+          {
+            "type": "IntSetting",
+            "lineNumber": 52,
+            "properties": {
+              "sliderMax": "1200",
+              "min": "1",
+              "defaultValue": "20",
+              "description": "Time delay in ticks between the sending of individual messages.",
+              "name": "delay-between-messages"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 60,
+            "properties": {
+              "sliderMax": "1200",
+              "min": "1",
+              "defaultValue": "100",
+              "description": "Time delay in ticks after all messages have been sent to all players.",
+              "name": "delay-between-players"
+            }
+          }
+        ],
+        "Disable Settings": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 69,
+            "properties": {
+              "defaultValue": "`DisableTrigger.None`",
+              "description": "\u0027None\u0027 - never; \u0027NoMoreMessages\u0027 - no more messages to send; \u0027NoMorePlayers\u0027 - no more players to send messages to.",
+              "name": "disable-trigger"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 75,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Stops the spam message flow when you leave a server.",
+              "name": "disable-on-exit"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 81,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Stops the spam message flow if you are disconnected from the server (eg. kicked).",
+              "name": "disable-on-disconnect"
+            }
+          }
+        ],
+        "Special Cases": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 88,
+            "properties": {
+              "defaultValue": "true",
+              "description": "If set to \u0027true\u0027, the system will not send messages to yourself.",
+              "name": "exclude-self"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 94,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Adds random text at the end of each message to avoid spam detection.",
+              "name": "anti-spam-bypass"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 100,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "256"
+              ],
+              "defaultValue": "16",
+              "visible": "`antiSpamBypass::get`",
+              "description": "Defines the number of characters used to bypass spam detection.",
+              "name": "bypass-text-length"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 108,
+            "properties": {
+              "defaultValue": "`PlayerMode.Blacklist`",
+              "description": "Choose between Blacklist (exclude players) or Whitelist (only include players).",
+              "name": "player-mode"
+            }
+          },
+          {
+            "type": "StringListSetting",
+            "lineNumber": 114,
+            "properties": {
+              "description": "List of player names to include when in Whitelist mode.",
+              "name": "player-whitelist"
+            }
+          },
+          {
+            "type": "StringListSetting",
+            "lineNumber": 119,
+            "properties": {
+              "description": "List of player names to exclude from receiving messages when in Blacklist mode.",
+              "name": "player-blacklist"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-feed",
+      "description": "Writes command in chat when hunger level is low.",
+      "category": "Meteorist",
+      "className": "AutoFeed",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoFeed.java",
+      "lineNumber": 42,
+      "settings": {
+        "General": [
+          {
+            "type": "StringSetting",
+            "lineNumber": 16,
+            "properties": {
+              "defaultValue": "/feed",
+              "description": "Command to refill hunger bar.",
+              "name": "feed-command"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 22,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "20"
+              ],
+              "min": "1",
+              "defaultValue": "12",
+              "description": "Hunger level at which to send the command.",
+              "name": "hunger-level"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 30,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "40"
+              ],
+              "min": "1",
+              "defaultValue": "20",
+              "description": "Delay after sending a command in ticks (20 ticks \u003d 1 sec).",
+              "name": "delay"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "zoom-plus",
+      "description": "Advanced Zoom module with more customizable settings.",
+      "category": "Meteorist",
+      "className": "ZoomPlus",
+      "classPath": "src/main/java/zgoly/meteorist/modules/ZoomPlus.java",
+      "lineNumber": 365,
+      "settings": {
+        "General": [
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 26,
+            "properties": {
+              "min": "2",
+              "defaultValue": "6",
+              "description": "The factor by which to zoom.",
+              "name": "zoom-factor"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 33,
+            "properties": {
+              "min": "0",
+              "defaultValue": "1",
+              "description": "The step size for scrolling.",
+              "name": "scroll-step"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 40,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether to save the scroll step value between sessions.",
+              "name": "save-scroll-step"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 46,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Enables cinematic mode when zooming.",
+              "name": "cinematic"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 52,
+            "properties": {
+              "visible": "`cinematic::get`",
+              "min": "`0.1`",
+              "defaultValue": "1",
+              "description": "The factor for cinematic mode.",
+              "name": "cinematic-factor"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 60,
+            "properties": {
+              "visible": "`cinematic::get`",
+              "defaultValue": "true",
+              "description": "Whether to normalize cinematic mode.",
+              "name": "normalize-cinematic"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 67,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Whether to normalize sensitivity.",
+              "name": "normalize-sensitivity"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 73,
+            "properties": {
+              "visible": "`normalizeSensitivity::get`",
+              "min": "0",
+              "defaultValue": "`0.5`",
+              "description": "The factor for normalized sensitivity.",
+              "name": "sensitivity-normalization-factor"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 81,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Whether to normalize zoom.",
+              "name": "normalize-zoom"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 87,
+            "properties": {
+              "visible": "`normalizeZoom::get`",
+              "min": "0",
+              "defaultValue": "`0.25`",
+              "description": "The factor for normalized zoom.",
+              "name": "zoom-normalization-factor"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 95,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether to hide the HUD.",
+              "name": "hide-HUD"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 101,
+            "properties": {
+              "visible": "`() -\u003e !hideHud.get()`",
+              "defaultValue": "true",
+              "description": "Whether to render hands.",
+              "name": "render-hands"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 108,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Whether to allow zoom scrolling.",
+              "name": "allow-scroll"
+            }
+          }
+        ],
+        "Zoom In": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 115,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether to zoom in instantly.",
+              "name": "instant-zoom-in"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 135,
+            "properties": {
+              "visible": "`() -\u003e !instantZoomIn.get()`",
+              "min": "`0.1`",
+              "defaultValue": "1",
+              "description": "The duration of the easing for zooming in.",
+              "name": "easing-duration"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 143,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Whether to play a sound when zooming in.",
+              "name": "play-sound"
+            }
+          },
+          {
+            "type": "SoundEventListSetting",
+            "lineNumber": 149,
+            "properties": {
+              "visible": "`zoomInPlaySound::get`",
+              "defaultValue": "`List.of(SoundEvents.UI_TOAST_IN)`",
+              "description": "Sound to play.",
+              "name": "sound"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 156,
+            "properties": {
+              "visible": "`zoomInPlaySound::get`",
+              "sliderRange": [
+                "`0.5`",
+                "2"
+              ],
+              "min": "0",
+              "defaultValue": "1",
+              "description": "Pitch of the sound.",
+              "name": "sound-pitch"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 165,
+            "properties": {
+              "visible": "`zoomInPlaySound::get`",
+              "sliderRange": [
+                "0",
+                "1"
+              ],
+              "min": "0",
+              "defaultValue": "`0.25`",
+              "description": "Volume of the sound.",
+              "name": "sound-volume"
+            }
+          }
+        ],
+        "Zoom Out": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 175,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether to zoom out instantly.",
+              "name": "instant-zoom-out"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 195,
+            "properties": {
+              "visible": "`() -\u003e !instantZoomOut.get()`",
+              "min": "`0.1`",
+              "defaultValue": "1",
+              "description": "The duration of the easing for zooming out.",
+              "name": "easing-duration"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 203,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Whether to play a sound when zooming out.",
+              "name": "play-sound"
+            }
+          },
+          {
+            "type": "SoundEventListSetting",
+            "lineNumber": 209,
+            "properties": {
+              "visible": "`zoomOutPlaySound::get`",
+              "defaultValue": "`List.of(SoundEvents.UI_TOAST_OUT)`",
+              "description": "Sound to play.",
+              "name": "sound"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 216,
+            "properties": {
+              "visible": "`zoomOutPlaySound::get`",
+              "sliderRange": [
+                "`0.5`",
+                "2"
+              ],
+              "min": "0",
+              "defaultValue": "1",
+              "description": "Pitch of the sound.",
+              "name": "sound-pitch"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 225,
+            "properties": {
+              "visible": "`zoomOutPlaySound::get`",
+              "sliderRange": [
+                "0",
+                "1"
+              ],
+              "min": "0",
+              "defaultValue": "`0.25`",
+              "description": "Volume of the sound.",
+              "name": "sound-volume"
+            }
+          }
+        ],
+        "Scroll In": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 235,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether to scroll in instantly.",
+              "name": "instant-scroll-in"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 255,
+            "properties": {
+              "visible": "`() -\u003e !instantScrollIn.get()`",
+              "min": "`0.1`",
+              "defaultValue": "`0.5`",
+              "description": "The duration of the easing for scrolling in.",
+              "name": "easing-duration"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 263,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Whether to play a sound when scrolling in.",
+              "name": "play-sound"
+            }
+          },
+          {
+            "type": "SoundEventListSetting",
+            "lineNumber": 269,
+            "properties": {
+              "visible": "`scrollInPlaySound::get`",
+              "defaultValue": "`List.of(SoundEvents.SPYGLASS_USE)`",
+              "description": "Sound to play.",
+              "name": "sound"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 276,
+            "properties": {
+              "visible": "`scrollInPlaySound::get`",
+              "sliderRange": [
+                "`0.5`",
+                "2"
+              ],
+              "min": "0",
+              "defaultValue": "1",
+              "description": "Pitch of the sound.",
+              "name": "sound-pitch"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 285,
+            "properties": {
+              "visible": "`scrollInPlaySound::get`",
+              "sliderRange": [
+                "0",
+                "1"
+              ],
+              "min": "0",
+              "defaultValue": "`0.5`",
+              "description": "Volume of the sound.",
+              "name": "sound-volume"
+            }
+          }
+        ],
+        "Scroll Out": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 295,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether to scroll out instantly.",
+              "name": "instant-scroll-out"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 315,
+            "properties": {
+              "visible": "`() -\u003e !instantScrollOut.get()`",
+              "min": "`0.1`",
+              "defaultValue": "`0.5`",
+              "description": "The duration of the easing for scrolling out.",
+              "name": "easing-duration"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 323,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Whether to play a sound when scrolling out.",
+              "name": "play-sound"
+            }
+          },
+          {
+            "type": "SoundEventListSetting",
+            "lineNumber": 329,
+            "properties": {
+              "visible": "`scrollOutPlaySound::get`",
+              "defaultValue": "`List.of(SoundEvents.SPYGLASS_STOP_USING)`",
+              "description": "Sound to play.",
+              "name": "sound"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 336,
+            "properties": {
+              "visible": "`scrollOutPlaySound::get`",
+              "sliderRange": [
+                "`0.5`",
+                "2"
+              ],
+              "min": "0",
+              "defaultValue": "1",
+              "description": "Pitch of the sound.",
+              "name": "sound-pitch"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 345,
+            "properties": {
+              "visible": "`scrollOutPlaySound::get`",
+              "sliderRange": [
+                "0",
+                "1"
+              ],
+              "min": "0",
+              "defaultValue": "`0.5`",
+              "description": "Volume of the sound.",
+              "name": "sound-volume"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "item-sucker",
+      "description": "Automatically picks up dropped items.",
+      "category": "Meteorist",
+      "className": "ItemSucker",
+      "classPath": "src/main/java/zgoly/meteorist/modules/ItemSucker.java",
+      "lineNumber": 215,
+      "settings": {
+        "General": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 80,
+            "properties": {
+              "defaultValue": "`MoveMode.Teleport`",
+              "description": "Set the move mode of the item sucker.",
+              "name": "move-mode"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 86,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Teleport`",
+              "defaultValue": "true",
+              "description": "Check if player can teleport to an item and not collide with blocks.",
+              "name": "check-collisions"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 93,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Baritone`",
+              "min": "0",
+              "defaultValue": "0",
+              "description": "The radius within which Baritone will attempt to pick up items (relative to the item\u0027s position).",
+              "name": "item-range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 101,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Teleport`",
+              "defaultValue": "true",
+              "description": "Automatically teleport player to initial position once all items have been picked up.",
+              "name": "tp-to-origin"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 108,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Teleport \u0026\u0026 tpToOrigin.get()`",
+              "defaultValue": "10",
+              "min": "1",
+              "description": "Time to wait after teleport (in ticks).",
+              "name": "wait-time"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 116,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Teleport \u0026\u0026 tpToOrigin.get()`",
+              "defaultValue": "true",
+              "description": "Resets wait time after teleport.",
+              "name": "reset-time-after-tp"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 123,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Baritone`",
+              "defaultValue": "true",
+              "description": "Automatically return player to initial position once all items have been picked up.",
+              "name": "return-to-origin"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 130,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Baritone \u0026\u0026 returnToOrigin.get()`",
+              "min": "0",
+              "defaultValue": "0",
+              "description": "The radius within which Baritone will return to its initial position (relative to the initial position).",
+              "name": "return-range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 138,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Baritone`",
+              "defaultValue": "true",
+              "description": "Whether or not the speed of the player should be altered when using Baritone.",
+              "name": "modify-speed"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 145,
+            "properties": {
+              "visible": "`() -\u003e moveMode.get() \u003d\u003d MoveMode.Baritone \u0026\u0026 modifySpeed.get()`",
+              "sliderRange": [
+                "1",
+                "30"
+              ],
+              "min": "1",
+              "defaultValue": "10",
+              "description": "Modifies the player\u0027s movement speed when \u0027Modify Speed\u0027 is enabled.",
+              "name": "move-speed"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 154,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Disables the module when a certain number of items are picked up.",
+              "name": "disable-on-item-count"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 160,
+            "properties": {
+              "visible": "`disableOnItemCount::get`",
+              "defaultValue": "`ItemCountMode.Stacks`",
+              "description": "Defines how the maximum number of items to pick up is calculated.",
+              "name": "item-count-mode"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 167,
+            "properties": {
+              "visible": "`disableOnItemCount::get`",
+              "sliderRange": [
+                "1",
+                "10"
+              ],
+              "min": "1",
+              "defaultValue": "10",
+              "description": "Maximum number of items to pick up.",
+              "name": "max-item-count"
+            }
+          }
+        ],
+        "Filter": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 39,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Only pickup items that can be picked up.",
+              "name": "only-pickupable"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 45,
+            "properties": {
+              "defaultValue": "`OperationMode.Blacklist`",
+              "description": "Defines how items will be filtered when using the item sucker.",
+              "name": "item-filtering-mode"
+            }
+          },
+          {
+            "type": "ItemListSetting",
+            "lineNumber": 51,
+            "properties": {
+              "visible": "`() -\u003e itemFilteringMode.get() \u003d\u003d OperationMode.Whitelist`",
+              "defaultValue": "`Items.DIAMOND`",
+              "description": "Items to be exclusively picked up by the item sucker.",
+              "name": "item-whitelist"
+            }
+          },
+          {
+            "type": "ItemListSetting",
+            "lineNumber": 58,
+            "properties": {
+              "visible": "`() -\u003e itemFilteringMode.get() \u003d\u003d OperationMode.Blacklist`",
+              "defaultValue": "`Items.POISONOUS_POTATO`",
+              "description": "Items which the item sucker should ignore.",
+              "name": "item-blacklist"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 65,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "25"
+              ],
+              "min": "1",
+              "defaultValue": "5",
+              "description": "Range within which the Baritone can pick up items.",
+              "name": "sucking-range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 73,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Only pick up items that are on the floor.",
+              "name": "only-on-ground"
+            }
+          }
+        ],
+        "Render": [
+          {
+            "type": "IntSetting",
+            "lineNumber": 177,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "10"
+              ],
+              "min": "1",
+              "defaultValue": "10",
+              "description": "Maximum number of hitboxes to render at once.",
+              "name": "max-item-at-once"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 185,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Displays player hitbox at items position when using \\\"Teleport\\\" move mode.",
+              "name": "show-teleport-box"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 191,
+            "properties": {
+              "visible": "`showTeleportBox::get`",
+              "defaultValue": "`new SettingColor(0, 0, 255, 40)`",
+              "description": "The color of the sides of box.",
+              "name": "side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 198,
+            "properties": {
+              "visible": "`showTeleportBox::get`",
+              "defaultValue": "`new SettingColor(0, 0, 255, 100)`",
+              "description": "The color of the lines of box.",
+              "name": "line-color"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-repair",
+      "description": "Sends repair commands for equipped items when durability is low.",
+      "category": "Meteorist",
+      "className": "AutoRepair",
+      "classPath": "src/main/java/zgoly/meteorist/modules/AutoRepair.java",
+      "lineNumber": 19,
+      "settings": {
+        "slot.getName()": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 80,
+            "properties": {
+              "defaultValue": "true",
+              "description": "`\"Enable durability check for the \" + slot.getName() + \" slot.\"`",
+              "name": "enabled"
+            }
+          },
+          {
+            "type": "StringSetting",
+            "lineNumber": 86,
+            "properties": {
+              "defaultValue": "`\"/repair \" + slot.getName().toLowerCase()`",
+              "description": "`\"Command to repair the \" + slot.getName() + \" slot.\"`",
+              "name": "repair-command"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 92,
+            "properties": {
+              "defaultValue": "`Mode.Percentage`",
+              "description": "Total - calculate item durability in numbers; Percentage - calculate item durability in percentage.",
+              "name": "mode"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 98,
+            "properties": {
+              "visible": "`() -\u003e mode.get() \u003d\u003d Mode.Total`",
+              "sliderRange": [
+                "1",
+                "1000"
+              ],
+              "min": "1",
+              "defaultValue": "10",
+              "description": "`\"Minimum durability for the \" + slot.getName() + \" slot.\"`",
+              "name": "min-durability"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 107,
+            "properties": {
+              "visible": "`() -\u003e mode.get() \u003d\u003d Mode.Percentage`",
+              "sliderRange": [
+                "1",
+                "100"
+              ],
+              "min": "1",
+              "defaultValue": "10",
+              "description": "`\"Minimum durability percentage for the \" + slot.getName() + \" slot.\"`",
+              "name": "min-durability-percentage"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 116,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "40"
+              ],
+              "min": "1",
+              "defaultValue": "20",
+              "description": "Delay after sending a command in ticks (20 ticks \u003d 1 sec).",
+              "name": "delay"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "nerd-vision",
+      "description": "Allows you to visualize various game mechanics/farms.",
+      "category": "Meteorist",
+      "className": "NerdVision",
+      "classPath": "src/main/java/zgoly/meteorist/modules/NerdVision.java",
+      "lineNumber": 756,
+      "settings": {
+        "Spawn": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 49,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Enables spawn range rendering.",
+              "name": "spawn-ranges-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 55,
+            "properties": {
+              "visible": "`spawnRangesEnabled::get`",
+              "defaultValue": "`SphereType.Default`",
+              "description": "Choose how spawn ranges are visualized: default spherical or cubic grid representation.",
+              "name": "spawn-range-sphere-type"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 62,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "defaultValue": "`CenterPositionType.Pos`",
+              "description": "Selects the type of position for the center.",
+              "name": "center-position-type"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 69,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 centerPositionType.get() \u003d\u003d CenterPositionType.Pos`",
+              "defaultValue": "`new Vector3d(0, 0, 0)`",
+              "description": "Sets the position for the center.",
+              "name": "center-position"
+            }
+          },
+          {
+            "type": "BlockPosSetting",
+            "lineNumber": 76,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 centerPositionType.get() \u003d\u003d CenterPositionType.BlockPos`",
+              "defaultValue": "`new BlockPos(0, 0, 0)`",
+              "description": "Sets the block position for the center.",
+              "name": "center-block-position"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 83,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "16",
+              "description": "Sets the sphere phi count for the spawn range.",
+              "name": "spawn-range-sphere-phi-count"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 92,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "16",
+              "description": "Sets the sphere theta count for the spawn range.",
+              "name": "spawn-range-sphere-theta-count"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 101,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "24",
+              "description": "Sets the sphere phi count for the idle range.",
+              "name": "idle-range-sphere-phi-count"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 110,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "24",
+              "description": "Sets the sphere theta count for the idle range.",
+              "name": "idle-range-sphere-theta-count"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 119,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "32",
+              "description": "Sets the sphere phi count for the despawn range.",
+              "name": "despawn-range-sphere-phi-count"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 128,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "32",
+              "description": "Sets the sphere theta count for the despawn range.",
+              "name": "despawn-range-sphere-theta-count"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 137,
+            "properties": {
+              "visible": "`spawnRangesEnabled::get`",
+              "defaultValue": "`CenterPositionMode.Relative`",
+              "description": "Determines how the center is calculated: relative to the player or absolute.",
+              "name": "center-position-mode"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 144,
+            "properties": {
+              "visible": "`spawnRangesEnabled::get`",
+              "defaultValue": "true",
+              "description": "Displays the center position indicator.",
+              "name": "display-center-position"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 151,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 displayCenterPosition.get()`",
+              "defaultValue": "`new Vector3d(1, 0, 1)`",
+              "description": "Sets the size of the center position indicator.",
+              "name": "center-position-size"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 158,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 displayCenterPosition.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the center position.",
+              "name": "center-position-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 165,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 displayCenterPosition.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 255, 1)`",
+              "description": "Sets the center position side color.",
+              "name": "center-position-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 172,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 displayCenterPosition.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 255, 255)`",
+              "description": "Sets the center position line color.",
+              "name": "center-position-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 179,
+            "properties": {
+              "visible": "`spawnRangesEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables spawn range rendering.",
+              "name": "spawn-range-enabled"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 186,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangeEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "0",
+                "24"
+              ],
+              "min": "0",
+              "defaultValue": "24",
+              "description": "Sets the spawn sphere range.",
+              "name": "spawn-sphere-range"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 195,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangeEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Cubic`",
+              "sliderRange": [
+                "1",
+                "24"
+              ],
+              "min": "1",
+              "defaultValue": "24",
+              "description": "Sets the spawn sphere range.",
+              "name": "spawn-block-sphere-range"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 204,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangeEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the spawn range.",
+              "name": "spawn-range-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 211,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangeEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 10)`",
+              "description": "Sets the spawn range side color.",
+              "name": "spawn-range-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 218,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 spawnRangeEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 255)`",
+              "description": "Sets the spawn range line color.",
+              "name": "spawn-range-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 225,
+            "properties": {
+              "visible": "`spawnRangesEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables idle range rendering.",
+              "name": "idle-range-enabled"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 232,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 idleRangeEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "0",
+                "32"
+              ],
+              "min": "0",
+              "defaultValue": "32",
+              "description": "Sets the idle sphere range.",
+              "name": "idle-sphere-range"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 241,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 idleRangeEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Cubic`",
+              "sliderRange": [
+                "1",
+                "32"
+              ],
+              "min": "1",
+              "defaultValue": "32",
+              "description": "Sets the idle sphere range.",
+              "name": "idle-block-sphere-range"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 250,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 idleRangeEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the idle range.",
+              "name": "idle-range-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 257,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 idleRangeEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 0, 10)`",
+              "description": "Sets the idle range side color.",
+              "name": "idle-range-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 264,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 idleRangeEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 0, 255)`",
+              "description": "Sets the idle range line color.",
+              "name": "idle-range-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 271,
+            "properties": {
+              "visible": "`spawnRangesEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables despawn range rendering.",
+              "name": "despawn-range-enabled"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 278,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 despawnRangeEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "0",
+                "128"
+              ],
+              "min": "0",
+              "defaultValue": "128",
+              "description": "Sets the despawn sphere range.",
+              "name": "despawn-sphere-range"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 287,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 despawnRangeEnabled.get() \u0026\u0026 spawnRangesSphereType.get() \u003d\u003d SphereType.Cubic`",
+              "sliderRange": [
+                "1",
+                "128"
+              ],
+              "min": "1",
+              "defaultValue": "128",
+              "description": "Sets the despawn sphere range.",
+              "name": "despawn-block-sphere-range"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 296,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 despawnRangeEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the despawn range.",
+              "name": "despawn-range-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 303,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 despawnRangeEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 10)`",
+              "description": "Sets the despawn range side color.",
+              "name": "despawn-range-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 310,
+            "properties": {
+              "visible": "`() -\u003e spawnRangesEnabled.get() \u0026\u0026 despawnRangeEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 255)`",
+              "description": "Sets the despawn range line color.",
+              "name": "despawn-range-line-color"
+            }
+          }
+        ],
+        "Turtle Eggs": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 318,
+            "properties": {
+              "onChanged": "`(value) -\u003e onActivate()`",
+              "defaultValue": "false",
+              "description": "Enables turtle eggs rendering.",
+              "name": "enabled"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 325,
+            "properties": {
+              "visible": "`turtleEggsRenderEnabled::get`",
+              "defaultValue": "`new Vector3d(47, 7, 47)`",
+              "description": "Sets the size of the turtle eggs range.",
+              "name": "range-size"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 332,
+            "properties": {
+              "visible": "`turtleEggsRenderEnabled::get`",
+              "onChanged": "`(value) -\u003e onActivate()`",
+              "defaultValue": "true",
+              "description": "Enables turtle eggs range rendering.",
+              "name": "range-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 340,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsRangeEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the turtle eggs range.",
+              "name": "range-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 347,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsRangeEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 255, 10)`",
+              "description": "Sets the turtle eggs range side color.",
+              "name": "range-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 354,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsRangeEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 255, 255)`",
+              "description": "Sets the turtle eggs range line color.",
+              "name": "range-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 361,
+            "properties": {
+              "visible": "`turtleEggsRenderEnabled::get`",
+              "defaultValue": "false",
+              "description": "Enables turtle eggs zombies range rendering.",
+              "name": "zombies-range-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 368,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsZombiesRangeEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the turtle eggs zombies range.",
+              "name": "zombies-range-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 375,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsZombiesRangeEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 10)`",
+              "description": "Sets the turtle eggs zombies range side color.",
+              "name": "zombies-range-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 382,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsZombiesRangeEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 255)`",
+              "description": "Sets the turtle eggs zombies range line color.",
+              "name": "zombies-range-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 389,
+            "properties": {
+              "visible": "`turtleEggsRenderEnabled::get`",
+              "onChanged": "`(value) -\u003e onActivate()`",
+              "defaultValue": "true",
+              "description": "Enables turtle eggs aggression render.",
+              "name": "aggression-render-enabled"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 397,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "true",
+              "description": "Enables turtle eggs aggression egg render.",
+              "name": "aggression-egg-render-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 404,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionEggRenderEnabled.get() \u0026\u0026 turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the turtle eggs aggression render.",
+              "name": "aggression-egg-render-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 411,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionEggRenderEnabled.get() \u0026\u0026 turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 0, 10)`",
+              "description": "Sets the turtle eggs aggression render side color.",
+              "name": "aggression-egg-render-side-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 418,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "true",
+              "description": "Enables turtle eggs aggression zombie render.",
+              "name": "aggression-zombie-render-enabled"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 425,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionEggRenderEnabled.get() \u0026\u0026 turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 0, 255)`",
+              "description": "Sets the turtle eggs aggression render line color.",
+              "name": "aggression-egg-render-line-color"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 432,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionZombieRenderEnabled.get() \u0026\u0026 turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the turtle eggs aggression render.",
+              "name": "aggression-zombie-render-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 439,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionZombieRenderEnabled.get() \u0026\u0026 turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 10)`",
+              "description": "Sets the turtle eggs aggression render side color.",
+              "name": "aggression-zombie-render-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 446,
+            "properties": {
+              "visible": "`() -\u003e turtleEggsAggressionZombieRenderEnabled.get() \u0026\u0026 turtleEggsAggressionRenderEnabled.get() \u0026\u0026 turtleEggsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 255)`",
+              "description": "Sets the turtle eggs aggression render line color.",
+              "name": "aggression-zombie-render-line-color"
+            }
+          }
+        ],
+        "Spawners": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 454,
+            "properties": {
+              "onChanged": "`(value) -\u003e onActivate()`",
+              "defaultValue": "false",
+              "description": "Enables spawners rendering.",
+              "name": "enabled"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 461,
+            "properties": {
+              "visible": "`spawnersRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables spawners render sphere rendering.",
+              "name": "render-sphere-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 468,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderSphereEnabled.get()`",
+              "defaultValue": "`SphereType.Default`",
+              "description": "Choose how spawners render spheres are visualized: default spherical or cubic grid representation.",
+              "name": "render-sphere-visualization-type"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 475,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderSphereEnabled.get() \u0026\u0026 spawnersRenderSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "16",
+              "description": "Sets the sphere phi count for the spawners render sphere.",
+              "name": "render-sphere-phi-count"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 484,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderSphereEnabled.get() \u0026\u0026 spawnersRenderSphereType.get() \u003d\u003d SphereType.Default`",
+              "sliderRange": [
+                "4",
+                "128"
+              ],
+              "min": "4",
+              "defaultValue": "16",
+              "description": "Sets the sphere theta count for the spawners render sphere.",
+              "name": "render-sphere-theta-count"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 493,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderSphereEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the spawners render sphere.",
+              "name": "render-sphere-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 500,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderSphereEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 10)`",
+              "description": "Sets the spawners render sphere side color.",
+              "name": "render-sphere-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 507,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderSphereEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 255)`",
+              "description": "Sets the spawners render sphere line color.",
+              "name": "render-sphere-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 514,
+            "properties": {
+              "visible": "`spawnersRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables spawners detecting zone rendering.",
+              "name": "detecting-zone-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 521,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderDetectingZoneEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the spawners detecting zone.",
+              "name": "detecting-zone-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 528,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderDetectingZoneEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 255, 10)`",
+              "description": "Sets the spawners detecting zone side color.",
+              "name": "detecting-zone-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 535,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderDetectingZoneEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 255, 255)`",
+              "description": "Sets the spawners detecting zone line color.",
+              "name": "detecting-zone-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 542,
+            "properties": {
+              "visible": "`spawnersRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables spawners spawning zone rendering.",
+              "name": "spawning-zone-enabled"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 549,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderSpawningZoneEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "false",
+              "description": "Round spawning zone size to block size.",
+              "name": "spawning-zone-rounding"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 556,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderSpawningZoneEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the spawners spawning zone.",
+              "name": "spawning-zone-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 563,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderSpawningZoneEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 10)`",
+              "description": "Sets the spawners spawning zone side color.",
+              "name": "spawning-zone-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 570,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderSpawningZoneEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 255)`",
+              "description": "Sets the spawners spawning zone line color.",
+              "name": "spawning-zone-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 577,
+            "properties": {
+              "visible": "`spawnersRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables spawners active spawner rendering.",
+              "name": "active-spawner-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 584,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderActiveSpawnerEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the spawners active spawner.",
+              "name": "active-spawner-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 591,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderActiveSpawnerEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 10)`",
+              "description": "Sets the spawners active spawner side color.",
+              "name": "active-spawner-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 598,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderActiveSpawnerEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 255)`",
+              "description": "Sets the spawners active spawner line color.",
+              "name": "active-spawner-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 605,
+            "properties": {
+              "visible": "`spawnersRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables spawners inactive spawner rendering.",
+              "name": "inactive-spawner-enabled"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 612,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderInactiveSpawnerEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the spawners inactive spawner.",
+              "name": "inactive-spawner-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 619,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderInactiveSpawnerEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 10)`",
+              "description": "Sets the spawners inactive spawner side color.",
+              "name": "inactive-spawner-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 626,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderInactiveSpawnerEnabled.get() \u0026\u0026 spawnersRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 255)`",
+              "description": "Sets the spawners inactive spawner line color.",
+              "name": "inactive-spawner-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 633,
+            "properties": {
+              "visible": "`spawnersRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables debug info rendering for the spawners render.",
+              "name": "render-debug-info-enabled"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 640,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderDebugInfoEnabled.get()`",
+              "defaultValue": "`new Vector3d(0, 0, 0)`",
+              "description": "Sets the spawners render debug info offset.",
+              "name": "render-debug-info-offset"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 647,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderDebugInfoEnabled.get()`",
+              "min": "0",
+              "defaultValue": "1",
+              "description": "Sets the spawners render debug info size.",
+              "name": "render-debug-info-size"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 655,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderDebugInfoEnabled.get()`",
+              "min": "0",
+              "defaultValue": "1",
+              "description": "Sets the vertical margin between debug info pairs.",
+              "name": "render-debug-info-margin"
+            }
+          },
+          {
+            "type": "StringListSetting",
+            "lineNumber": 663,
+            "properties": {
+              "visible": "`() -\u003e spawnersRenderEnabled.get() \u0026\u0026 spawnersRenderDebugInfoEnabled.get()`",
+              "defaultValue": "`List.of(\"Delay\", \"RequiredPlayerRange\")`",
+              "description": "Sets the spawners render debug info allowed keys.",
+              "name": "render-debug-info-allowed-keys"
+            }
+          }
+        ],
+        "Iron Golems": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 671,
+            "properties": {
+              "onChanged": "`(value) -\u003e onActivate()`",
+              "defaultValue": "false",
+              "description": "Enables iron golems rendering.",
+              "name": "enabled"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 678,
+            "properties": {
+              "visible": "`ironGolemsRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables iron golems detecting zone rendering.",
+              "name": "detecting-zone-enabled"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 685,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderDetectingZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`new Vector3d(32, 32, 32)`",
+              "description": "Sets the iron golems detecting zone size.",
+              "name": "detecting-zone-size"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 692,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderDetectingZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the iron golems detecting zone.",
+              "name": "detecting-zone-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 699,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderDetectingZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 255, 10)`",
+              "description": "Sets the iron golems detecting zone side color.",
+              "name": "detecting-zone-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 706,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderDetectingZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(255, 255, 255, 255)`",
+              "description": "Sets the iron golems detecting zone line color.",
+              "name": "detecting-zone-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 713,
+            "properties": {
+              "visible": "`ironGolemsRenderEnabled::get`",
+              "defaultValue": "true",
+              "description": "Enables iron golems spawning zone rendering.",
+              "name": "spawning-zone-enabled"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 720,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderSpawningZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`new Vector3d(17, 13, 17)`",
+              "description": "Sets the iron golems spawning zone size.",
+              "name": "spawning-zone-size"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 727,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderSpawningZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "Sets the shape mode for the iron golems spawning zone.",
+              "name": "spawning-zone-shape-mode"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 734,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderSpawningZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 10)`",
+              "description": "Sets the iron golems spawning zone side color.",
+              "name": "spawning-zone-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 741,
+            "properties": {
+              "visible": "`() -\u003e ironGolemsRenderSpawningZoneEnabled.get() \u0026\u0026 ironGolemsRenderEnabled.get()`",
+              "defaultValue": "`new SettingColor(0, 255, 0, 255)`",
+              "description": "Sets the iron golems spawning zone line color.",
+              "name": "spawning-zone-line-color"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "boat-control",
+      "description": "Automatically controls the boat for you.",
+      "category": "Meteorist",
+      "className": "BoatControl",
+      "classPath": "src/main/java/zgoly/meteorist/modules/BoatControl.java",
+      "lineNumber": 177,
+      "settings": {
+        "General": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 28,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Automatically moves forward when you get into the boat.",
+              "name": "auto-forward"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 34,
+            "properties": {
+              "visible": "`autoForward::get`",
+              "defaultValue": "false",
+              "description": "Do not move forward when turning.",
+              "name": "stop-when-turning"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 41,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Automatically turns the boat.",
+              "name": "smart-turning"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 47,
+            "properties": {
+              "visible": "`smartTurning::get`",
+              "defaultValue": "false",
+              "description": "Always try (if possible) to turn the boat back to the yaw axis. Not effective but may be useful in some cases.",
+              "name": "turn-to-yaw"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 54,
+            "properties": {
+              "visible": "`() -\u003e smartTurning.get() \u0026\u0026 turnToYaw.get()`",
+              "max": "180",
+              "min": "`-180`",
+              "defaultValue": "0",
+              "description": "The yaw to turn to.",
+              "name": "yaw"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 63,
+            "properties": {
+              "visible": "`() -\u003e smartTurning.get() \u0026\u0026 turnToYaw.get()`",
+              "defaultValue": "false",
+              "description": "Automatically capture boat\u0027s yaw upon boarding.",
+              "name": "auto-yaw"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 70,
+            "properties": {
+              "visible": "`() -\u003e smartTurning.get() \u0026\u0026 turnToYaw.get()`",
+              "min": "0",
+              "defaultValue": "10",
+              "description": "Accuracy of turning to yaw. The higher the value, the lower the accuracy.",
+              "name": "accuracy"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 78,
+            "properties": {
+              "visible": "`smartTurning::get`",
+              "defaultValue": "`new Vector3d(1, 1, 1)`",
+              "description": "The size of the left collision.",
+              "name": "left-collision-size"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 85,
+            "properties": {
+              "visible": "`smartTurning::get`",
+              "defaultValue": "`new Vector3d(1, 0, -1)`",
+              "description": "The offset of the left collision.",
+              "name": "left-collision-offset"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 92,
+            "properties": {
+              "visible": "`smartTurning::get`",
+              "defaultValue": "`new Vector3d(1, 1, 1)`",
+              "description": "The size of the right collision.",
+              "name": "right-collision-size"
+            }
+          },
+          {
+            "type": "Vector3dSetting",
+            "lineNumber": 99,
+            "properties": {
+              "visible": "`smartTurning::get`",
+              "defaultValue": "`new Vector3d(1, 0, 1)`",
+              "description": "The offset of the right collision.",
+              "name": "right-collision-offset"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 106,
+            "properties": {
+              "defaultValue": "`State.TURNING_RIGHT`",
+              "description": "The action to do when left collision is detected.",
+              "name": "left-collision-action"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 112,
+            "properties": {
+              "defaultValue": "`State.TURNING_LEFT`",
+              "description": "The action to do when right collision is detected.",
+              "name": "right-collision-action"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 118,
+            "properties": {
+              "defaultValue": "`State.TURNING_LEFT`",
+              "description": "The action to do when both left and right collisions are detected.",
+              "name": "both-collision-action"
+            }
+          }
+        ],
+        "Render": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 125,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Uses the lerped position for the rendering collisions.",
+              "name": "use-lerped-position"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 131,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Renders the left collision.",
+              "name": "render-left-collision"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 137,
+            "properties": {
+              "visible": "`renderSideColor1::get`",
+              "defaultValue": "`new SettingColor(0, 0, 255, 40)`",
+              "description": "The color of the sides of the collision being rendered.",
+              "name": "left-collision-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 144,
+            "properties": {
+              "visible": "`renderSideColor1::get`",
+              "defaultValue": "`new SettingColor(0, 0, 255, 100)`",
+              "description": "The color of the lines of the collision being rendered.",
+              "name": "left-collision-line-color"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 151,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Renders the right collision.",
+              "name": "render-right-collision"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 157,
+            "properties": {
+              "visible": "`renderSideColor2::get`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 40)`",
+              "description": "The color of the sides of the collision being rendered.",
+              "name": "right-collision-side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 164,
+            "properties": {
+              "visible": "`renderSideColor2::get`",
+              "defaultValue": "`new SettingColor(255, 0, 0, 100)`",
+              "description": "The color of the lines of the collision being rendered.",
+              "name": "right-collision-line-color"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "minescript-integration",
+      "description": "Control your Minescript custom scripts.",
+      "category": "Meteorist",
+      "className": "MinescriptIntegration",
+      "classPath": "src/main/java/zgoly/meteorist/modules/minescript/MinescriptIntegration.java",
+      "lineNumber": 15,
+      "settings": {}
+    },
+    {
+      "name": "z-kill-aura",
+      "description": "Killaura which only attacks target if you aim at it.",
+      "category": "Meteorist",
+      "className": "ZKillaura",
+      "classPath": "src/main/java/zgoly/meteorist/modules/ZKillaura.java",
+      "lineNumber": 282,
+      "settings": {
+        "Filter": [
+          {
+            "type": "EntityTypeListSetting",
+            "lineNumber": 35,
+            "properties": {
+              "defaultValue": "`EntityType.PLAYER`",
+              "description": "Entities to attack.",
+              "name": "entities"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 42,
+            "properties": {
+              "sliderMax": "6",
+              "min": "0",
+              "defaultValue": "`4.5`",
+              "description": "The maximum range the entity can be to attack it.",
+              "name": "range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 56,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether or not to attack mobs with a name.",
+              "name": "ignore-named"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 62,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will only attack sometimes passive mobs if they are targeting you.",
+              "name": "ignore-passive"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 68,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Will avoid attacking mobs you tamed.",
+              "name": "ignore-tamed"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 74,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will avoid attacking players in creative mode.",
+              "name": "ignore-creative"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 80,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will avoid attacking players on your friends list.",
+              "name": "ignore-friends"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 86,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether or not to attack mobs through walls.",
+              "name": "ignore-walls"
+            }
+          }
+        ],
+        "Attack": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 93,
+            "properties": {
+              "defaultValue": "`OnFallMode.Value`",
+              "description": "Chooses an attack strategy when falling to maximize critical damage.",
+              "name": "on-fall-mode"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 99,
+            "properties": {
+              "visible": "`() -\u003e onFallMode.get() \u003d\u003d OnFallMode.Value`",
+              "sliderMax": "1",
+              "defaultValue": "`0.25`",
+              "min": "0",
+              "description": "Defines a specific value for attacking while falling.",
+              "name": "on-fall-value"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 108,
+            "properties": {
+              "visible": "`() -\u003e onFallMode.get() \u003d\u003d OnFallMode.RandomValue`",
+              "sliderMax": "1",
+              "defaultValue": "`0.2`",
+              "min": "0",
+              "description": "Specifies the minimum randomized value for attacking while falling.",
+              "name": "on-fall-min-random-value"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 117,
+            "properties": {
+              "visible": "`() -\u003e onFallMode.get() \u003d\u003d OnFallMode.RandomValue`",
+              "sliderMax": "1",
+              "defaultValue": "`0.4`",
+              "min": "0",
+              "description": "Specifies the maximum randomized value for attacking while falling.",
+              "name": "on-fall-max-random-value"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 126,
+            "properties": {
+              "defaultValue": "`HitSpeedMode.Value`",
+              "description": "Selects a hit speed mode for attacking.",
+              "name": "hit-speed-mode"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 132,
+            "properties": {
+              "visible": "`() -\u003e hitSpeedMode.get() \u003d\u003d HitSpeedMode.Value`",
+              "sliderRange": [
+                "`-10`",
+                "10"
+              ],
+              "defaultValue": "0",
+              "description": "Defines a specific hit speed value for attacking.",
+              "name": "hit-speed-value"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 140,
+            "properties": {
+              "visible": "`() -\u003e hitSpeedMode.get() \u003d\u003d HitSpeedMode.RandomValue`",
+              "sliderRange": [
+                "`-10`",
+                "10"
+              ],
+              "defaultValue": "0",
+              "description": "Specifies the minimum randomized hit speed value.",
+              "name": "hit-speed-min-random-value"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 148,
+            "properties": {
+              "visible": "`() -\u003e hitSpeedMode.get() \u003d\u003d HitSpeedMode.RandomValue`",
+              "sliderRange": [
+                "`-10`",
+                "10"
+              ],
+              "defaultValue": "0",
+              "description": "Specifies the maximum randomized hit speed value.",
+              "name": "hit-speed-max-random-value"
+            }
+          }
+        ],
+        "Shield": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 157,
+            "properties": {
+              "defaultValue": "`ShieldMode.Break`",
+              "description": "Will try and use an axe to break target shields.",
+              "name": "shield-mode"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 163,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break`",
+              "defaultValue": "`DelayMode.Value`",
+              "description": "Selects a delay before swapping.",
+              "name": "swap-delay-mode"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 170,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 swapDelayMode.get() \u003d\u003d DelayMode.Value`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "2",
+              "description": "Defines a specific delay (in ticks) before swapping.",
+              "name": "swap-delay-value"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 178,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 swapDelayMode.get() \u003d\u003d DelayMode.RandomValue`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "1",
+              "description": "Specifies the minimum randomized delay (in ticks) before swapping.",
+              "name": "swap-delay-min-random-value"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 186,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 swapDelayMode.get() \u003d\u003d DelayMode.RandomValue`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "5",
+              "description": "Specifies the maximum randomized delay (in ticks) before swapping.",
+              "name": "swap-delay-max-random-value"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 194,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break`",
+              "defaultValue": "`DelayMode.Value`",
+              "description": "Selects a delay before hitting.",
+              "name": "hit-delay-mode"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 201,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 hitDelayMode.get() \u003d\u003d DelayMode.Value`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "2",
+              "description": "Defines a specific delay (in ticks) before hitting.",
+              "name": "hit-delay-value"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 209,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 hitDelayMode.get() \u003d\u003d DelayMode.RandomValue`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "1",
+              "description": "Specifies the minimum randomized delay (in ticks) before hitting.",
+              "name": "hit-delay-min-random-value"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 217,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 hitDelayMode.get() \u003d\u003d DelayMode.RandomValue`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "5",
+              "description": "Specifies the maximum randomized delay (in ticks) before hitting.",
+              "name": "hit-delay-max-random-value"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 225,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break`",
+              "defaultValue": "`DelayMode.Value`",
+              "description": "Selects a delay before swapping back.",
+              "name": "swap-back-delay-mode"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 232,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 swapBackDelayMode.get() \u003d\u003d DelayMode.Value`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "2",
+              "description": "Defines a specific delay (in ticks) before swapping back.",
+              "name": "swap-back-delay-value"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 240,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 swapBackDelayMode.get() \u003d\u003d DelayMode.RandomValue`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "1",
+              "description": "Specifies the minimum randomized delay (in ticks) before swapping back.",
+              "name": "swap-back-delay-min-random-value"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 248,
+            "properties": {
+              "visible": "`() -\u003e shieldMode.get() \u003d\u003d ShieldMode.Break \u0026\u0026 swapBackDelayMode.get() \u003d\u003d DelayMode.RandomValue`",
+              "sliderRange": [
+                "0",
+                "20"
+              ],
+              "defaultValue": "5",
+              "description": "Specifies the maximum randomized delay (in ticks) before swapping back.",
+              "name": "swap-back-delay-max-random-value"
+            }
+          }
+        ],
+        "Visual": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 257,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Makes hand swing visible client-side.",
+              "name": "swing-hand"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "slot-click",
+      "description": "Module that automates clicking on slots.",
+      "category": "Meteorist",
+      "className": "SlotClick",
+      "classPath": "src/main/java/zgoly/meteorist/modules/slotclick/SlotClick.java",
+      "lineNumber": 62,
+      "settings": {
+        "General": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 48,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Disables the module after one iteration.",
+              "name": "disable-after-iteration"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "instructions",
+      "description": "Runs commands with different delays and number of cycles. Supports Starscript.",
+      "category": "Meteorist",
+      "className": "Instructions",
+      "classPath": "src/main/java/zgoly/meteorist/modules/instructions/Instructions.java",
+      "lineNumber": 37,
+      "settings": {}
+    },
+    {
+      "name": "placer",
+      "description": "Places blocks in range.",
+      "category": "CATEGORY",
+      "className": "Placer",
+      "classPath": "src/main/java/zgoly/meteorist/modules/placer/Placer.java",
+      "lineNumber": 143,
+      "settings": {
+        "General": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 53,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Check conditions for placing blocks, such as whether block can be placed and whether there is entity that blocking block from being placed.",
+              "name": "check-conditions"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 60,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Rotate head when placing a block.",
+              "name": "rotate-head"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 67,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Limit block placement range.",
+              "name": "limit-range"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 74,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "6"
+              ],
+              "visible": "`limitRange::get`",
+              "defaultValue": "4",
+              "description": "Max range to place blocks.",
+              "name": "max-range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 83,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Render each block in placer area.",
+              "name": "render-each-block"
+            }
+          }
+        ],
+        "Timing": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 90,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Use delay between placing blocks.",
+              "name": "use-delay"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 97,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "10"
+              ],
+              "min": "1",
+              "visible": "`useDelay::get`",
+              "defaultValue": "1",
+              "description": "Maximum blocks to place per tick.",
+              "name": "max-blocks-per-tick"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 107,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "40"
+              ],
+              "range": [
+                "1",
+                "120"
+              ],
+              "visible": "`useDelay::get`",
+              "defaultValue": "1",
+              "description": "Delay after placing block(s) in ticks (20 ticks \u003d 1 sec).",
+              "name": "delay"
+            }
+          }
+        ],
+        "Pause": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 117,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Pause when Auto Eat is active and eats food.",
+              "name": "pause-on-auto-eat"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 124,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Pause when Auto Gap is active and eats gaps.",
+              "name": "pause-on-auto-gap"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 131,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Pause when Kill Aura is active and attacks target entities.",
+              "name": "pause-on-kill-aura"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entity-interact",
+      "description": "Automatically interacts with entities in range.",
+      "category": "Meteorist",
+      "className": "EntityInteract",
+      "classPath": "src/main/java/zgoly/meteorist/modules/EntityInteract.java",
+      "lineNumber": 75,
+      "settings": {
+        "General": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 21,
+            "properties": {
+              "defaultValue": "true",
+              "description": "One interaction per tick.",
+              "name": "one-interaction-per-tick"
+            }
+          },
+          {
+            "type": "EntityTypeListSetting",
+            "lineNumber": 27,
+            "properties": {
+              "defaultValue": "`EntityType.SHEEP`",
+              "description": "Entities to interact with.",
+              "name": "entities"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 34,
+            "properties": {
+              "defaultValue": "4",
+              "min": "0",
+              "description": "Interact range.",
+              "name": "range"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 41,
+            "properties": {
+              "defaultValue": "`InteractionHand.MAIN_HAND`",
+              "description": "The hand to use when interacting.",
+              "name": "hand"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 47,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Swing hand client-side.",
+              "name": "swing-hand"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 53,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Ignore baby entities.",
+              "name": "ignore-babies"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 59,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Interact with each entity only one time.",
+              "name": "one-time"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 65,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Sends rotation packets to the server when interacting with entity.",
+              "name": "rotate"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "jump-flight",
+      "description": "Flight that using jumps for fly. No fall recommended.",
+      "category": "Meteorist",
+      "className": "JumpFlight",
+      "classPath": "src/main/java/zgoly/meteorist/modules/JumpFlight.java",
+      "lineNumber": 58,
+      "settings": {
+        "General": [
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 22,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "75"
+              ],
+              "range": [
+                "1",
+                "75"
+              ],
+              "defaultValue": "5",
+              "description": "Flight speed.",
+              "name": "speed"
+            }
+          },
+          {
+            "type": "IntSetting",
+            "lineNumber": 30,
+            "properties": {
+              "sliderRange": [
+                "1",
+                "10"
+              ],
+              "range": [
+                "1",
+                "10"
+              ],
+              "defaultValue": "1",
+              "description": "Force of change y-axis.",
+              "name": "change-y-axis-force"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 38,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Allows change speed using scroll wheel.",
+              "name": "scroll-to-speed"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 44,
+            "properties": {
+              "visible": "`scrollBool::get`",
+              "sliderRange": [
+                "`0.1`",
+                "5"
+              ],
+              "range": [
+                "`0.1`",
+                "5"
+              ],
+              "defaultValue": "1",
+              "description": "Change speed using scroll wheel sensitivity.",
+              "name": "scroll-sensitivity"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-trade",
+      "description": "Automatically trades items with villagers (idea by Hiradpi).",
+      "category": "Meteorist",
+      "className": "AutoTrade",
+      "classPath": "src/main/java/zgoly/meteorist/modules/autotrade/AutoTrade.java",
+      "lineNumber": 68,
+      "settings": {
+        "General": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 48,
+            "properties": {
+              "defaultValue": "true",
+              "description": "One offer per tick.",
+              "name": "one-offer-per-tick"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 54,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Closes the trade screen when done.",
+              "name": "close-when-done"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-login",
+      "description": "Automatically logs in your account using /login.",
+      "category": "Meteorist",
+      "className": "AutoLogin",
+      "classPath": "src/main/java/zgoly/meteorist/modules/autologin/AutoLogin.java",
+      "lineNumber": 130,
+      "settings": {
+        "General": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 36,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Automatically saves passwords when you login or register.",
+              "name": "auto-save"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 42,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "true",
+              "description": "Ignore self commands. Recommended to leave enabled, otherwise Auto Save will trigger on Auto Login commands.",
+              "name": "ignore-self"
+            }
+          },
+          {
+            "type": "StringSetting",
+            "lineNumber": 49,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "/login",
+              "description": "Command to login.",
+              "name": "login-command"
+            }
+          },
+          {
+            "type": "StringListSetting",
+            "lineNumber": 56,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": [
+                "login",
+                "log",
+                "l",
+                "register",
+                "reg"
+              ],
+              "description": "Commands to handle.",
+              "name": "commands-to-handle"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 63,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "true",
+              "description": "Save server IP in filter.",
+              "name": "save-server-ip"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 70,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "true",
+              "description": "Save username in filter.",
+              "name": "save-username"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 77,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "true",
+              "description": "Whether to check password command when adding new auto login.",
+              "name": "check-password-command"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 84,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "false",
+              "description": "Whether to check execution mode when adding new auto login.",
+              "name": "check-execution-mode"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 91,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "false",
+              "description": "Whether to check delay when adding new auto login.",
+              "name": "check-delay"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 98,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "false",
+              "description": "Whether to check username when adding new auto login.",
+              "name": "check-username"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 105,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "false",
+              "description": "Whether to check server IP when adding new auto login.",
+              "name": "check-server-ip"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 112,
+            "properties": {
+              "visible": "`autoSave::get`",
+              "defaultValue": "false",
+              "description": "Whether to check last login when adding new auto login.",
+              "name": "check-last-login"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "double-doors-interact",
+      "description": "Open both doors with one interaction.",
+      "category": "Meteorist",
+      "className": "DoubleDoorsInteract",
+      "classPath": "src/main/java/zgoly/meteorist/modules/DoubleDoorsInteract.java",
+      "lineNumber": 21,
+      "settings": {}
+    },
+    {
+      "name": "range-actions",
+      "description": "Combined functionality of different range actions.",
+      "category": "Meteorist",
+      "className": "RangeActions",
+      "classPath": "src/main/java/zgoly/meteorist/modules/rangeactions/RangeActions.java",
+      "lineNumber": 59,
+      "settings": {}
+    },
+    {
+      "name": "z-aimbot",
+      "description": "Smart aimbot that takes many settings into account when targeting.",
+      "category": "Meteorist",
+      "className": "ZAimbot",
+      "classPath": "src/main/java/zgoly/meteorist/modules/ZAimbot.java",
+      "lineNumber": 184,
+      "settings": {
+        "Filter": [
+          {
+            "type": "EntityTypeListSetting",
+            "lineNumber": 34,
+            "properties": {
+              "defaultValue": "`EntityType.PLAYER`",
+              "description": "Entities to aim at.",
+              "name": "entities"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 41,
+            "properties": {
+              "sliderMax": "6",
+              "min": "0",
+              "defaultValue": "`4.5`",
+              "description": "The maximum range the entity can be to aim at it.",
+              "name": "range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 55,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether or not to aim at mobs with a name.",
+              "name": "ignore-named"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 61,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will only aim at sometimes passive mobs if they are targeting you.",
+              "name": "ignore-passive"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 67,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Will avoid aiming at mobs you tamed.",
+              "name": "ignore-tamed"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 73,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will avoid aiming at players in creative mode.",
+              "name": "ignore-creative"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 79,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will avoid aiming at players on your friends list.",
+              "name": "ignore-friends"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 85,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Will avoid aiming at players who are using a shield.",
+              "name": "ignore-shield"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 91,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Restrict aiming to entities within the specified FOV.",
+              "name": "use-fov-range"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 97,
+            "properties": {
+              "visible": "`useFovRange::get`",
+              "defaultValue": "90",
+              "sliderRange": [
+                "0",
+                "180"
+              ],
+              "description": "Maximum Field of View (FOV) range for targeting entities.",
+              "name": "fov-range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 105,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Allow aiming through walls.",
+              "name": "ignore-walls"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 111,
+            "properties": {
+              "defaultValue": "`SortPriority.ClosestAngle`",
+              "description": "Sorting method to prioritize targets within range.",
+              "name": "priority"
+            }
+          }
+        ],
+        "Aim": [
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 118,
+            "properties": {
+              "defaultValue": "0",
+              "sliderMax": "20",
+              "min": "0",
+              "description": "Amount to predict the target\u0027s movement when aiming.",
+              "name": "target-movement-prediction"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 126,
+            "properties": {
+              "defaultValue": "`AimAxes.Both`",
+              "description": "Which rotational axes to adjust when aiming.",
+              "name": "aim-axes"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 132,
+            "properties": {
+              "defaultValue": "`Target.Head`",
+              "description": "Part of the target entity\u0027s body to aim at.",
+              "name": "aim-target"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 138,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Aim horizontally (yaw) at the target entity instantly.",
+              "name": "instant-yaw"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 144,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Aim vertically (pitch) at the target entity instantly.",
+              "name": "instant-pitch"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 150,
+            "properties": {
+              "visible": "`() -\u003e !instantYaw.get()`",
+              "defaultValue": "false",
+              "description": "Synchronize yaw aim speed with attack cooldown progress.",
+              "name": "sync-yaw-with-cooldown"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 157,
+            "properties": {
+              "visible": "`() -\u003e !instantPitch.get()`",
+              "defaultValue": "false",
+              "description": "Synchronize pitch aim speed with attack cooldown progress.",
+              "name": "sync-pitch-with-cooldown"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 164,
+            "properties": {
+              "visible": "`() -\u003e !instantYaw.get()`",
+              "sliderRange": [
+                "`0.1`",
+                "10"
+              ],
+              "defaultValue": "1",
+              "min": "0",
+              "description": "Speed at which to adjust horizontal (yaw) aim.",
+              "name": "speed-yaw"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 173,
+            "properties": {
+              "visible": "`() -\u003e !instantPitch.get()`",
+              "sliderRange": [
+                "`0.1`",
+                "10"
+              ],
+              "defaultValue": "1",
+              "min": "0",
+              "description": "Speed at which to adjust vertical (pitch) aim.",
+              "name": "speed-pitch"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "sign-search",
+      "description": "Searches sign text using regex and highlights matching signs.",
+      "category": "Meteorist",
+      "className": "SignSearch",
+      "classPath": "src/main/java/zgoly/meteorist/modules/SignSearch.java",
+      "lineNumber": 93,
+      "settings": {
+        "General": [
+          {
+            "type": "EnumSetting",
+            "lineNumber": 37,
+            "properties": {
+              "defaultValue": "`SearchSide.Both`",
+              "description": "Which side(s) of the sign to search.",
+              "name": "search-side"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 43,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Show found signs in GUI.",
+              "name": "show-results"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 49,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Re-run the search every tick (useful for dynamic sign changes). May impact performance.",
+              "name": "update-every-tick"
+            }
+          }
+        ],
+        "Render": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 56,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Render found signs in world.",
+              "name": "render-signs"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 62,
+            "properties": {
+              "visible": "`renderSigns::get`",
+              "defaultValue": "`new SettingColor(255, 255, 0, 50)`",
+              "description": "Color of the side of the sign render box.",
+              "name": "side-color"
+            }
+          },
+          {
+            "type": "ColorSetting",
+            "lineNumber": 69,
+            "properties": {
+              "visible": "`renderSigns::get`",
+              "defaultValue": "`new SettingColor(255, 255, 0, 255)`",
+              "description": "Color of the line of the sign render box.",
+              "name": "line-color"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 76,
+            "properties": {
+              "visible": "`renderSigns::get`",
+              "defaultValue": "`ShapeMode.Both`",
+              "description": "How to render the sign boxes.",
+              "name": "shape-mode"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "disconnect-sound",
+      "description": "Plays a sound when the Disconnected Screen appears (e.g., when kicked).",
+      "category": "Meteorist",
+      "className": "DisconnectSound",
+      "classPath": "src/main/java/zgoly/meteorist/modules/DisconnectSound.java",
+      "lineNumber": 48,
+      "settings": {
+        "General": [
+          {
+            "type": "SoundEventListSetting",
+            "lineNumber": 24,
+            "properties": {
+              "defaultValue": "`List.of(SoundEvents.NOTE_BLOCK_PLING.value())`",
+              "description": "Sound to play.",
+              "name": "sound"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 30,
+            "properties": {
+              "sliderRange": [
+                "`0.5`",
+                "2"
+              ],
+              "min": "0",
+              "defaultValue": "`0.5`",
+              "description": "Pitch of the sound.",
+              "name": "sound-pitch"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 38,
+            "properties": {
+              "sliderRange": [
+                "0",
+                "1"
+              ],
+              "min": "0",
+              "defaultValue": "1",
+              "description": "Volume of the sound.",
+              "name": "sound-volume"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "auto-crafter",
+      "description": "Automatically craft items.",
+      "category": "Meteorist",
+      "className": "AutoCrafter",
+      "classPath": "src/main/java/zgoly/meteorist/modules/autocrafter/AutoCrafter.java",
+      "lineNumber": 64,
+      "settings": {
+        "General": [
+          {
+            "type": "BoolSetting",
+            "lineNumber": 50,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Attempts to fix inventory desync when crafting. Use it only if you have a desync issue.",
+              "name": "fix-desync"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "commands": [
+    {
+      "name": "instructions",
+      "description": "Runs saved instructions from the \\\"Instructions\\\" module.",
+      "aliases": [],
+      "className": "InstructionsCommand",
+      "classPath": "src/main/java/zgoly/meteorist/commands/InstructionsCommand.java",
+      "lineNumber": 37
+    },
+    {
+      "name": "data",
+      "description": "Gets NBT data of entities or blocks.",
+      "aliases": [
+        "target-nbt"
+      ],
+      "className": "DataCommand",
+      "classPath": "src/main/java/zgoly/meteorist/commands/DataCommand.java",
+      "lineNumber": 21
+    },
+    {
+      "name": "playersinfo",
+      "description": "Saves in file / copies to clipboard info about players on current server.",
+      "aliases": [],
+      "className": "PlayersInfoCommand",
+      "classPath": "src/main/java/zgoly/meteorist/commands/PlayersInfoCommand.java",
+      "lineNumber": 20
+    },
+    {
+      "name": "interact",
+      "description": "Interact with closest block.",
+      "aliases": [],
+      "className": "InteractCommand",
+      "classPath": "src/main/java/zgoly/meteorist/commands/InteractCommand.java",
+      "lineNumber": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "meteorist",
+      "description": "Additional presets for Meteor.",
+      "className": "TextPresets",
+      "classPath": "src/main/java/zgoly/meteorist/hud/TextPresets.java",
+      "lineNumber": 8,
+      "presets": [
+        {
+          "title": "Fall Distance",
+          "text": "Fall distance: #1{round(meteorist.fall_distance, 1)}",
+          "lineNumber": 11
+        },
+        {
+          "title": "Max Fall Distance",
+          "text": "Max fall distance: #1{round(meteorist.max_fall_distance, 1)}",
+          "lineNumber": 12
+        },
+        {
+          "title": "Fall Damage",
+          "text": "Fall damage: #1{round(meteorist.fall_damage) / 2} ❤",
+          "lineNumber": 13
+        },
+        {
+          "title": "Max Fall Damage",
+          "text": "Max fall damage: #1{round(meteorist.max_fall_damage) / 2} ❤",
+          "lineNumber": 14
+        }
+      ]
+    }
+  ]
+}
