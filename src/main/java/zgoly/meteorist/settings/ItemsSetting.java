@@ -17,7 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -55,7 +55,7 @@ public class ItemsSetting extends Setting<List<Item>> {
         ListTag listTag = new ListTag();
 
         for (Item item : get()) {
-            ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+            Identifier id = BuiltInRegistries.ITEM.getKey(item);
             listTag.add(StringTag.valueOf(id.toString()));
         }
 
@@ -70,7 +70,7 @@ public class ItemsSetting extends Setting<List<Item>> {
 
         for (Tag element : listTag) {
             String idStr = element.asString().orElse("");
-            Item item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(idStr));
+            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(idStr));
             if (item != Items.AIR) get().add(item);
         }
 

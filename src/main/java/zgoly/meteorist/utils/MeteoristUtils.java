@@ -22,12 +22,10 @@ import java.util.function.Predicate;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class MeteoristUtils {
-    /**
-     * Determines if the given box collides with any entities.
-     *
-     * @param box the box to check for collisions
-     * @return true if the box collides with any entities, false otherwise
-     */
+    /// Determines if the given box collides with any entities.
+    ///
+    /// @param box the box to check for collisions
+    /// @return true if the box collides with any entities, false otherwise
     public static boolean isCollidesEntity(AABB box) {
         if (mc.level == null) return false;
         for (Entity entity : mc.level.entitiesForRendering()) {
@@ -37,25 +35,21 @@ public class MeteoristUtils {
         return false;
     }
 
-    /**
-     * Check if the given block position collides with any entities.
-     *
-     * @param blockPos the block position to check for collisions
-     * @return true if the block position collides with an entity, false otherwise
-     */
+    /// Check if the given block position collides with any entities.
+    ///
+    /// @param blockPos the block position to check for collisions
+    /// @return true if the block position collides with an entity, false otherwise
     public static boolean isCollidesEntity(BlockPos blockPos) {
         return isCollidesEntity(new AABB(blockPos));
     }
 
-    /**
-     * Retrieves the target that the crosshair is currently pointing at within a given range.
-     *
-     * @param entity       the entity from which the crosshair originates
-     * @param range        the maximum range to the target
-     * @param ignoreBlocks determines whether blocks should be ignored when checking for targets
-     * @param filter       a predicate used to filter potential targets
-     * @return the hit result representing the target that the crosshair is pointing at, or null if no target is found
-     */
+    /// Retrieves the target that the crosshair is currently pointing at within a given range.
+    ///
+    /// @param entity       the entity from which the crosshair originates
+    /// @param range        the maximum range to the target
+    /// @param ignoreBlocks determines whether blocks should be ignored when checking for targets
+    /// @param filter       a predicate used to filter potential targets
+    /// @return the hit result representing the target that the crosshair is pointing at, or null if no target is found
     public static HitResult getCrosshairTarget(Entity entity, double range, boolean ignoreBlocks, Predicate<Entity> filter) {
         if (entity == null || mc.level == null) return null;
 
@@ -68,7 +62,7 @@ public class MeteoristUtils {
         HitResult hitResult = mc.level.clip(raycastContext);
 
         double e = range * range;
-        if (hitResult != null && !ignoreBlocks) e = hitResult.getLocation().distanceToSqr(vec3d);
+        if (!ignoreBlocks) e = hitResult.getLocation().distanceToSqr(vec3d);
 
         EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(entity, vec3d, vec3d3, box, filter.and(targetEntity -> !targetEntity.isSpectator()), e);
         if (entityHitResult != null) {
@@ -80,12 +74,10 @@ public class MeteoristUtils {
         return null;
     }
 
-    /**
-     * Removes invalid characters from the given string. Not fast, but cross-platform.
-     *
-     * @param text the string to remove invalid characters from
-     * @return the string with invalid characters removed
-     */
+    /// Removes invalid characters from the given string. Not fast, but cross-platform.
+    ///
+    /// @param text the string to remove invalid characters from
+    /// @return the string with invalid characters removed
     public static String removeInvalidChars(final String text) {
         try {
             Paths.get(text);
@@ -100,19 +92,16 @@ public class MeteoristUtils {
         }
     }
 
-    /**
-     * Converts a given number of ticks into a human-readable time format.
-     * <p>
-     * This method takes the number of ticks and converts it into hours, minutes, and seconds.
-     * It supports both short (e.g., {@code 3h, 25m, 45s}) and long (e.g., {@code 3 hours, 25 minutes, 45 seconds})
-     * formats, and can optionally include formatting markers {@code (highlight)} and {@code (default)}.
-     * <p>
-     *
-     * @param ticks       the number of ticks to convert (20 ticks = 1 second)
-     * @param shortFormat {@code true} to use short format like "3h, 25m, 45s"; {@code false} for long format like "3 hours, 25 minutes, 45 seconds"
-     * @param formatMsg   {@code true} to include "(highlight)" and "(default)" formatting markers; {@code false} for plain text
-     * @return a formatted string representing the time in hours, minutes, and seconds
-     */
+    /// Converts a given number of ticks into a human-readable time format.
+    ///
+    /// This method takes the number of ticks and converts it into hours, minutes, and seconds.
+    /// It supports both short (e.g., `3h, 25m, 45s`) and long (e.g., `3 hours, 25 minutes, 45 seconds`)
+    /// formats, and can optionally include formatting markers `(highlight)` and `(default)`.
+    ///
+    /// @param ticks       the number of ticks to convert (20 ticks = 1 second)
+    /// @param shortFormat `true` to use short format like "3h, 25m, 45s"; `false` for long format like "3 hours, 25 minutes, 45 seconds"
+    /// @param formatMsg   `true` to include "(highlight)" and "(default)" formatting markers; `false` for plain text
+    /// @return a formatted string representing the time in hours, minutes, and seconds
     public static String ticksToTime(int ticks, boolean shortFormat, boolean formatMsg) {
         int ticksPerSecond = 20;
         int ticksPerMinute = ticksPerSecond * 60;
@@ -165,13 +154,11 @@ public class MeteoristUtils {
         return result.toString();
     }
 
-    /**
-     * Calculates the FOV angle in degrees between the player's look direction and the target.
-     *
-     * @param player the player entity
-     * @param target the target entity
-     * @return the FOV angle in degrees
-     */
+    /// Calculates the FOV angle in degrees between the player's look direction and the target.
+    ///
+    /// @param player the player entity
+    /// @param target the target entity
+    /// @return the FOV angle in degrees
     public static float calculateFov(LivingEntity player, Entity target) {
         Vec3 lookDirection = player.getViewVector(1.0F);
         Vec3 targetDirection = target.position().subtract(player.position()).normalize();
@@ -179,14 +166,12 @@ public class MeteoristUtils {
         return (float) Math.toDegrees(Math.acos(lookDirection.dot(targetDirection)));
     }
 
-    /**
-     * Checks if the recipe can be displayed based on the crafting grid size.
-     *
-     * @param screenHandler The crafting screen handler providing the grid dimensions
-     * @param display       The recipe to check
-     * @return True if the recipe can be displayed in the current grid
-     * @see CraftingRecipeBookComponent
-     */
+    /// Checks if the recipe can be displayed based on the crafting grid size.
+    ///
+    /// @param screenHandler The crafting screen handler providing the grid dimensions
+    /// @param display       The recipe to check
+    /// @return True if the recipe can be displayed in the current grid
+    /// @see CraftingRecipeBookComponent
     public static boolean canDisplayRecipe(AbstractCraftingMenu screenHandler, RecipeDisplay display) {
         int width = screenHandler.getGridWidth();
         int height = screenHandler.getGridHeight();

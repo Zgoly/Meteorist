@@ -30,6 +30,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
+import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.gui.screens.PlacerScreen;
 import zgoly.meteorist.gui.widgets.WVisibilityCheckbox;
 import zgoly.meteorist.utils.MeteoristUtils;
@@ -43,7 +44,8 @@ import java.util.stream.Stream;
 
 import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
 import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.EDIT;
-import static zgoly.meteorist.Meteorist.*;
+import static zgoly.meteorist.Meteorist.ARROW_DOWN;
+import static zgoly.meteorist.Meteorist.ARROW_UP;
 
 public class Placer extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -140,7 +142,7 @@ public class Placer extends Module {
     private boolean work;
 
     public Placer() {
-        super(CATEGORY, "placer", "Places blocks in range.");
+        super(Meteorist.CATEGORY, "placer", "Places blocks in range.");
     }
 
     public CompoundTag toTag() {

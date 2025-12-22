@@ -4,7 +4,7 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 
 public class StubMinescriptService implements MinescriptService {
     @Override

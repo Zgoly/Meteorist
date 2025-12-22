@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,7 @@ import zgoly.meteorist.settings.ItemsSetting;
 import zgoly.meteorist.settings.StringPairSetting;
 import zgoly.meteorist.utils.config.MeteoristConfigScreen;
 import zgoly.meteorist.utils.misc.MeteoristStarscript;
+import zgoly.meteorist.modules.zaimbot.ZAimbot;
 
 import java.util.Random;
 
@@ -61,8 +62,8 @@ public class Meteorist extends MeteorAddon {
     public static GuiTexture ARROW_DOWN;
     public static GuiTexture EYE;
 
-    public static ResourceLocation identifier(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier identifier(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     @Override

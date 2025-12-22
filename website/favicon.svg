@@ -1,0 +1,11 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <path id="cube" d="M16 8l8 4v8l-8 4-8-4v-8Z" stroke-linejoin="round" />
+    </defs>
+
+    <use href="#cube" stroke="#0080ff" stroke-width="16" />
+    <use href="#cube" stroke="#001932" stroke-width="12" fill="#001932" />
+
+    <path d="M12 8q12 0 12 15-2-7-12-7Z" fill="#0080ff" />
+    <circle cx="12" cy="12" r="4" fill="white" />
+</svg>

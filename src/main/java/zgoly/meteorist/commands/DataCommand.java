@@ -3,7 +3,7 @@ package zgoly.meteorist.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.commands.arguments.PlayerArgumentType;
-import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.advancements.criterion.NbtPredicate;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

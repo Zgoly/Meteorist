@@ -1,0 +1,610 @@
+/* 1. CSS Custom Properties (Variables) */
+:root {
+    --primary: rgb(0, 128, 255);
+    --shadow-primary: rgba(0, 128, 255, 0.5);
+    --shadow-secondary: rgba(0, 0, 0, 0.2);
+    --surface-0: rgb(0, 15, 30);
+    --surface-1: rgb(0, 25, 50);
+    --surface-2: rgb(0, 30, 60);
+    --surface-3: rgb(0, 40, 80);
+    --text-primary: #f8f9fa;
+    --text-secondary: #8d99ae;
+    --transition-primary: all 0.3s ease;
+    --transition-secondary: all 1s ease;
+}
+
+/* 2. Base / Reset / Global Styles */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Nunito";
+    background: var(--surface-1);
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+button,
+input[type="button"] {
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    font-weight: 500;
+    position: relative;
+    transition: var(--transition-primary);
+}
+
+a:hover {
+    color: var(--primary);
+}
+
+code {
+    background: var(--surface-0);
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+
+:target {
+    scroll-margin-top: 100px;
+}
+
+/* 3. Layout & Utility Classes */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.material-symbols-rounded {
+    user-select: none;
+}
+
+.small-icon {
+    font-size: 16px;
+}
+
+/* 4. Header & Navigation */
+header {
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface-0);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    user-select: none;
+    gap: 1rem;
+}
+
+.logo img {
+    height: 32px;
+    transition: var(--transition-primary);
+    display: block;
+}
+
+.logo:hover img {
+    transform: rotate(-26deg);
+}
+
+.logo-text {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition-primary);
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-links .inner {
+    display: flex;
+    gap: 1.8rem;
+}
+
+header a {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--primary);
+    transition: var(--transition-primary);
+}
+
+.nav-links a:hover::after {
+    left: 0;
+    width: 100%;
+}
+
+/* 5. Sections & Typography */
+.hero {
+    text-align: center;
+    padding: 5rem 0 2.5rem;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 1.15rem;
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+}
+
+.title {
+    text-align: center;
+    margin: 3.5rem 0 2rem;
+    font-size: 2rem;
+    position: relative;
+}
+
+.title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 3px;
+    transition: var(--transition-primary);
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.title:hover::after {
+    width: 100px;
+}
+
+/* 6. Buttons */
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--primary);
+    color: var(--text-primary);
+    padding: 0.85rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition-primary);
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 20px var(--shadow-secondary);
+    margin: 0.5rem;
+}
+
+.cta-button:hover {
+    background: transparent;
+    color: var(--text-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px var(--shadow-primary);
+}
+
+.cta-button:active {
+    color: var(--primary);
+    transform: translateY(0px);
+}
+
+.github-button {
+    background: var(--surface-0);
+}
+
+.github-button:hover {
+    background: var(--surface-1);
+}
+
+/* 7. Feature Cards */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+    margin-bottom: 2.5rem;
+}
+
+.feature-card {
+    background: var(--surface-2);
+    border-radius: 1.5em;
+    padding: 1.8rem;
+    transition: var(--transition-primary);
+    box-shadow: 0 8px 25px var(--shadow-secondary);
+    border: 2px solid transparent;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px var(--shadow-primary);
+    border: 2px solid var(--primary);
+}
+
+.feature-icon {
+    width: 55px;
+    height: 55px;
+    background: var(--surface-3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    color: var(--primary);
+    transition: var(--transition-primary);
+}
+
+.feature-card:hover .feature-icon {
+    background: var(--primary);
+}
+
+.feature-icon .material-symbols-rounded {
+    transition: var(--transition-primary);
+    font-size: 32px;
+}
+
+.feature-card:hover .material-symbols-rounded {
+    color: var(--text-primary);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+}
+
+/* 8. Content Sections */
+.content-container {
+    background: var(--surface-2);
+    border-radius: 1.5em;
+    padding: 2rem;
+    box-shadow: 0 10px 30px var(--shadow-secondary);
+}
+
+.category-section {
+    margin-bottom: 2.5rem;
+}
+
+.category-title {
+    font-size: 1.4rem;
+    margin: 0 0 1rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.content-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.content-grid > * {
+    flex: 275px;
+}
+
+.content-card {
+    background: var(--surface-3);
+    border-radius: 16px;
+    padding: 1.3rem;
+    transition: var(--transition-primary);
+    border: 2px solid transparent;
+}
+
+.content-card:hover {
+    border: 2px solid var(--primary);
+    transform: translateY(-3px);
+}
+
+.content-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: 1em;
+}
+
+.content-title .material-symbols-rounded {
+    color: var(--primary);
+    font-size: 24px;
+    transition: var(--transition-primary);
+}
+
+.content-card:hover .material-symbols-rounded {
+    color: var(--text-primary);
+}
+
+.content-title h4 {
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.content-description {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* 9. Reviews */
+.review-card {
+    background: var(--surface-2);
+    border-radius: 1.5em;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: var(--transition-primary);
+    box-shadow: 0 8px 25px var(--shadow-secondary);
+    border-left: 4px solid var(--primary);
+    position: relative;
+}
+
+.review-card::before {
+    content: "“";
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 8rem;
+    line-height: 1;
+    color: rgba(0, 128, 255, 0.12);
+    font-weight: bold;
+    z-index: 0;
+    transition: var(--transition-primary);
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+    border-left: 8px solid var(--primary);
+}
+
+.review-card:hover::before {
+    transform: translateY(20px);
+}
+
+.review-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.review-author {
+    margin: 0 0 1em;
+}
+
+.review-text {
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.review-source {
+    font-size: 0.9rem;
+    margin-top: 1.2rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* 10. Footer */
+footer {
+    margin-top: 3.5rem;
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.3rem;
+    margin: 1.2rem 0;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.3rem 0;
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    color: var(--text-primary);
+    transition: var(--transition-primary);
+    text-decoration: none;
+}
+
+.social-icons a:hover {
+    background: var(--primary);
+    transform: translateY(-3px);
+}
+
+.social-icons img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+/* 11. Popover Component (Something here probably won't work in Firefox) */
+[popover] {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--surface-2);
+    color: var(--text-primary);
+    padding: 2rem;
+    margin: 0;
+    border-radius: 2rem;
+    box-shadow: 0 10px 40px var(--shadow-primary);
+    border: 2px solid var(--primary);
+    width: max-content;
+    max-width: calc(100% - 8em);
+    max-height: calc(100% - 8em);
+}
+
+[popover]::backdrop {
+    background-color: #0005;
+    backdrop-filter: blur(10px);
+}
+
+[popover],
+[popover]::backdrop {
+    opacity: 0;
+    transition: all 0.5s allow-discrete;
+}
+
+[popover]:popover-open {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+[popover]:popover-open::backdrop {
+    opacity: 1;
+}
+
+@starting-style {
+    [popover]:popover-open {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% + 2em));
+    }
+    [popover]:popover-open::backdrop {
+        opacity: 0;
+    }
+}
+
+[popover] h2 {
+    margin: 0 0 1em;
+}
+
+.popover-content {
+    max-height: calc(100vh - 8em);
+    overflow-y: auto;
+}
+
+.popover-close {
+    position: absolute;
+    top: 1.25em;
+    right: 1.25em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.popover-close > .material-symbols-rounded {
+    transition: var(--transition-primary);
+    color: var(--text-primary);
+}
+
+.popover-close:hover > .material-symbols-rounded {
+    color: var(--primary);
+}
+
+/* 12. Scroll Reveal Animation */
+section {
+    opacity: 0;
+    filter: blur(10px);
+    transition: 1s;
+}
+
+section.scrolled {
+    opacity: 1;
+    filter: blur(0);
+}
+
+/* 13. Responsive Design (Media Queries) */
+@media (max-width: 900px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: grid;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--surface-0);
+        overflow: hidden;
+        box-shadow: 0 10px 20px var(--shadow-secondary);
+        border-radius: 1.5rem;
+        margin: 0.5rem;
+        transition: var(--transition-primary);
+        grid-template-rows: 0fr;
+        align-items: start;
+        z-index: 100;
+        min-width: 200px;
+    }
+
+    .nav-links a {
+        margin: 0.75rem 1rem;
+        padding: 0.75rem 2rem;
+        text-align: center;
+        border-radius: 50px;
+    }
+
+    .nav-links a:hover::after {
+        width: 0%;
+    }
+
+    .nav-links > .inner {
+        display: grid;
+        gap: 0;
+        overflow: hidden;
+    }
+
+    .nav-links a:hover {
+        background: var(--surface-2);
+    }
+
+    .nav-links a:active {
+        background: var(--surface-3);
+    }
+
+    .menu-toggle-wrapper:focus-within .nav-links {
+        grid-template-rows: 1fr;
+    }
+
+    .menu-toggle-wrapper:focus-within > .menu-toggle {
+        transform: rotate(90deg);
+    }
+}
+
+@media (max-width: 600px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+}

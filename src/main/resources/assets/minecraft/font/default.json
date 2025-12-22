@@ -1,0 +1,9 @@
+{
+  "providers":[{
+    "type":"bitmap",
+    "file":"meteorist.png",
+    "chars":["\uD83C\uDF20"],
+    "ascent": 7,
+    "height": 8
+  }]
+}

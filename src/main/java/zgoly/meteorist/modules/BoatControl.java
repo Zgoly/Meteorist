@@ -10,7 +10,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.level.block.WaterlilyBlock;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;

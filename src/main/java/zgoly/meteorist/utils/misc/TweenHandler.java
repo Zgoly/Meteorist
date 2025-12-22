@@ -26,16 +26,14 @@ public class TweenHandler {
         }
     }
 
-    /**
-     * Plays a tween animation.
-     *
-     * @param instant         Whether to play the tween instantly.
-     * @param reference       The atomic double reference to be tweened.
-     * @param endValue        The end value of the tween.
-     * @param duration        The duration of the tween.
-     * @param easingStyle     The easing style of the tween.
-     * @param easingDirection The easing direction of the tween.
-     */
+    /// Plays a tween animation.
+    ///
+    /// @param instant         Whether to play the tween instantly.
+    /// @param reference       The atomic double reference to be tweened.
+    /// @param endValue        The end value of the tween.
+    /// @param duration        The duration of the tween.
+    /// @param easingStyle     The easing style of the tween.
+    /// @param easingDirection The easing direction of the tween.
     public void play(boolean instant, AtomicDouble reference, double endValue, double duration, EasingStyle easingStyle, EasingDirection easingDirection) {
         if (instant) {
             stopPreviousTween(reference);
@@ -45,47 +43,37 @@ public class TweenHandler {
         }
     }
 
-    /**
-     * Plays a tween animation.
-     *
-     * @param reference       The atomic double reference to be tweened.
-     * @param endValue        The end value of the tween.
-     * @param duration        The duration of the tween.
-     * @param easingStyle     The easing style of the tween.
-     * @param easingDirection The easing direction of the tween.
-     */
+    /// Plays a tween animation.
+    ///
+    /// @param reference       The atomic double reference to be tweened.
+    /// @param endValue        The end value of the tween.
+    /// @param duration        The duration of the tween.
+    /// @param easingStyle     The easing style of the tween.
+    /// @param easingDirection The easing direction of the tween.
     public void play(AtomicDouble reference, double endValue, double duration, EasingStyle easingStyle, EasingDirection easingDirection) {
         stopPreviousTween(reference);
         Tween tween = new Tween(reference, endValue, duration, easingStyle, easingDirection);
         tweens.add(tween);
     }
 
-    /**
-     * Stops the previous tween associated with the given reference.
-     *
-     * @param reference The atomic double reference.
-     */
+    /// Stops the previous tween associated with the given reference.
+    ///
+    /// @param reference The atomic double reference.
     private void stopPreviousTween(AtomicDouble reference) {
         tweens.removeIf(tween -> Objects.equals(tween.reference, reference));
     }
 
-    /**
-     * Enum representing different easing styles.
-     */
+    /// Enum representing different easing styles.
     public enum EasingStyle {
         Linear, Sine, Quad, Cubic, Quart, Quint, Expo, Circ, Back, Elastic, Bounce
     }
 
-    /**
-     * Enum representing different easing directions.
-     */
+    /// Enum representing different easing directions.
     public enum EasingDirection {
         In, Out, InOut, OutIn
     }
 
-    /**
-     * Represents a tween animation.
-     */
+    /// Represents a tween animation.
     public static class Tween {
         private final AtomicDouble reference;
         private final double startValue;
@@ -96,15 +84,13 @@ public class TweenHandler {
         private final double startTime;
         private boolean completed = false;
 
-        /**
-         * Constructs a new Tween.
-         *
-         * @param reference       The atomic double reference to be tweened.
-         * @param endValue        The end value of the tween.
-         * @param duration        The duration of the tween.
-         * @param easingStyle     The easing style of the tween.
-         * @param easingDirection The easing direction of the tween.
-         */
+        /// Constructs a new Tween.
+        ///
+        /// @param reference       The atomic double reference to be tweened.
+        /// @param endValue        The end value of the tween.
+        /// @param duration        The duration of the tween.
+        /// @param easingStyle     The easing style of the tween.
+        /// @param easingDirection The easing direction of the tween.
         public Tween(AtomicDouble reference, double endValue, double duration, EasingStyle easingStyle, EasingDirection easingDirection) {
             this.reference = reference;
             this.startValue = reference.get();
@@ -115,9 +101,7 @@ public class TweenHandler {
             this.startTime = currentTime;
         }
 
-        /**
-         * Updates the tween animation.
-         */
+        /// Updates the tween animation.
         public void update() {
             double elapsedTime = currentTime - startTime;
             if (elapsedTime < duration) {
@@ -132,18 +116,14 @@ public class TweenHandler {
         }
     }
 
-    /**
-     * Provides easing functions for tween animations.
-     */
+    /// Provides easing functions for tween animations.
     public static class EasingFunctions {
-        /**
-         * Calculates the eased value based on the easing style and direction.
-         *
-         * @param easingStyle     The easing style.
-         * @param easingDirection The easing direction.
-         * @param x               The input value.
-         * @return The eased value.
-         */
+        /// Calculates the eased value based on the easing style and direction.
+        ///
+        /// @param easingStyle     The easing style.
+        /// @param easingDirection The easing direction.
+        /// @param x               The input value.
+        /// @return The eased value.
         public static double ease(EasingStyle easingStyle, EasingDirection easingDirection, double x) {
             return switch (easingDirection) {
                 case In -> easeIn(easingStyle, x);
@@ -154,13 +134,11 @@ public class TweenHandler {
             };
         }
 
-        /**
-         * Calculates the eased value for the "In" direction.
-         *
-         * @param easingStyle The easing style.
-         * @param x           The input value.
-         * @return The eased value.
-         */
+        /// Calculates the eased value for the "In" direction.
+        ///
+        /// @param easingStyle The easing style.
+        /// @param x           The input value.
+        /// @return The eased value.
         private static double easeIn(EasingStyle easingStyle, double x) {
             switch (easingStyle) {
                 case Sine:

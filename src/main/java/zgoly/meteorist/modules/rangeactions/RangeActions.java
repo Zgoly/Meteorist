@@ -28,7 +28,7 @@ import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.modules.rangeactions.rangeactions.BaseRangeAction;

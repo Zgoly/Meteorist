@@ -49,7 +49,6 @@ public class MeteoristStarscript {
                 mc.player
         ));
 
-        if (blockHitResult == null) return 0;
         return blockHitResult.getLocation().distanceTo(start);
     }
 
