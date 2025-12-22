@@ -4,6 +4,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.google.gson.GsonBuilder;
 
@@ -17,20 +18,19 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-/**
- * Parses Meteorist's Java source code to generate a JSON file containing metadata
- * about modules, commands, and HUD preset groups.
- * <p>
- * Extracts data by analyzing constructor calls and builder patterns in classes
- * that extend Module, Command, or use HudElementInfo. Output includes names,
- * descriptions, settings, and presets with source locations.
- * <p>
- * <b>Note:</b> Relies on code structure and string literals;
- * may not resolve complex expressions. Subject to improvement.
- */
+/// Parses Meteorist's Java source code to generate a JSON file containing metadata
+/// about modules, commands, and HUD preset groups.
+///
+/// Extracts data by analyzing constructor calls and builder patterns in classes
+/// that extend Module, Command, or use HudElementInfo. Output includes names,
+/// descriptions, settings, and presets with source locations.
+///
+/// **Note:** Relies on code structure and string literals;
+/// may not resolve complex expressions. Subject to improvement.
 public class MeteoristInfoParser {
-    private static final Map<String, File> CLASS_NAME_TO_FILE = new HashMap<>();
     private static final JavaParser JAVA_PARSER = new JavaParser();
+    private static final Map<String, String> CATEGORY_NAME_CACHE = new HashMap<>();
+    private static final Map<File, CompilationUnit> FILE_TO_CU_CACHE = new HashMap<>();
 
     static class ExpressionValue {
         String value;
@@ -88,38 +88,44 @@ public class MeteoristInfoParser {
 
         try {
             Path start = Paths.get(sourceDir);
-
-            System.out.println("Searching for Java files in: " + start.toAbsolutePath());
             List<File> javaFiles = findAndCacheJavaFiles(start);
+            scanForCategories(javaFiles);
 
             List<ModuleInfo> allModules = new ArrayList<>();
             List<CommandInfo> allCommands = new ArrayList<>();
             List<PresetGroup> allPresetGroups = new ArrayList<>();
 
             for (File file : javaFiles) {
-                try (FileInputStream in = new FileInputStream(file)) {
-                    CompilationUnit cu = JAVA_PARSER.parse(in).getResult().orElse(null);
-                    if (cu == null) continue;
+                CompilationUnit cu = getCompilationUnit(file);
+                if (cu == null) continue;
 
-                    String className = cu.getPrimaryTypeName().orElse(file.getName().replace(".java", ""));
-                    String classPath = file.getPath();
+                String className = cu.getPrimaryTypeName().orElse(file.getName().replace(".java", ""));
+                String classPath = file.getPath();
 
-                    boolean isModule = cu.findAll(ClassOrInterfaceDeclaration.class).stream()
-                            .anyMatch(cls -> extendsClass(cls, "Module"));
-                    boolean isCommand = cu.findAll(ClassOrInterfaceDeclaration.class).stream()
-                            .anyMatch(cls -> extendsClass(cls, "Command")) && !isModule;
+                boolean isModule = cu.findAll(ClassOrInterfaceDeclaration.class).stream()
+                        .anyMatch(cls -> extendsClass(cls, "Module"));
+                boolean isCommand = !isModule && cu.findAll(ClassOrInterfaceDeclaration.class).stream()
+                        .anyMatch(cls -> extendsClass(cls, "Command"));
 
-                    if (isModule) {
-                        ModuleInfo moduleInfo = extractModuleInfo(cu, className, classPath);
-                        if (moduleInfo != null) allModules.add(moduleInfo);
+                if (isModule) {
+                    ModuleInfo moduleInfo = extractModuleInfo(cu, className, classPath);
+                    if (moduleInfo != null) {
+                        System.out.println("Processed module: " + moduleInfo.name + " (" + className + ")");
+                        allModules.add(moduleInfo);
                     }
-                    if (isCommand) {
-                        CommandInfo cmd = extractCommandInfo(cu, className, classPath);
-                        if (cmd != null) allCommands.add(cmd);
-                    }
-                    List<PresetGroup> presetGroups = extractPresetGroups(cu, className, classPath);
-                    allPresetGroups.addAll(presetGroups);
                 }
+                if (isCommand) {
+                    CommandInfo cmd = extractCommandInfo(cu, className, classPath);
+                    if (cmd != null) {
+                        System.out.println("Processed command: " + cmd.name + " (" + className + ")");
+                        allCommands.add(cmd);
+                    }
+                }
+                List<PresetGroup> presetGroups = extractPresetGroups(cu, className, classPath);
+                for (PresetGroup group : presetGroups) {
+                    System.out.println("Processed preset group: " + group.name + " (" + className + ")");
+                }
+                allPresetGroups.addAll(presetGroups);
             }
 
             Map<String, Object> result = new LinkedHashMap<>();
@@ -135,33 +141,87 @@ public class MeteoristInfoParser {
         }
     }
 
+    private static void scanForCategories(List<File> files) {
+        for (File file : files) {
+            try {
+                CompilationUnit cu = getCompilationUnit(file);
+                if (cu == null) continue;
+
+                String packageName = cu.getPackageDeclaration().map(NodeWithName::getNameAsString).orElse("");
+
+                cu.findAll(ClassOrInterfaceDeclaration.class).forEach(cls -> {
+                    String className = cls.getNameAsString();
+                    String fullClassName = packageName.isEmpty() ? className : packageName + "." + className;
+
+                    cls.getFields().forEach(field -> {
+                        if (field.isPublic() && field.isStatic() && field.isFinal()) {
+                            String fieldType = field.getCommonType().toString();
+                            if (fieldType.endsWith("Category")) {
+                                field.getVariables().forEach(var -> {
+                                    String fieldName = var.getNameAsString();
+                                    String fullFieldName = fullClassName + "." + fieldName;
+
+                                    var.getInitializer().ifPresent(init -> {
+                                        if (init instanceof ObjectCreationExpr objCreation) {
+                                            String typeName = objCreation.getType().getNameAsString();
+                                            if (typeName.equals("Category") || typeName.endsWith(".Category")) {
+                                                if (!objCreation.getArguments().isEmpty()) {
+                                                    Expression firstArg = objCreation.getArgument(0);
+                                                    if (firstArg instanceof StringLiteralExpr strExpr) {
+                                                        CATEGORY_NAME_CACHE.put(fullFieldName, strExpr.getValue());
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                        }
+                    });
+                });
+            } catch (Exception e) {
+                System.err.println("Failed to scan categories in file: " + file.getName());
+            }
+        }
+    }
+
     private static boolean extendsClass(ClassOrInterfaceDeclaration cls, String className) {
         return cls.getExtendedTypes().stream()
                 .anyMatch(type -> className.equals(type.getNameAsString()));
     }
 
     private static List<File> findAndCacheJavaFiles(Path start) throws IOException {
+        List<File> files = new ArrayList<>();
         try (Stream<Path> stream = Files.walk(start)) {
-            List<File> files = stream
-                    .filter(Files::isRegularFile)
+            stream.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".java"))
-                    .peek(path -> System.out.println("  Found: " + path.getFileName()))
                     .map(Path::toFile)
-                    .toList();
-
-            for (File file : files) {
-                try (FileInputStream in = new FileInputStream(file)) {
-                    CompilationUnit cu = JAVA_PARSER.parse(in).getResult().orElse(null);
-                    if (cu != null && cu.getPrimaryTypeName().isPresent()) {
-                        CLASS_NAME_TO_FILE.put(cu.getPrimaryTypeName().get(), file);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Failed to parse for cache: " + file.getName());
-                }
-            }
-
-            return files;
+                    .forEach(files::add);
         }
+
+        for (File file : files) {
+            try (FileInputStream in = new FileInputStream(file)) {
+                CompilationUnit cu = JAVA_PARSER.parse(in).getResult().orElse(null);
+                if (cu != null && cu.getPrimaryTypeName().isPresent()) {
+                    cu.getPackageDeclaration().ifPresent(pkg -> FILE_TO_CU_CACHE.put(file, cu));
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to parse for cache: " + file.getName());
+            }
+        }
+
+        return files;
+    }
+
+    private static CompilationUnit getCompilationUnit(File file) {
+        return FILE_TO_CU_CACHE.computeIfAbsent(file, f -> {
+            try (FileInputStream in = new FileInputStream(f)) {
+                return JAVA_PARSER.parse(in).getResult().orElse(null);
+            } catch (Exception e) {
+                System.err.println("Failed to parse file: " + f.getName());
+                return null;
+            }
+        });
     }
 
     private static ModuleInfo extractModuleInfo(CompilationUnit cu, String className, String classPath) {
@@ -174,15 +234,16 @@ public class MeteoristInfoParser {
                     ExpressionValue nameExpr = getExpressionValue(call.getArgument(1));
                     ExpressionValue descExpr = getExpressionValue(call.getArgument(2));
                     if (nameExpr.isCode || descExpr.isCode) {
-                        System.out.println("  Cannot resolve name or description for: " + className);
                         return null;
                     }
+
+                    String resolvedCategory = resolveCategory(categoryExpr.value);
 
                     Map<String, String> settingGroupNameMap = findSettingGroupNames(cu);
                     Map<String, List<SettingInfo>> settings = extractSettingsByGroup(cu, settingGroupNameMap);
 
                     ModuleInfo module = new ModuleInfo();
-                    module.category = categoryExpr.value;
+                    module.category = resolvedCategory;
                     module.name = nameExpr.value;
                     module.description = descExpr.value;
                     module.className = className;
@@ -192,6 +253,30 @@ public class MeteoristInfoParser {
                     return module;
                 })
                 .orElse(null);
+    }
+
+    private static String resolveCategory(String exprStr) {
+        if (CATEGORY_NAME_CACHE.containsKey(exprStr)) {
+            return CATEGORY_NAME_CACHE.get(exprStr);
+        }
+
+        if (exprStr.contains(".")) {
+            String[] parts = exprStr.split("\\.");
+            String fieldName = parts[parts.length - 1];
+            String className = parts[parts.length - 2];
+
+            for (Map.Entry<String, String> entry : CATEGORY_NAME_CACHE.entrySet()) {
+                String key = entry.getKey();
+                if (key.endsWith("." + fieldName)) {
+                    String[] keyParts = key.split("\\.");
+                    if (keyParts.length >= 2 && keyParts[keyParts.length - 2].equals(className)) {
+                        return entry.getValue();
+                    }
+                }
+            }
+        }
+
+        return exprStr;
     }
 
     private static Map<String, String> findSettingGroupNames(CompilationUnit cu) {
@@ -214,8 +299,6 @@ public class MeteoristInfoParser {
                                     ExpressionValue arg = getExpressionValue(argExpr);
                                     map.put(varName, arg.value);
                                 });
-
-                                if (methodCall.getArguments().isEmpty()) map.put(varName, "Unknown");
                                 return;
                             }
                         }
@@ -245,9 +328,7 @@ public class MeteoristInfoParser {
 
                     String resolvedName = groupNameMap.getOrDefault(groupName, "Unknown");
                     if ("Unknown".equals(resolvedName)) return;
-                    if (!groupedSettings.containsKey(resolvedName)) {
-                        groupedSettings.put(resolvedName, new ArrayList<>());
-                    }
+                    groupedSettings.putIfAbsent(resolvedName, new ArrayList<>());
 
                     if (call.getArguments().isEmpty()) return;
                     ObjectCreationExpr creation = findBuilderCreation(call.getArgument(0));
@@ -281,44 +362,7 @@ public class MeteoristInfoParser {
         if (expr instanceof BooleanLiteralExpr) {
             return new ExpressionValue(Boolean.toString(((BooleanLiteralExpr) expr).getValue()), false);
         }
-        if (expr instanceof FieldAccessExpr fieldAccess) {
-            String resolved = resolveConstantField(fieldAccess);
-            if (resolved != null) {
-                return new ExpressionValue(resolved, false);
-            } else {
-                return new ExpressionValue(fieldAccess.toString(), true);
-            }
-        }
         return new ExpressionValue(expr.toString(), true);
-    }
-
-    private static String resolveConstantField(FieldAccessExpr fieldAccess) {
-        try {
-            String scopeName = fieldAccess.getScope().toString();
-            String fieldName = fieldAccess.getNameAsString();
-            if (!scopeName.matches("[A-Za-z0-9_]+")) return null;
-
-            File file = CLASS_NAME_TO_FILE.get(scopeName);
-            if (file == null) return null;
-
-            try (FileInputStream in = new FileInputStream(file)) {
-                CompilationUnit cu = JAVA_PARSER.parse(in).getResult().orElse(null);
-                if (cu == null) return null;
-
-                return cu.findAll(ClassOrInterfaceDeclaration.class).stream()
-                        .filter(cls -> cls.getNameAsString().equals(scopeName))
-                        .flatMap(cls -> cls.getFields().stream())
-                        .filter(f -> f.getVariable(0).getNameAsString().equals(fieldName))
-                        .filter(f -> f.isPublic() && f.isStatic() && f.isFinal())
-                        .map(f -> f.getVariable(0).getInitializer().orElse(null))
-                        .filter(init -> init instanceof StringLiteralExpr)
-                        .map(init -> ((StringLiteralExpr) init).getValue())
-                        .findFirst()
-                        .orElse(null);
-            }
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private static ObjectCreationExpr findBuilderCreation(Expression expr) {
@@ -436,10 +480,8 @@ public class MeteoristInfoParser {
     private static void writeToJsonFile(Object data, String filename) {
         try {
             Path path = Paths.get(filename);
-
             Path parent = path.getParent();
             if (parent != null) Files.createDirectories(parent);
-
             try (FileWriter writer = new FileWriter(path.toFile())) {
                 new GsonBuilder().setPrettyPrinting().create().toJson(data, writer);
             }

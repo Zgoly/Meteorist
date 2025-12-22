@@ -1,32 +1,34 @@
-name: Extract Release Info to Website
+name: Update Release Info
 
 on:
   release:
     types: [published, edited]
 
 jobs:
-  extract-release-info:
+  update-release-info:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - name: Checkout Website Repository
-        uses: actions/checkout@v4
-        with:
-          repository: Zgoly/zgoly.github.io
-          token: ${{ secrets.WEBSITE_REPO_TOKEN }}
-          path: ./website-repo
+      - name: Checkout main
+        uses: actions/checkout@v6
 
-      - name: Write Release Info to File
-        env:
-          RELEASE_JSON: ${{ toJSON(github.event.release) }}
-        run: |
-          mkdir -p ./website-repo/meteorist/generated
-          echo "$RELEASE_JSON" > ./website-repo/meteorist/generated/release-info.json
+      - name: Create output directory
+        run: mkdir -p website/generated
 
-      - name: Commit and Push Release Info to Website
+      - name: Save release info as JSON
         run: |
-          cd ./website-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add meteorist/generated/release-info.json
-          git commit -m "Update latest release info [automated]" || exit 0
-          git push
+          cat > website/generated/release-info.json << 'EOF'
+          ${{ toJSON(github.event.release) }}
+          EOF
+
+      - name: Commit and push to main
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add website/generated/release-info.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update release info for ${{ github.event.release.tag_name }}"
+            git push origin HEAD:refs/heads/main
+          fi
