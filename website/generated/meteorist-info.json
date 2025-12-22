@@ -327,12 +327,12 @@
       "category": "Meteorist",
       "className": "AutoSleep",
       "classPath": "src/main/java/zgoly/meteorist/modules/AutoSleep.java",
-      "lineNumber": 86,
+      "lineNumber": 88,
       "settings": {
         "General": [
           {
             "type": "IntSetting",
-            "lineNumber": 24,
+            "lineNumber": 26,
             "properties": {
               "sliderRange": [
                 "1",
@@ -346,7 +346,7 @@
           },
           {
             "type": "EnumSetting",
-            "lineNumber": 32,
+            "lineNumber": 34,
             "properties": {
               "defaultValue": "`SleepMode.Default`",
               "description": "\u0027Default\u0027 - sleep every amount of ticks; \u0027WhenPlayerLiesOnBed\u0027 - sleep when other player lies down on bed.",
@@ -355,7 +355,7 @@
           },
           {
             "type": "IntSetting",
-            "lineNumber": 38,
+            "lineNumber": 40,
             "properties": {
               "visible": "`() -\u003e sleepMode.get() \u003d\u003d SleepMode.Default`",
               "sliderRange": [
@@ -370,7 +370,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 47,
+            "lineNumber": 49,
             "properties": {
               "visible": "`() -\u003e sleepMode.get() \u003d\u003d SleepMode.Default`",
               "defaultValue": "true",
@@ -380,7 +380,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 54,
+            "lineNumber": 56,
             "properties": {
               "visible": "`() -\u003e sleepMode.get() \u003d\u003d SleepMode.Default`",
               "defaultValue": "true",
@@ -390,7 +390,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 61,
+            "lineNumber": 63,
             "properties": {
               "defaultValue": "true",
               "description": "Use maximum sleep time.",
@@ -399,7 +399,7 @@
           },
           {
             "type": "IntSetting",
-            "lineNumber": 67,
+            "lineNumber": 69,
             "properties": {
               "visible": "`useMaxSleepTime::get`",
               "sliderRange": [
@@ -414,11 +414,237 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 76,
+            "lineNumber": 78,
             "properties": {
               "defaultValue": "true",
               "description": "Don\u0027t go to bed if you\u0027re in a dimension like nether/end.",
               "name": "dimension-restrict"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "z-aimbot",
+      "description": "Smart aimbot that takes many settings into account when targeting.",
+      "category": "Meteorist",
+      "className": "ZAimbot",
+      "classPath": "src/main/java/zgoly/meteorist/modules/zaimbot/ZAimbot.java",
+      "lineNumber": 202,
+      "settings": {
+        "Filter": [
+          {
+            "type": "EntityTypeListSetting",
+            "lineNumber": 50,
+            "properties": {
+              "defaultValue": "`EntityType.PLAYER`",
+              "description": "Entities to aim at.",
+              "name": "entities"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 57,
+            "properties": {
+              "sliderMax": "6",
+              "min": "0",
+              "defaultValue": "`4.5`",
+              "description": "The maximum range the entity can be to aim at it.",
+              "name": "range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 71,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Whether or not to aim at mobs with a name.",
+              "name": "ignore-named"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 77,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will only aim at sometimes passive mobs if they are targeting you.",
+              "name": "ignore-passive"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 83,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Will avoid aiming at mobs you tamed.",
+              "name": "ignore-tamed"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 89,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will avoid aiming at players in creative mode.",
+              "name": "ignore-creative"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 95,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Will avoid aiming at players on your friends list.",
+              "name": "ignore-friends"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 101,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Will avoid aiming at players who are using a shield.",
+              "name": "ignore-shield"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 107,
+            "properties": {
+              "defaultValue": "true",
+              "description": "Restrict aiming to entities within the specified FOV.",
+              "name": "use-fov-range"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 113,
+            "properties": {
+              "visible": "`useFovRange::get`",
+              "defaultValue": "90",
+              "sliderRange": [
+                "0",
+                "180"
+              ],
+              "description": "Maximum Field of View (FOV) range for targeting entities.",
+              "name": "fov-range"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 121,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Allow aiming through walls.",
+              "name": "ignore-walls"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 127,
+            "properties": {
+              "defaultValue": "`SortPriority.ClosestAngle`",
+              "description": "Sorting method to prioritize targets within range.",
+              "name": "priority"
+            }
+          }
+        ],
+        "Aim": [
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 134,
+            "properties": {
+              "defaultValue": "0",
+              "sliderMax": "20",
+              "min": "0",
+              "description": "Amount to predict the target\u0027s movement when aiming.",
+              "name": "target-movement-prediction"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 142,
+            "properties": {
+              "defaultValue": "`AimAxes.Both`",
+              "description": "Which rotational axes to adjust when aiming.",
+              "name": "aim-axes"
+            }
+          },
+          {
+            "type": "EnumSetting",
+            "lineNumber": 148,
+            "properties": {
+              "defaultValue": "`Target.Head`",
+              "description": "Part of the target entity\u0027s body to aim at.",
+              "name": "aim-target"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 154,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Aim horizontally (yaw) at the target entity instantly.",
+              "name": "instant-yaw"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 160,
+            "properties": {
+              "defaultValue": "false",
+              "description": "Aim vertically (pitch) at the target entity instantly.",
+              "name": "instant-pitch"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 166,
+            "properties": {
+              "visible": "`() -\u003e !instantYaw.get()`",
+              "defaultValue": "false",
+              "description": "Synchronize yaw aim speed with attack cooldown progress.",
+              "name": "sync-yaw-with-cooldown"
+            }
+          },
+          {
+            "type": "BoolSetting",
+            "lineNumber": 173,
+            "properties": {
+              "visible": "`() -\u003e !instantPitch.get()`",
+              "defaultValue": "false",
+              "description": "Synchronize pitch aim speed with attack cooldown progress.",
+              "name": "sync-pitch-with-cooldown"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 180,
+            "properties": {
+              "visible": "`() -\u003e !instantYaw.get()`",
+              "sliderRange": [
+                "`0.1`",
+                "10"
+              ],
+              "defaultValue": "1",
+              "min": "0",
+              "description": "Speed at which to adjust horizontal (yaw) aim.",
+              "name": "speed-yaw"
+            }
+          },
+          {
+            "type": "DoubleSetting",
+            "lineNumber": 189,
+            "properties": {
+              "visible": "`() -\u003e !instantPitch.get()`",
+              "sliderRange": [
+                "`0.1`",
+                "10"
+              ],
+              "defaultValue": "1",
+              "min": "0",
+              "description": "Speed at which to adjust vertical (pitch) aim.",
+              "name": "speed-pitch"
             }
           }
         ]
@@ -3473,15 +3699,15 @@
     {
       "name": "placer",
       "description": "Places blocks in range.",
-      "category": "CATEGORY",
+      "category": "Meteorist",
       "className": "Placer",
       "classPath": "src/main/java/zgoly/meteorist/modules/placer/Placer.java",
-      "lineNumber": 143,
+      "lineNumber": 145,
       "settings": {
         "General": [
           {
             "type": "BoolSetting",
-            "lineNumber": 53,
+            "lineNumber": 55,
             "properties": {
               "defaultValue": "true",
               "description": "Check conditions for placing blocks, such as whether block can be placed and whether there is entity that blocking block from being placed.",
@@ -3490,7 +3716,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 60,
+            "lineNumber": 62,
             "properties": {
               "defaultValue": "true",
               "description": "Rotate head when placing a block.",
@@ -3499,7 +3725,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 67,
+            "lineNumber": 69,
             "properties": {
               "defaultValue": "true",
               "description": "Limit block placement range.",
@@ -3508,7 +3734,7 @@
           },
           {
             "type": "DoubleSetting",
-            "lineNumber": 74,
+            "lineNumber": 76,
             "properties": {
               "sliderRange": [
                 "1",
@@ -3522,7 +3748,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 83,
+            "lineNumber": 85,
             "properties": {
               "defaultValue": "true",
               "description": "Render each block in placer area.",
@@ -3533,7 +3759,7 @@
         "Timing": [
           {
             "type": "BoolSetting",
-            "lineNumber": 90,
+            "lineNumber": 92,
             "properties": {
               "defaultValue": "true",
               "description": "Use delay between placing blocks.",
@@ -3542,7 +3768,7 @@
           },
           {
             "type": "IntSetting",
-            "lineNumber": 97,
+            "lineNumber": 99,
             "properties": {
               "sliderRange": [
                 "1",
@@ -3557,7 +3783,7 @@
           },
           {
             "type": "IntSetting",
-            "lineNumber": 107,
+            "lineNumber": 109,
             "properties": {
               "sliderRange": [
                 "1",
@@ -3577,7 +3803,7 @@
         "Pause": [
           {
             "type": "BoolSetting",
-            "lineNumber": 117,
+            "lineNumber": 119,
             "properties": {
               "defaultValue": "true",
               "description": "Pause when Auto Eat is active and eats food.",
@@ -3586,7 +3812,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 124,
+            "lineNumber": 126,
             "properties": {
               "defaultValue": "true",
               "description": "Pause when Auto Gap is active and eats gaps.",
@@ -3595,7 +3821,7 @@
           },
           {
             "type": "BoolSetting",
-            "lineNumber": 131,
+            "lineNumber": 133,
             "properties": {
               "defaultValue": "true",
               "description": "Pause when Kill Aura is active and attacks target entities.",
@@ -3947,232 +4173,6 @@
       "classPath": "src/main/java/zgoly/meteorist/modules/rangeactions/RangeActions.java",
       "lineNumber": 59,
       "settings": {}
-    },
-    {
-      "name": "z-aimbot",
-      "description": "Smart aimbot that takes many settings into account when targeting.",
-      "category": "Meteorist",
-      "className": "ZAimbot",
-      "classPath": "src/main/java/zgoly/meteorist/modules/ZAimbot.java",
-      "lineNumber": 184,
-      "settings": {
-        "Filter": [
-          {
-            "type": "EntityTypeListSetting",
-            "lineNumber": 34,
-            "properties": {
-              "defaultValue": "`EntityType.PLAYER`",
-              "description": "Entities to aim at.",
-              "name": "entities"
-            }
-          },
-          {
-            "type": "DoubleSetting",
-            "lineNumber": 41,
-            "properties": {
-              "sliderMax": "6",
-              "min": "0",
-              "defaultValue": "`4.5`",
-              "description": "The maximum range the entity can be to aim at it.",
-              "name": "range"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 55,
-            "properties": {
-              "defaultValue": "false",
-              "description": "Whether or not to aim at mobs with a name.",
-              "name": "ignore-named"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 61,
-            "properties": {
-              "defaultValue": "true",
-              "description": "Will only aim at sometimes passive mobs if they are targeting you.",
-              "name": "ignore-passive"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 67,
-            "properties": {
-              "defaultValue": "false",
-              "description": "Will avoid aiming at mobs you tamed.",
-              "name": "ignore-tamed"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 73,
-            "properties": {
-              "defaultValue": "true",
-              "description": "Will avoid aiming at players in creative mode.",
-              "name": "ignore-creative"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 79,
-            "properties": {
-              "defaultValue": "true",
-              "description": "Will avoid aiming at players on your friends list.",
-              "name": "ignore-friends"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 85,
-            "properties": {
-              "defaultValue": "false",
-              "description": "Will avoid aiming at players who are using a shield.",
-              "name": "ignore-shield"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 91,
-            "properties": {
-              "defaultValue": "true",
-              "description": "Restrict aiming to entities within the specified FOV.",
-              "name": "use-fov-range"
-            }
-          },
-          {
-            "type": "DoubleSetting",
-            "lineNumber": 97,
-            "properties": {
-              "visible": "`useFovRange::get`",
-              "defaultValue": "90",
-              "sliderRange": [
-                "0",
-                "180"
-              ],
-              "description": "Maximum Field of View (FOV) range for targeting entities.",
-              "name": "fov-range"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 105,
-            "properties": {
-              "defaultValue": "false",
-              "description": "Allow aiming through walls.",
-              "name": "ignore-walls"
-            }
-          },
-          {
-            "type": "EnumSetting",
-            "lineNumber": 111,
-            "properties": {
-              "defaultValue": "`SortPriority.ClosestAngle`",
-              "description": "Sorting method to prioritize targets within range.",
-              "name": "priority"
-            }
-          }
-        ],
-        "Aim": [
-          {
-            "type": "DoubleSetting",
-            "lineNumber": 118,
-            "properties": {
-              "defaultValue": "0",
-              "sliderMax": "20",
-              "min": "0",
-              "description": "Amount to predict the target\u0027s movement when aiming.",
-              "name": "target-movement-prediction"
-            }
-          },
-          {
-            "type": "EnumSetting",
-            "lineNumber": 126,
-            "properties": {
-              "defaultValue": "`AimAxes.Both`",
-              "description": "Which rotational axes to adjust when aiming.",
-              "name": "aim-axes"
-            }
-          },
-          {
-            "type": "EnumSetting",
-            "lineNumber": 132,
-            "properties": {
-              "defaultValue": "`Target.Head`",
-              "description": "Part of the target entity\u0027s body to aim at.",
-              "name": "aim-target"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 138,
-            "properties": {
-              "defaultValue": "false",
-              "description": "Aim horizontally (yaw) at the target entity instantly.",
-              "name": "instant-yaw"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 144,
-            "properties": {
-              "defaultValue": "false",
-              "description": "Aim vertically (pitch) at the target entity instantly.",
-              "name": "instant-pitch"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 150,
-            "properties": {
-              "visible": "`() -\u003e !instantYaw.get()`",
-              "defaultValue": "false",
-              "description": "Synchronize yaw aim speed with attack cooldown progress.",
-              "name": "sync-yaw-with-cooldown"
-            }
-          },
-          {
-            "type": "BoolSetting",
-            "lineNumber": 157,
-            "properties": {
-              "visible": "`() -\u003e !instantPitch.get()`",
-              "defaultValue": "false",
-              "description": "Synchronize pitch aim speed with attack cooldown progress.",
-              "name": "sync-pitch-with-cooldown"
-            }
-          },
-          {
-            "type": "DoubleSetting",
-            "lineNumber": 164,
-            "properties": {
-              "visible": "`() -\u003e !instantYaw.get()`",
-              "sliderRange": [
-                "`0.1`",
-                "10"
-              ],
-              "defaultValue": "1",
-              "min": "0",
-              "description": "Speed at which to adjust horizontal (yaw) aim.",
-              "name": "speed-yaw"
-            }
-          },
-          {
-            "type": "DoubleSetting",
-            "lineNumber": 173,
-            "properties": {
-              "visible": "`() -\u003e !instantPitch.get()`",
-              "sliderRange": [
-                "`0.1`",
-                "10"
-              ],
-              "defaultValue": "1",
-              "min": "0",
-              "description": "Speed at which to adjust vertical (pitch) aim.",
-              "name": "speed-pitch"
-            }
-          }
-        ]
-      }
     },
     {
       "name": "sign-search",
