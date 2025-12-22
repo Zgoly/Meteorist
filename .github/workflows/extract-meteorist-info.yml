@@ -1,6 +1,8 @@
 name: Extract Meteorist Info to Website
 
-on: [push, workflow_dispatch]
+on:
+  release:
+    types: [published, edited]
 
 jobs:
   extract-meteorist-info:
