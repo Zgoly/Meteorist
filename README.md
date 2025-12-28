@@ -37,7 +37,9 @@ Add-on for Meteor that adds modules, commands and other useful stuff for primary
 </a>
 
 <div align="center">
-    <img align="center" height="64px" alt="Meteorist Download" src="website/button.svg">
+    <a href="https://meteorist.pages.dev" target="_blank">
+        <img align="center" height="64px" alt="Meteorist Download" src="website/button.svg">
+    </a>
 </div>
 
 ## 🧩 Modules
