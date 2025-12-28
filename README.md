@@ -29,20 +29,40 @@
 Add-on for Meteor that adds modules, commands and other useful stuff for primary non-vanilla anarchy servers.
 
 <a href="https://github.com/Zgoly/Meteorist/stargazers">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://reporoster.com/stars/dark/Zgoly/Meteorist">
-    <source media="(prefers-color-scheme: light)" srcset="https://reporoster.com/stars/light/Zgoly/Meteorist">
-    <img alt="Stargazers" src="https://reporoster.com/stars/dark/Zgoly/Meteorist">
-  </picture>
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://reporoster.com/stars/dark/Zgoly/Meteorist">
+        <source media="(prefers-color-scheme: light)" srcset="https://reporoster.com/stars/light/Zgoly/Meteorist">
+        <img alt="Stargazers" src="https://reporoster.com/stars/dark/Zgoly/Meteorist">
+    </picture>
 </a>
 
 <div align="center">
-
-# [Download from website ⬇️][meteorist-download]
-
+    <img align="center" height="64px" alt="Meteorist Download" src="website/button.svg">
 </div>
 
+## 🧩 Modules
+
+[![Join Discord][shield-discord-server]][discord]
+[![Join Discord][shield-discord-members]][discord]
+
+[**View all modules**](https://meteorist.pages.dev/#modules)
+
+## 📘 Commands
+
+[![Join Discord][shield-discord-server]][discord]
+[![Join Discord][shield-discord-members]][discord]
+
+[**View all commands**](https://meteorist.pages.dev/#commands)
+
+## 🎨 Presets
+
+[![Join Discord][shield-discord-server]][discord]
+[![Join Discord][shield-discord-members]][discord]
+
+[**View all presets**](https://meteorist.pages.dev/#presets)
+
 [meteorist-banner-download]: website/banner.svg
+[meteorist-button-download]: website/button.svg
 [meteorist-download]: https://meteorist.pages.dev
 [meteor-download]: https://meteorclient.com
 [baritone-download]: https://meteorclient.com/api/downloadBaritone
@@ -71,14 +91,11 @@ Add-on for Meteor that adds modules, commands and other useful stuff for primary
 [shield-repo-forks]: https://img.shields.io/github/forks/Zgoly/Meteorist?style=flat&labelColor=940060&color=940060
 [repo-forks]: https://github.com/Zgoly/Meteorist/network/members
 
-
 [vidget-discord]: https://invidget.switchblade.xyz/y8fBWPNJFm
 [discord]: https://dsc.gg/zgoly
 
-
 [shield-fabric]: https://raw.githubusercontent.com/intergrav/devins-badges/v3/assets/cozy/supported/fabric_vector.svg
 [fabric]: https://fabricmc.net/
-
 
 [shield-discord-server]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Fv9%2Fguilds%2F1035620564133490809%2Fwidget.json&query=name&logo=discord&logoColor=white&label=Server&labelColor=5865F2&color=5865F2
 [shield-discord-members]: https://img.shields.io/discord/1035620564133490809?label=%20&color=5865F2

@@ -168,6 +168,12 @@ header a {
     color: var(--text-secondary);
 }
 
+.hero .older-versions-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+}
+
 .title {
     text-align: center;
     margin: 3.5rem 0 2rem;

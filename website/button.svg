@@ -1,0 +1,23 @@
+<svg viewBox="0 0 320 64" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#0080ff" />
+            <stop offset="100%" stop-color="#001932" />
+            <animateTransform attributeName="gradientTransform" type="rotate" from="0 0.5 0.5" to="360 0.5 0.5" dur="4s"
+                repeatCount="indefinite" />
+        </linearGradient>
+    </defs>
+
+    <rect width="100%" height="100%" rx="32" ry="32" fill="url(#g)" />
+    <rect x="4" y="4" width="calc(100% - 8px)" height="calc(100% - 8px)" rx="28" ry="28" fill="#001932" />
+
+    <path transform="translate(24, 18) scale(0.75)"
+        d="M4 28H28V24a1 1 0 014 0v6a2 2 0 01-2 2H2A2 2 0 010 30V24a1 1 0 014 0ZM18 18l4-4a1 1 0 013 3l-7 7a3 3 0 01-4 0L7 17a1 1 0 013-3l4 4V2a1 1 0 014 0Z"
+        fill="white" />
+
+    <!-- Text -->
+    <text x="150" y="32" font-family="Arial, sans-serif" font-size="24" fill="white" dominant-baseline="middle"
+        text-anchor="middle" dx="32">
+        Download via website
+    </text>
+</svg>
