@@ -168,7 +168,7 @@ header a {
     color: var(--text-secondary);
 }
 
-.hero .older-versions-link {
+.older-versions-link {
     display: inline-block;
     margin-top: 0.5rem;
     color: var(--text-secondary);
