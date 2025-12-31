@@ -181,7 +181,7 @@ header a {
     justify-content: center;
 }
 
-.hero .older-versions-link {
+.older-versions-link {
     color: var(--text-secondary);
     display: inline-block;
     margin-top: 0.5rem;
@@ -625,17 +625,6 @@ footer {
 }
 
 /* Popover Component (Something here probably won't work in Firefox) */
-@starting-style {
-    [popover]:popover-open {
-        opacity: 0;
-        transform: translate(-50%, calc(-50% + 2em));
-    }
-
-    [popover]:popover-open::backdrop {
-        opacity: 0;
-    }
-}
-
 [popover] {
     background: var(--surface-2);
     border: 2px solid var(--primary);
@@ -675,6 +664,17 @@ footer {
 
 [popover]:popover-open::backdrop {
     opacity: 1;
+}
+
+@starting-style {
+    [popover]:popover-open {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% + 2em));
+    }
+
+    [popover]:popover-open::backdrop {
+        opacity: 0;
+    }
 }
 
 .popover-close {
