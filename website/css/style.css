@@ -1,5 +1,6 @@
-/* 1. CSS Custom Properties (Variables) */
+/* CSS Custom Properties (Variables) */
 :root {
+    --backdrop: rgb(0, 25, 50, 0.8);
     --primary: rgb(0, 128, 255);
     --shadow-primary: rgba(0, 128, 255, 0.5);
     --shadow-secondary: rgba(0, 0, 0, 0.2);
@@ -13,24 +14,9 @@
     --transition-secondary: all 1s ease;
 }
 
-/* 2. Base / Reset / Global Styles */
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: "Nunito";
-    background: var(--surface-1);
-    color: var(--text-primary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-button,
-input[type="button"] {
-    font-family: inherit;
-    font-size: inherit;
-    cursor: pointer;
+/* Base / Reset / Global Styles */
+:target {
+    scroll-margin-top: 100px;
 }
 
 a {
@@ -44,22 +30,37 @@ a:hover {
     color: var(--primary);
 }
 
+body {
+    background: var(--surface-1);
+    color: var(--text-primary);
+    font-family: "Nunito";
+    line-height: 1.6;
+    margin: 0;
+}
+
+button,
+input[type="button"] {
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
 code {
     background: var(--surface-0);
-    padding: 0.5em;
     border-radius: 0.5em;
+    padding: 0.5em;
 }
 
-:target {
-    scroll-margin-top: 100px;
+html {
+    scroll-behavior: smooth;
 }
 
-/* 3. Layout & Utility Classes */
+/* Layout & Utility Classes */
 .container {
-    width: 90%;
-    max-width: 1200px;
     margin: 0 auto;
+    max-width: 1200px;
     padding: 0 1rem;
+    width: 90%;
 }
 
 .material-symbols-rounded {
@@ -70,32 +71,32 @@ code {
     font-size: 16px;
 }
 
-/* 4. Header & Navigation */
+/* Header & Navigation */
 header {
+    background: var(--surface-0);
     padding: 1rem 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--surface-0);
 }
 
 .header-content {
+    align-items: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 .logo {
-    display: flex;
     align-items: center;
-    user-select: none;
+    display: flex;
     gap: 1rem;
+    user-select: none;
 }
 
 .logo img {
+    display: block;
     height: 32px;
     transition: var(--transition-primary);
-    display: block;
 }
 
 .logo:hover img {
@@ -108,12 +109,12 @@ header {
 }
 
 .menu-toggle {
-    display: none;
     background: none;
     border: none;
     color: white;
-    font-size: 1.5rem;
     cursor: pointer;
+    display: none;
+    font-size: 1.5rem;
     padding: 0.5rem;
     transition: var(--transition-primary);
 }
@@ -132,16 +133,21 @@ header a {
     text-decoration: none;
 }
 
+.nav-links a {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
 .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 0;
-    height: 2px;
-    border-radius: 1px;
     background: var(--primary);
+    border-radius: 1px;
+    bottom: 0;
+    content: "";
+    height: 2px;
+    position: absolute;
+    right: 0;
     transition: var(--transition-primary);
+    width: 0;
 }
 
 .nav-links a:hover::after {
@@ -149,82 +155,89 @@ header a {
     width: 100%;
 }
 
-/* 5. Sections & Typography */
+/* Sections & Typography */
 .hero {
-    text-align: center;
     padding: 5rem 0 2.5rem;
+    text-align: center;
 }
 
 .hero h1 {
     font-size: 3rem;
-    margin-bottom: 1.2rem;
     line-height: 1.2;
+    margin-bottom: 1.2rem;
 }
 
 .hero p {
-    font-size: 1.15rem;
-    max-width: 700px;
-    margin: 0 auto 2rem;
     color: var(--text-secondary);
+    font-size: 1.15rem;
+    margin: 0 auto 2rem;
+    max-width: 700px;
 }
 
-.older-versions-link {
+.hero>.container div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    justify-content: center;
+}
+
+.hero .older-versions-link {
+    color: var(--text-secondary);
     display: inline-block;
     margin-top: 0.5rem;
-    color: var(--text-secondary);
 }
 
 .title {
-    text-align: center;
-    margin: 3.5rem 0 2rem;
     font-size: 2rem;
+    margin: 3.5rem 0 2rem;
     position: relative;
+    text-align: center;
 }
 
 .title::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70px;
-    height: 3px;
-    transition: var(--transition-primary);
     background: var(--primary);
     border-radius: 2px;
+    bottom: -8px;
+    content: "";
+    height: 3px;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+    transition: var(--transition-primary);
+    width: 70px;
 }
 
 .title:hover::after {
     width: 100px;
 }
 
-/* 6. Buttons */
+/* Buttons */
 .cta-button {
-    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
     background: var(--primary);
-    color: var(--text-primary);
-    padding: 0.85rem 2rem;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: var(--transition-primary);
     border: 2px solid var(--primary);
+    border-radius: 50px;
     box-shadow: 0 4px 20px var(--shadow-secondary);
-    margin: 0.5rem;
+    color: var(--text-primary);
+    display: inline-flex;
+    font-weight: 600;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    text-decoration: none;
+    transition: var(--transition-primary);
+}
+
+.cta-button:active {
+    background: var(--surface-0);
+    color: var(--primary);
+    transform: translateY(0px);
 }
 
 .cta-button:hover {
     background: transparent;
+    box-shadow: 0 6px 25px var(--shadow-primary);
     color: var(--text-primary);
     transform: translateY(-3px);
-    box-shadow: 0 6px 25px var(--shadow-primary);
-}
-
-.cta-button:active {
-    color: var(--primary);
-    transform: translateY(0px);
 }
 
 .github-button {
@@ -235,40 +248,44 @@ header a {
     background: var(--surface-1);
 }
 
-/* 7. Feature Cards */
+/* Feature Cards */
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.8rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     margin-bottom: 2.5rem;
 }
 
 .feature-card {
     background: var(--surface-2);
+    border: 2px solid transparent;
     border-radius: 1.5em;
+    box-shadow: 0 8px 25px var(--shadow-secondary);
     padding: 1.8rem;
     transition: var(--transition-primary);
-    box-shadow: 0 8px 25px var(--shadow-secondary);
-    border: 2px solid transparent;
 }
 
 .feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px var(--shadow-primary);
     border: 2px solid var(--primary);
+    box-shadow: 0 12px 30px var(--shadow-primary);
+    transform: translateY(-8px);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
 }
 
 .feature-icon {
-    width: 55px;
-    height: 55px;
+    align-items: center;
     background: var(--surface-3);
     border-radius: 16px;
+    color: var(--primary);
     display: flex;
-    align-items: center;
+    height: 55px;
     justify-content: center;
     margin-bottom: 1.2rem;
-    color: var(--primary);
     transition: var(--transition-primary);
+    width: 55px;
 }
 
 .feature-card:hover .feature-icon {
@@ -276,35 +293,114 @@ header a {
 }
 
 .feature-icon .material-symbols-rounded {
-    transition: var(--transition-primary);
     font-size: 32px;
+    transition: var(--transition-primary);
 }
 
 .feature-card:hover .material-symbols-rounded {
     color: var(--text-primary);
 }
 
-.feature-card p {
-    color: var(--text-secondary);
-}
-
-/* 8. Content Sections */
-.content-container {
+/* Also Try Section */
+.addon-card {
+    align-items: center;
     background: var(--surface-2);
+    border: 2px solid transparent;
     border-radius: 1.5em;
-    padding: 2rem;
-    box-shadow: 0 10px 30px var(--shadow-secondary);
+    box-shadow: 0 8px 25px var(--shadow-secondary);
+    display: flex;
+    flex: 1 1 350px;
+    flex-direction: column;
+    padding: 1.8rem;
+    transition: var(--transition-primary);
 }
 
+.addon-card h3 {
+    color: var(--text-primary);
+    font-size: 1.375rem;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+}
+
+.addon-card:hover {
+    border: 2px solid var(--primary);
+    box-shadow: 0 12px 30px var(--shadow-primary);
+    transform: translateY(-5px);
+}
+
+.addon-description {
+    align-items: center;
+    color: var(--text-secondary);
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    line-height: 1.5;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+.addon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.addon-icon {
+    align-items: center;
+    background: var(--surface-3);
+    border-radius: 0.75rem;
+    display: flex;
+    height: 64px;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+    overflow: hidden;
+    transition: var(--transition-primary);
+    width: 64px;
+}
+
+.addon-icon img {
+    height: 32px;
+    object-fit: contain;
+    width: 32px;
+}
+
+/* Content Sections */
 .category-section {
     margin-bottom: 2.5rem;
 }
 
 .category-title {
-    font-size: 1.4rem;
-    margin: 0 0 1rem;
     color: var(--primary);
+    font-size: 1.4rem;
     font-weight: 600;
+    margin: 0 0 1rem;
+}
+
+.content-container {
+    background: var(--surface-2);
+    border-radius: 1.5em;
+    box-shadow: 0 10px 30px var(--shadow-secondary);
+    padding: 2rem;
+}
+
+.content-card {
+    background: var(--surface-3);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 1.3rem;
+    transition: var(--transition-primary);
+}
+
+.content-card:hover {
+    border: 2px solid var(--primary);
+    transform: translateY(-3px);
+}
+
+.content-description {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    margin: 0;
 }
 
 .content-grid {
@@ -313,28 +409,21 @@ header a {
     gap: 16px;
 }
 
-.content-grid > * {
+.content-grid>* {
     flex: 275px;
 }
 
-.content-card {
-    background: var(--surface-3);
-    border-radius: 16px;
-    padding: 1.3rem;
-    transition: var(--transition-primary);
-    border: 2px solid transparent;
-}
-
-.content-card:hover {
-    border: 2px solid var(--primary);
-    transform: translateY(-3px);
-}
-
 .content-title {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: 0.6em;
     margin-bottom: 1em;
+}
+
+.content-title h4 {
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    margin: 0;
 }
 
 .content-title .material-symbols-rounded {
@@ -347,106 +436,181 @@ header a {
     color: var(--text-primary);
 }
 
-.content-title h4 {
-    font-size: 1.05rem;
-    color: var(--text-primary);
-    margin: 0;
+/* Reviews */
+.review-author {
+    margin: 0 0 1em;
 }
 
-.content-description {
-    font-size: 0.92rem;
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-/* 9. Reviews */
 .review-card {
     background: var(--surface-2);
-    border-radius: 1.5em;
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-    transition: var(--transition-primary);
-    box-shadow: 0 8px 25px var(--shadow-secondary);
     border-left: 4px solid var(--primary);
+    border-radius: 1.5em;
+    box-shadow: 0 8px 25px var(--shadow-secondary);
+    margin-bottom: 1.5rem;
+    padding: 2rem;
     position: relative;
+    transition: var(--transition-primary);
 }
 
 .review-card::before {
+    color: var(--surface-3);
     content: "“";
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
     font-size: 8rem;
-    line-height: 1;
-    color: rgba(0, 128, 255, 0.12);
     font-weight: bold;
-    z-index: 0;
+    line-height: 1;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
     transition: var(--transition-primary);
+    z-index: 0;
+}
+
+.review-card>* {
+    position: relative;
+    z-index: 1;
 }
 
 .review-card:hover {
-    transform: translateY(-5px);
     border-left: 8px solid var(--primary);
+    transform: translateY(-5px);
 }
 
 .review-card:hover::before {
     transform: translateY(20px);
 }
 
-.review-card > * {
-    position: relative;
-    z-index: 1;
-}
-
-.review-author {
-    margin: 0 0 1em;
+.review-source {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 1.2rem;
+    text-align: center;
 }
 
 .review-text {
+    color: var(--text-secondary);
     font-style: italic;
-    color: var(--text-secondary);
 }
 
-.review-source {
+/* Showcase Section */
+.pswp--ui-visible .pswp__img,
+.pswp--ui-visible .pswp__img--placeholder {
+    opacity: 1;
+}
+
+.pswp__img,
+.pswp__img--placeholder {
+    opacity: 0;
+    transition: 0.5s opacity !important;
+}
+
+.showcase-grid {
+    display: grid;
+    gap: 1.8rem;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    margin-bottom: 2.5rem;
+}
+
+.showcase-item {
+    background: var(--surface-2);
+    border: 2px solid var(--surface-2);
+    border-radius: 1.5em;
+    box-shadow: 0 8px 25px var(--shadow-secondary);
+    overflow: hidden;
+    position: relative;
+    transition: var(--transition-primary);
+}
+
+.showcase-item img {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-primary);
+    width: 100%;
+}
+
+.showcase-item:hover {
+    border: 2px solid var(--primary);
+    box-shadow: 0 12px 30px var(--shadow-primary);
+    transform: translateY(-8px);
+}
+
+.showcase-item:hover img {
+    transform: scale(1.05);
+}
+
+.showcase-overlay {
+    background: linear-gradient(transparent, var(--backdrop));
+    bottom: 0;
+    color: white;
+    left: 0;
+    padding: 2rem 1.5rem 1.2rem;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    transform: translateY(0);
+}
+
+.showcase-overlay h3 {
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.showcase-overlay p {
+    color: #e2e8f0;
     font-size: 0.9rem;
-    margin-top: 1.2rem;
-    color: var(--text-secondary);
-    text-align: center;
+    margin: 0;
 }
 
-/* 10. Footer */
+.showcase-overlay::before {
+    background: linear-gradient(transparent, var(--primary));
+    bottom: 0px;
+    content: "";
+    left: 0px;
+    opacity: 0;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    transition: var(--transition-primary);
+    z-index: -1;
+}
+
+.showcase-item:hover .showcase-overlay::before {
+    opacity: 1;
+}
+
+/* Footer */
 footer {
-    margin-top: 3.5rem;
-    text-align: center;
-    padding: 2rem 0;
     color: var(--text-secondary);
+    margin-top: 3.5rem;
+    padding: 2rem 0;
+    text-align: center;
 }
 
 .footer-links {
     display: flex;
-    justify-content: center;
     gap: 1.3rem;
+    justify-content: center;
     margin: 1.2rem 0;
 }
 
 .social-icons {
     display: flex;
-    justify-content: center;
     gap: 1rem;
+    justify-content: center;
     margin: 1.3rem 0;
 }
 
 .social-icons a {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
     background: var(--surface-3);
+    border-radius: 50%;
     color: var(--text-primary);
-    transition: var(--transition-primary);
+    display: flex;
+    height: 38px;
+    justify-content: center;
     text-decoration: none;
+    transition: var(--transition-primary);
+    width: 38px;
 }
 
 .social-icons a:hover {
@@ -455,32 +619,47 @@ footer {
 }
 
 .social-icons img {
-    width: 20px;
-    height: 20px;
     filter: brightness(0) invert(1);
+    height: 20px;
+    width: 20px;
 }
 
-/* 11. Popover Component (Something here probably won't work in Firefox) */
+/* Popover Component (Something here probably won't work in Firefox) */
+@starting-style {
+    [popover]:popover-open {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% + 2em));
+    }
+
+    [popover]:popover-open::backdrop {
+        opacity: 0;
+    }
+}
+
 [popover] {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
     background: var(--surface-2);
-    color: var(--text-primary);
-    padding: 2rem;
-    margin: 0;
+    border: 2px solid var(--primary);
     border-radius: 2rem;
     box-shadow: 0 10px 40px var(--shadow-primary);
-    border: 2px solid var(--primary);
-    width: max-content;
-    max-width: calc(100% - 8em);
+    color: var(--text-primary);
+    left: 50%;
+    margin: 0;
     max-height: calc(100% - 8em);
+    max-width: calc(100% - 8em);
+    padding: 2rem;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: max-content;
+}
+
+[popover] h2 {
+    margin: 0 0 1em;
 }
 
 [popover]::backdrop {
-    background-color: #0005;
     backdrop-filter: blur(10px);
+    background-color: #0005;
 }
 
 [popover],
@@ -498,18 +677,23 @@ footer {
     opacity: 1;
 }
 
-@starting-style {
-    [popover]:popover-open {
-        opacity: 0;
-        transform: translate(-50%, calc(-50% + 2em));
-    }
-    [popover]:popover-open::backdrop {
-        opacity: 0;
-    }
+.popover-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    right: 1.25em;
+    top: 1.25em;
+    z-index: 1;
 }
 
-[popover] h2 {
-    margin: 0 0 1em;
+.popover-close>.material-symbols-rounded {
+    color: var(--text-primary);
+    transition: var(--transition-primary);
+}
+
+.popover-close:hover>.material-symbols-rounded {
+    color: var(--primary);
 }
 
 .popover-content {
@@ -517,95 +701,83 @@ footer {
     overflow-y: auto;
 }
 
-.popover-close {
-    position: absolute;
-    top: 1.25em;
-    right: 1.25em;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 1;
-}
-
-.popover-close > .material-symbols-rounded {
-    transition: var(--transition-primary);
-    color: var(--text-primary);
-}
-
-.popover-close:hover > .material-symbols-rounded {
-    color: var(--primary);
-}
-
-/* 12. Scroll Reveal Animation */
-section {
-    opacity: 0;
+/* Scroll Reveal Animation */
+body>section {
     filter: blur(10px);
+    opacity: 0;
     transition: 1s;
 }
 
-section.scrolled {
-    opacity: 1;
+body>section.scrolled {
     filter: blur(0);
+    opacity: 1;
 }
 
-/* 13. Responsive Design (Media Queries) */
-@media (max-width: 900px) {
+/* Responsive Design (Media Queries) */
+@media (max-width: 1050px) {
     .menu-toggle {
         display: block;
     }
 
-    .nav-links {
-        display: grid;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: var(--surface-0);
-        overflow: hidden;
-        box-shadow: 0 10px 20px var(--shadow-secondary);
-        border-radius: 1.5rem;
-        margin: 0.5rem;
-        transition: var(--transition-primary);
-        grid-template-rows: 0fr;
-        align-items: start;
-        z-index: 100;
-        min-width: 200px;
-    }
-
-    .nav-links a {
-        margin: 0.75rem 1rem;
-        padding: 0.75rem 2rem;
-        text-align: center;
-        border-radius: 50px;
-    }
-
-    .nav-links a:hover::after {
-        width: 0%;
-    }
-
-    .nav-links > .inner {
-        display: grid;
-        gap: 0;
-        overflow: hidden;
-    }
-
-    .nav-links a:hover {
-        background: var(--surface-2);
-    }
-
-    .nav-links a:active {
-        background: var(--surface-3);
+    .menu-toggle-wrapper:focus-within>.menu-toggle {
+        transform: rotate(90deg);
     }
 
     .menu-toggle-wrapper:focus-within .nav-links {
         grid-template-rows: 1fr;
     }
 
-    .menu-toggle-wrapper:focus-within > .menu-toggle {
-        transform: rotate(90deg);
+    .nav-links {
+        align-items: start;
+        background-color: var(--surface-0);
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 20px var(--shadow-secondary);
+        display: grid;
+        grid-template-rows: 0fr;
+        margin: 0.5rem;
+        min-width: 200px;
+        overflow: hidden;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        transition: var(--transition-primary);
+        z-index: 100;
+    }
+
+    .nav-links>.inner {
+        display: grid;
+        gap: 0;
+        overflow: hidden;
+    }
+
+    .nav-links a {
+        border-radius: 50px;
+        margin: 0.75rem 1rem;
+        padding: 0.75rem 2rem;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .nav-links a:active {
+        background: var(--surface-3);
+    }
+
+    .nav-links a:hover {
+        background: var(--surface-2);
+    }
+
+    .nav-links a:hover::after {
+        width: 0%;
     }
 }
 
 @media (max-width: 600px) {
+
+    .features-grid,
+    .showcase-grid {
+        grid-template-columns: none;
+    }
+
     .hero h1 {
         font-size: 2rem;
     }

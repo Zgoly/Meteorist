@@ -1,5 +1,10 @@
 const isDebug = false;
 
+function unescapeDoubleQuotes(str) {
+    if (typeof str !== 'string') return str;
+    return str.split('\\"').join('"');
+}
+
 async function loadAndRenderContent() {
     try {
         const response = await fetch('generated/meteorist-info.json');
@@ -29,7 +34,7 @@ async function loadAndRenderContent() {
             grid.className = 'content-grid';
 
             groups[cat].forEach(module => {
-                const name = module.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const name = unescapeDoubleQuotes(module.name).replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 const card = document.createElement('div');
                 card.className = 'content-card';
 
@@ -47,7 +52,7 @@ async function loadAndRenderContent() {
 
                 const desc = document.createElement('p');
                 desc.className = 'content-description';
-                desc.textContent = module.description;
+                desc.textContent = unescapeDoubleQuotes(module.description);
 
                 card.appendChild(titleDiv);
                 card.appendChild(desc);
@@ -76,7 +81,7 @@ async function loadAndRenderContent() {
 
             const desc = document.createElement('p');
             desc.className = 'content-description';
-            desc.textContent = cmd.description;
+            desc.textContent = unescapeDoubleQuotes(cmd.description);
 
             if (cmd.aliases && cmd.aliases.length > 0) {
                 const aliasText = document.createTextNode(' — Aliases: ');
@@ -110,7 +115,7 @@ async function loadAndRenderContent() {
             titleDiv.appendChild(h4);
 
             const desc = document.createElement('p');
-            desc.textContent = preset.text;
+            desc.textContent = unescapeDoubleQuotes(preset.text);
             desc.className = "content-description";
 
             card.appendChild(titleDiv);
@@ -164,9 +169,9 @@ setupDownloadButton();
 const sections = document.querySelectorAll('section');
 
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    entry.target.classList.toggle('scrolled', entry.isIntersecting);
-  });
+    entries.forEach(entry => {
+        entry.target.classList.toggle('scrolled', entry.isIntersecting);
+    });
 });
 
 sections.forEach(section => observer.observe(section));
