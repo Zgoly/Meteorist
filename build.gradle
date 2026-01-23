@@ -17,6 +17,10 @@ repositories {
         name = 'meteor-maven-snapshots'
         url = 'https://maven.meteordev.org/snapshots'
     }
+    maven {
+        name = "jitpack"
+        url = uri("https://jitpack.io")
+    }
     exclusiveContent {
         forRepository {
             maven {
@@ -55,6 +59,9 @@ dependencies {
 
     // JavaParser
     devImplementation 'com.github.javaparser:javaparser-core:3.27.0'
+
+    // Catppuccin theme TODO rename later
+    modCompileOnly "com.github.X-C-0.catpuccin-addon:${project.properties['minecraft_version']}:stonecutter-SNAPSHOT"
 }
 
 tasks.withType(JavaCompile).configureEach {

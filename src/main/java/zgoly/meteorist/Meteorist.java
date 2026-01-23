@@ -1,5 +1,6 @@
 package zgoly.meteorist;
 
+import me.pindour.catppuccin.api.icons.CatppuccinIcons;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.commands.Commands;
@@ -58,9 +59,7 @@ public class Meteorist extends MeteorAddon {
 
     public static String MOD_ID = "meteorist";
 
-    public static GuiTexture ARROW_UP;
-    public static GuiTexture ARROW_DOWN;
-    public static GuiTexture EYE;
+    public static GuiTexture ARROW_UP, ARROW_DOWN, EYE, ICON;
 
     public static Identifier identifier(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
@@ -76,6 +75,8 @@ public class Meteorist extends MeteorAddon {
         ARROW_UP = GuiRenderer.addTexture(identifier("textures/icons/gui/arrow_up.png"));
         ARROW_DOWN = GuiRenderer.addTexture(identifier("textures/icons/gui/arrow_down.png"));
         EYE = GuiRenderer.addTexture(identifier("textures/icons/gui/eye.png"));
+
+        ICON = GuiRenderer.addTexture(identifier("textures/icons/meteorist.png"));
 
         // Config
         MeteoristConfigScreen.init();
@@ -118,6 +119,10 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new ZAutoTotem());
         Modules.get().add(new ZKillaura());
         Modules.get().add(new ZoomPlus());
+
+        if (FabricLoader.getInstance().isModLoaded("catppuccin-addon")) {
+            CatppuccinIcons.registerCategoryIcon(CATEGORY.name, ICON);
+        }
 
         // Dev modules
         Modules.get().add(new DocsGenerator());
