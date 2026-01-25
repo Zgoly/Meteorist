@@ -1,18 +1,18 @@
 {
   "assets": [
     {
-      "browser_download_url": "https://github.com/Zgoly/Meteorist/releases/download/v1.21.11-1/meteorist-1.21.11-1.jar",
+      "browser_download_url": "https://github.com/Zgoly/Meteorist/releases/download/v1.21.11-2/meteorist-1.21.11-2.jar",
       "content_type": "application/java-archive",
-      "created_at": "2025-12-22T19:35:28Z",
-      "digest": "sha256:6ec3d3db9398f05db326ecd6c8c05fb7e20a3ab068357fcb493689d81b6f4165",
+      "created_at": "2026-01-25T11:58:52Z",
+      "digest": "sha256:f83fbd14d545f69d2ebe4be3055d9ddbff03466ff1998cf76f273db51e2ad7a4",
       "download_count": 0,
-      "id": 331849400,
+      "id": 345620032,
       "label": null,
-      "name": "meteorist-1.21.11-1.jar",
-      "node_id": "RA_kwDOHDiC884Tx564",
-      "size": 391623,
+      "name": "meteorist-1.21.11-2.jar",
+      "node_id": "RA_kwDOHDiC884Umb5A",
+      "size": 401840,
       "state": "uploaded",
-      "updated_at": "2025-12-22T19:35:30Z",
+      "updated_at": "2026-01-25T11:58:55Z",
       "uploader": {
         "avatar_url": "https://avatars.githubusercontent.com/u/46041044?v=4",
         "events_url": "https://api.github.com/users/Zgoly/events{/privacy}",
@@ -34,10 +34,10 @@
         "url": "https://api.github.com/users/Zgoly",
         "user_view_type": "public"
       },
-      "url": "https://api.github.com/repos/Zgoly/Meteorist/releases/assets/331849400"
+      "url": "https://api.github.com/repos/Zgoly/Meteorist/releases/assets/345620032"
     }
   ],
-  "assets_url": "https://api.github.com/repos/Zgoly/Meteorist/releases/272298556/assets",
+  "assets_url": "https://api.github.com/repos/Zgoly/Meteorist/releases/279726091/assets",
   "author": {
     "avatar_url": "https://avatars.githubusercontent.com/u/46041044?v=4",
     "events_url": "https://api.github.com/users/Zgoly/events{/privacy}",
@@ -59,21 +59,21 @@
     "url": "https://api.github.com/users/Zgoly",
     "user_view_type": "public"
   },
-  "body": "## What's Changed\r\n* Update to Minecraft 1.21.11 and upgrade Fabric Loader, Loom, and Gradle\r\n* Overhaul **ZAimbot** with fully customizable projectile trajectories (snowballs, eggs, etc.) and GUI for managing them\r\n* Easter egg has been added! Try downloading latest version and typing `🌠` in the chat\r\n* Launch new official website with auto-generated module/command browser and one-click downloads\r\n* Refactor CI workflows to commit generated JSON metadata directly to main repo (no longer uses separate website repo)\r\n* Improve `MeteoristInfoParser` with better `Category` resolution and file caching for reliable metadata extraction\r\n* Fix minor issues in `AutoSleep`, `ItemsSetting`, and various entity imports due to Minecraft 1.21.11 package changes\r\n\r\n**Full Changelog**: https://github.com/Zgoly/Meteorist/compare/v1.21.10-1...v1.21.11-1",
-  "created_at": "2025-12-22T19:32:50Z",
+  "body": "## What's Changed\r\n* Update to latest Yarn mappings, Fabric Loader and Loom\r\n* Replace `JumpJump` with new `Jumps` module, now supports ground-only activation\r\n* Overhaul `JumpFlight`: add tick-delayed ascent/descent\r\n* Add sign counter to `SignSearch` info string\r\n* Enhance `ItemsOffer` in AutoTrade with NBT-based filtering, regex matching, and flexible item/count rules\r\n* Add Catppuccin theme support and register custom category icon\r\n* Launch updated official website with better download button, SEO metadata, and showcase images\r\n* Add `meteor-addon-list.json` for future addon discovery\r\n* Bump Baritone version to 1.21.11\r\n\r\n**Full Changelog**: https://github.com/Zgoly/Meteorist/compare/v1.21.11-1...v1.21.11-2",
+  "created_at": "2026-01-25T11:48:25Z",
   "draft": false,
-  "html_url": "https://github.com/Zgoly/Meteorist/releases/tag/v1.21.11-1",
-  "id": 272298556,
+  "html_url": "https://github.com/Zgoly/Meteorist/releases/tag/v1.21.11-2",
+  "id": 279726091,
   "immutable": false,
-  "name": "v1.21.11-1",
-  "node_id": "RE_kwDOHDiC884QOvI8",
+  "name": "v1.21.11-2",
+  "node_id": "RE_kwDOHDiC884QrEgL",
   "prerelease": false,
-  "published_at": "2025-12-22T19:47:55Z",
-  "tag_name": "v1.21.11-1",
-  "tarball_url": "https://api.github.com/repos/Zgoly/Meteorist/tarball/v1.21.11-1",
+  "published_at": "2026-01-25T12:01:10Z",
+  "tag_name": "v1.21.11-2",
+  "tarball_url": "https://api.github.com/repos/Zgoly/Meteorist/tarball/v1.21.11-2",
   "target_commitish": "main",
-  "updated_at": "2025-12-22T19:47:55Z",
-  "upload_url": "https://uploads.github.com/repos/Zgoly/Meteorist/releases/272298556/assets{?name,label}",
-  "url": "https://api.github.com/repos/Zgoly/Meteorist/releases/272298556",
-  "zipball_url": "https://api.github.com/repos/Zgoly/Meteorist/zipball/v1.21.11-1"
+  "updated_at": "2026-01-25T12:01:10Z",
+  "upload_url": "https://uploads.github.com/repos/Zgoly/Meteorist/releases/279726091/assets{?name,label}",
+  "url": "https://api.github.com/repos/Zgoly/Meteorist/releases/279726091",
+  "zipball_url": "https://api.github.com/repos/Zgoly/Meteorist/zipball/v1.21.11-2"
 }
