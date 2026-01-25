@@ -227,4 +227,9 @@ public class SignSearch extends Module {
         Back,
         Both
     }
+
+    @Override
+    public String getInfoString() {
+        return String.valueOf(foundSigns.size());
+    }
 }

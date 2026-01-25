@@ -78,6 +78,11 @@ public class Meteorist extends MeteorAddon {
 
         ICON = GuiRenderer.addTexture(identifier("textures/icons/meteorist.png"));
 
+        // Catppuccin-styled category icon
+        if (FabricLoader.getInstance().isModLoaded("catppuccin-addon")) {
+            CatppuccinIcons.registerCategoryIcon(CATEGORY.name, ICON);
+        }
+
         // Config
         MeteoristConfigScreen.init();
 
@@ -108,7 +113,7 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new Instructions());
         Modules.get().add(new ItemSucker());
         Modules.get().add(new JumpFlight());
-        Modules.get().add(new JumpJump());
+        Modules.get().add(new Jumps());
         Modules.get().add(new Placer());
         Modules.get().add(new SlotClick());
         Modules.get().add(new MinescriptIntegration());
@@ -119,10 +124,6 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new ZAutoTotem());
         Modules.get().add(new ZKillaura());
         Modules.get().add(new ZoomPlus());
-
-        if (FabricLoader.getInstance().isModLoaded("catppuccin-addon")) {
-            CatppuccinIcons.registerCategoryIcon(CATEGORY.name, ICON);
-        }
 
         // Dev modules
         Modules.get().add(new DocsGenerator());
