@@ -11,7 +11,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout Code
+      - name: Checkout release commit
         uses: actions/checkout@v6
 
       - name: Set up Java
@@ -20,17 +20,25 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Make Gradle Executable
+      - name: Make Gradle executable
         run: chmod +x ./gradlew
 
-      - name: Run MeteoristInfoParser
+      - name: Generate Meteorist info from release version
         run: ./gradlew generateMeteoristInfo
 
-      - name: Create output directory
-        run: mkdir -p website/generated
+      - name: Save generated file temporarily
+        run: cp build/info/meteorist-info.json /tmp/meteorist-info.json
 
-      - name: Copy Meteorist Info to website/generated
-        run: cp build/info/meteorist-info.json website/generated/meteorist-info.json
+      - name: Checkout main branch
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Restore generated file to website directory
+        run: |
+          mkdir -p website/generated
+          cp /tmp/meteorist-info.json website/generated/meteorist-info.json
 
       - name: Commit and push to main
         run: |
@@ -39,5 +47,5 @@ jobs:
           git add website/generated/meteorist-info.json
           if ! git diff --cached --quiet; then
             git commit -m "chore: update Meteorist info [automated]"
-            git push origin HEAD:refs/heads/main
+            git push --force-with-lease origin main
           fi

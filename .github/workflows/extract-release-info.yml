@@ -11,24 +11,36 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout main
+      - name: Checkout main branch
         uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Create output directory
         run: mkdir -p website/generated
 
-      - name: Save release info as JSON
+      - name: Extract and transform release info
         run: |
-          cat > website/generated/release-info.json << 'EOF'
+          cat > /tmp/release.json << 'EOF'
           ${{ toJSON(github.event.release) }}
           EOF
+          jq '{
+            name: .name,
+            body: .body,
+            tag_name: .tag_name
+          } + (if (.assets | length) > 0 then {
+            size: .assets[0].size,
+            updated_at: .assets[0].updated_at,
+            url: .assets[0].browser_download_url
+          } else {} end)' /tmp/release.json > website/generated/release-info.json
 
-      - name: Commit and push to main
+      - name: Commit and push changes
         run: |
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
           git add website/generated/release-info.json
           if ! git diff --cached --quiet; then
             git commit -m "chore: update release info for ${{ github.event.release.tag_name }}"
-            git push origin HEAD:refs/heads/main
+            git push --force-with-lease origin main
           fi
