@@ -5,6 +5,40 @@ function unescapeDoubleQuotes(str) {
     return str.split('\\"').join('"');
 }
 
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function getTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'week', seconds: 604800 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 }
+    ];
+
+    for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
+        if (count > 0) {
+            return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
+        }
+    }
+
+    return 'Just now';
+}
+
 async function loadAndRenderContent() {
     try {
         const response = await fetch('generated/meteorist-info.json');
@@ -134,25 +168,25 @@ async function setupDownloadButton() {
         const response = await fetch('generated/release-info.json');
         const data = await response.json();
 
-        const downloadBtn = document.getElementById('download-btn');
-        if (!downloadBtn || !data.tag_name || !data.assets?.length) return;
-
-        const jarAsset = data.assets.find(asset => asset.name.endsWith('.jar'));
-        if (!jarAsset) return;
-
-        const icon = document.createElement('span');
-        icon.className = 'material-symbols-rounded';
-        icon.textContent = 'download';
-
-        downloadBtn.textContent = `Download ${data.tag_name}`;
-        downloadBtn.insertBefore(icon, downloadBtn.firstChild);
+        if (!data.url || !data.tag_name) return;
 
         const downloadLink = document.getElementById('download-link');
-        downloadLink.href = jarAsset.browser_download_url;
+        downloadLink.href = data.url;
+
+        const tagNameSpans = document.querySelectorAll('.tag-name');
+        tagNameSpans.forEach(span => span.textContent = data.tag_name);
+
+        const fileSizeSpans = document.querySelectorAll('.file-size');
+        fileSizeSpans.forEach(span => span.textContent = formatFileSize(data.size));
+
+        const timeAgoSpans = document.querySelectorAll('.time-ago');
+        timeAgoSpans.forEach(span => span.textContent = getTimeAgo(data.updated_at));
+
+        const downloadBtn = document.getElementById('download-btn');
 
         if (!isDebug) downloadBtn.addEventListener('click', e => {
             const link = document.createElement('a');
-            link.href = jarAsset.browser_download_url;
+            link.href = data.url;
             link.download = jarAsset.name;
             document.body.appendChild(link);
             link.click();
@@ -165,6 +199,40 @@ async function setupDownloadButton() {
 }
 
 setupDownloadButton();
+
+async function parseShieldsIoInfo() {
+    const btn = document.querySelector('.github-button');
+    if (!btn) return;
+
+    try {
+        const starsRes = await fetch('https://img.shields.io/github/stars/Zgoly/Meteorist?style=flat-square&label=');
+        const starsSvgText = await starsRes.text();
+
+        const parser = new DOMParser();
+        const starsDoc = parser.parseFromString(starsSvgText, 'image/svg+xml');
+        const stars = starsDoc.querySelector('text')?.textContent?.trim();
+
+        if (stars) {
+            const badge = document.getElementById('github-star-count');
+            badge.textContent = stars;
+        }
+
+        const downloadsRes = await fetch('https://img.shields.io/github/downloads/Zgoly/Meteorist/total?style=flat-square&label=');
+        const downloadsSvgText = await downloadsRes.text();
+
+        const downloadsDoc = parser.parseFromString(downloadsSvgText, 'image/svg+xml');
+        const downloads = downloadsDoc.querySelector('text')?.textContent?.trim();
+
+        if (downloads) {
+            const downloadCounterNumber = document.getElementById('hero-download-counter-number');
+            downloadCounterNumber.textContent = downloads;
+        }
+    } catch (e) {
+        console.warn('Failed to parse stats', e);
+    }
+}
+
+parseShieldsIoInfo()
 
 const sections = document.querySelectorAll('section');
 

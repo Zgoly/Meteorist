@@ -3,7 +3,7 @@
   "id": "meteorist",
   "version": "${version}",
   "name": "Meteorist",
-  "description": "Add-on for Meteor that adds useful utilities for non-vanilla anarchy servers.",
+  "description": "Meteorist is a handy multi-tool add-on for Meteor Client, packed with utilities for everyday gameplay.",
   "authors": [
     "Zgoly"
   ],

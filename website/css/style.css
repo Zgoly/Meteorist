@@ -30,10 +30,15 @@ a:hover {
     color: var(--primary);
 }
 
+html,
+body {
+    overflow-x: clip;
+}
+
 body {
     background: var(--surface-1);
     color: var(--text-primary);
-    font-family: "Nunito";
+    font-family: system-ui, sans-serif;
     line-height: 1.6;
     margin: 0;
 }
@@ -123,22 +128,28 @@ header {
     display: flex;
 }
 
+.nav-links>a {
+    margin: 0.5em;
+}
+
+/*
 .nav-links .inner {
     display: flex;
     gap: 1.8rem;
 }
+*/
 
 header a {
     color: var(--text-primary);
     text-decoration: none;
 }
 
-.nav-links a {
+.nav-links>a {
     color: var(--text-primary);
     text-decoration: none;
 }
 
-.nav-links a::after {
+.nav-links>a::after {
     background: var(--primary);
     border-radius: 1px;
     bottom: 0;
@@ -150,7 +161,7 @@ header a {
     width: 0;
 }
 
-.nav-links a:hover::after {
+.nav-links>a:hover::after {
     left: 0;
     width: 100%;
 }
@@ -161,30 +172,124 @@ header a {
     text-align: center;
 }
 
-.hero h1 {
+.hero-content {
+    display: flex;
+    text-align: left;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(5px);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes swing {
+
+    0%,
+    100% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+.hero-logo {
+    animation: float 4s ease-in-out infinite;
+}
+
+.hero-logo>img {
+    animation: swing 8s ease-in-out infinite;
+}
+
+.hero-logo>img {
+    height: 192px;
+    width: 192px;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-text h1 {
     font-size: 3rem;
     line-height: 1.2;
     margin-bottom: 1.2rem;
 }
 
-.hero p {
+.hero-text p {
     color: var(--text-secondary);
     font-size: 1.15rem;
-    margin: 0 auto 2rem;
-    max-width: 700px;
+    margin: 0 0 2rem;
 }
 
-.hero>.container div {
+#hero-buttons {
     display: flex;
-    flex-wrap: wrap;
     gap: 1em;
-    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#hero-version-info {
+    display: flex;
+    gap: 0.5em;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+#hero-version-info>span {
+    color: var(--text-secondary);
+}
+
+#hero-version-info>.dot,
+#hero-version-info>.tag-name {
+    color: var(--text-primary);
 }
 
 .older-versions-link {
     color: var(--text-secondary);
     display: inline-block;
-    margin-top: 0.5rem;
+}
+
+#hero-download-counter {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#hero-download-counter>.material-symbols-rounded {
+    background-color: var(--surface-3);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    color: var(--primary);
+}
+
+#hero-download-counter-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#hero-download-counter-content>span {
+    line-height: 1;
+}
+
+#hero-download-counter-number {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+#hero-download-counter-text {
+    color: var(--text-secondary);
 }
 
 .title {
@@ -216,28 +321,29 @@ header a {
     align-items: center;
     background: var(--primary);
     border: 2px solid var(--primary);
-    border-radius: 50px;
+    border-radius: 1.5rem;
     box-shadow: 0 4px 20px var(--shadow-secondary);
     color: var(--text-primary);
     display: inline-flex;
     font-weight: 600;
     gap: 0.5rem;
-    padding: 0.85rem 2rem;
+    padding: 0.75rem 2rem;
     text-decoration: none;
     transition: var(--transition-primary);
-}
-
-.cta-button:active {
-    background: var(--surface-0);
-    color: var(--primary);
-    transform: translateY(0px);
 }
 
 .cta-button:hover {
     background: transparent;
     box-shadow: 0 6px 25px var(--shadow-primary);
     color: var(--text-primary);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+}
+
+.cta-button:active {
+    background: var(--surface-0);
+    color: var(--primary);
+    transform: translateY(4px);
+    box-shadow: 0 4px 20px var(--shadow-secondary);
 }
 
 .github-button {
@@ -246,6 +352,36 @@ header a {
 
 .github-button:hover {
     background: var(--surface-1);
+}
+
+.github-icon {
+    filter: invert(1);
+    height: 24px;
+    width: 24px;
+}
+
+#github-star-badge {
+    background: var(--primary);
+    border-radius: 0.75rem;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    line-height: 1;
+    padding: 6px;
+    position: absolute;
+    right: -12px;
+    top: -12px;
+    transition: var(--transition-primary);
+    display: flex;
+    align-items: center;
+}
+
+#github-star-badge>.material-symbols-rounded {
+    font-size: 1rem;
+    margin-right: 0.25rem;
+}
+
+.github-button:hover>#github-star-badge {
+    transform: translateY(-4px);
 }
 
 /* Feature Cards */
@@ -278,7 +414,7 @@ header a {
 .feature-icon {
     align-items: center;
     background: var(--surface-3);
-    border-radius: 16px;
+    border-radius: 1rem;
     color: var(--primary);
     display: flex;
     height: 55px;
@@ -354,7 +490,6 @@ header a {
     height: 64px;
     justify-content: center;
     margin: 0 auto 1.2rem;
-    overflow: hidden;
     transition: var(--transition-primary);
     width: 64px;
 }
@@ -387,14 +522,14 @@ header a {
 .content-card {
     background: var(--surface-3);
     border: 2px solid transparent;
-    border-radius: 16px;
+    border-radius: 1rem;
     padding: 1.3rem;
     transition: var(--transition-primary);
 }
 
 .content-card:hover {
     border: 2px solid var(--primary);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
 }
 
 .content-description {
@@ -615,11 +750,11 @@ footer {
 
 .social-icons a:hover {
     background: var(--primary);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
 }
 
 .social-icons img {
-    filter: brightness(0) invert(1);
+    filter: invert(1);
     height: 20px;
     width: 20px;
 }
@@ -714,7 +849,21 @@ body>section.scrolled {
 }
 
 /* Responsive Design (Media Queries) */
-@media (max-width: 1050px) {
+@media (max-width: 1000px) {
+    .hero-content {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+
+    .hero-content * {
+        justify-content: center;
+    }
+
+    .hero-logo img {
+        height: 128px;
+        width: 128px;
+    }
+
     .menu-toggle {
         display: block;
     }
@@ -723,51 +872,42 @@ body>section.scrolled {
         transform: rotate(90deg);
     }
 
-    .menu-toggle-wrapper:focus-within .nav-links {
-        grid-template-rows: 1fr;
-    }
-
     .nav-links {
-        align-items: start;
-        background-color: var(--surface-0);
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 20px var(--shadow-secondary);
-        display: grid;
-        grid-template-rows: 0fr;
-        margin: 0.5rem;
-        min-width: 200px;
-        overflow: hidden;
+        display: flex;
         position: absolute;
-        right: 0;
-        top: 100%;
         transition: var(--transition-primary);
-        z-index: 100;
+        background-color: var(--surface-0);
+        height: calc(100vh - 100px);
+        top: 80px;
+        right: 0;
+        transform: translateX(100%);
+        overflow-y: auto;
+        padding: 1rem;
+        flex-direction: column;
     }
 
-    .nav-links>.inner {
-        display: grid;
-        gap: 0;
-        overflow: hidden;
-    }
-
-    .nav-links a {
-        border-radius: 50px;
-        margin: 0.75rem 1rem;
-        padding: 0.75rem 2rem;
+    .nav-links>a {
+        margin: 0 0 0.5rem 0;
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
         text-align: center;
-        text-decoration: none;
-    }
-
-    .nav-links a:active {
-        background: var(--surface-3);
-    }
-
-    .nav-links a:hover {
         background: var(--surface-2);
     }
 
-    .nav-links a:hover::after {
+    .nav-links>a:hover {
+        background: var(--surface-3);
+    }
+
+    .nav-links>a:active {
+        background: var(--primary);
+    }
+
+    .nav-links>a:hover::after {
         width: 0%;
+    }
+
+    .menu-toggle-wrapper:focus-within>.nav-links {
+        transform: translateX(0);
     }
 }
 
@@ -784,5 +924,10 @@ body>section.scrolled {
 
     .hero p {
         font-size: 1rem;
+    }
+
+    .hero-logo img {
+        height: 96px;
+        width: 96px;
     }
 }
