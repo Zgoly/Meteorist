@@ -54,7 +54,9 @@
                     <div class="logo-text">Meteorist</div>
                 </a>
                 <div class="menu-toggle-wrapper">
-                    <button aria-label="Toggle menu" class="menu-toggle">☰</button>
+                    <button aria-label="Toggle menu" class="menu-toggle">
+                        <span class="material-symbols-rounded">menu</span>
+                    </button>
                     <div class="nav-links">
                         <a href="#">Download</a>
                         <a href="#showcase">Showcase</a>
@@ -82,19 +84,20 @@
                 <div class="hero-text">
                     <h1>Meteorist</h1>
                     <p>Handy multi-tool add-on for <a href="https://meteorclient.com/">Meteor Client</a>,
-                        packed with
-                        utilities for everyday gameplay.</p>
+                        packed with utilities for everyday gameplay.</p>
                     <div id="hero-buttons">
                         <button class="cta-button" id="download-btn" popovertarget="install-popover">
-                            <span class="material-symbols-rounded">download</span> Download <span
-                                class="tag-name"></span>
+                            <span class="material-symbols-rounded">download</span>Download
+                            <span class="tag-name"></span>
                         </button>
                         <a class="cta-button github-button" href="https://github.com/Zgoly/Meteorist" target="_blank">
                             <img alt="GitHub" class="github-icon"
-                                src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"> View on GitHub
+                                src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg">View on GitHub
                             <span class="material-symbols-rounded small-icon">open_in_new</span>
-                            <span id="github-star-badge"><span class="material-symbols-rounded">star</span><span
-                                    id="github-star-count">0</span></span>
+                            <span id="github-star-badge">
+                                <span class="material-symbols-rounded">star</span>
+                                <span id="github-star-count">0</span>
+                            </span>
                         </a>
                     </div>
                     <div id="hero-version-info">
@@ -121,6 +124,10 @@
             </div>
         </div>
     </section>
+
+    <a class="scroll-down-indicator" href="#showcase">
+        <span class="material-symbols-rounded">expand_more</span>
+    </a>
 
     <section class="container" id="showcase">
         <h2 class="title">Showcase</h2>
@@ -248,9 +255,10 @@
                 far you definitely should try it!
             </div>
         </div>
-        <p class="review-source">All reviews were handpicked from <a
-                href="https://discord.com/channels/1035620564133490809/1397865020745846875" target="_blank">this Discord
-                channel</a>. Feel free to check the original messages to verify their authenticity.</p>
+        <p class="review-source"><span class="material-symbols-rounded small-icon">info</span>All reviews were
+            handpicked from <a href="https://discord.com/channels/1035620564133490809/1397865020745846875"
+                target="_blank"> this Discord channel</a>. Feel free to check the original messages to verify their
+            authenticity.</p>
     </section>
 
     <section class="container" id="modules">
@@ -291,10 +299,10 @@
             </div>
             <div class="addon-card">
                 <div class="addon-icon">
-                    <img alt="Villager Roller"
+                    <img alt="Meteor Villager Roller"
                         src="https://raw.githubusercontent.com/maxsupermanhd/meteor-villager-roller/refs/heads/main/src/main/resources/assets/roller/icon.png">
                 </div>
-                <h3>Villager Roller</h3>
+                <h3>Meteor Villager Roller</h3>
                 <p class="addon-description">Automatically breaks and places villagers job blocks until they offer the
                     trades you want.</p>
                 <a class="cta-button" href="https://github.com/maxsupermanhd/meteor-villager-roller" target="_blank">
@@ -304,9 +312,9 @@
             </div>
             <div class="addon-card">
                 <div class="addon-icon">
-                    <img alt="Meteor Client Plus" src="https://meteorclientplus.github.io/assets/img/icon.png">
+                    <img alt="Meteor+" src="https://meteorclientplus.github.io/assets/img/icon.png">
                 </div>
-                <h3>Meteor Client Plus</h3>
+                <h3>Meteor+</h3>
                 <p class="addon-description">Addon that adds many additional features and modules for an even more
                     powerful Minecraft experience.</p>
                 <a class="cta-button" href="https://github.com/MeteorClientPlus/MeteorPlus" target="_blank">
@@ -316,10 +324,10 @@
             </div>
             <div class="addon-card">
                 <div class="addon-icon">
-                    <img alt="Catpuccin Theme"
+                    <img alt="Catppuccin Addon"
                         src="https://raw.githubusercontent.com/X-C-0/Catpuccin-Addon/refs/heads/master/src/main/resources/assets/catpuccin-addon/icon.png">
                 </div>
-                <h3>Catpuccin Theme</h3>
+                <h3>Catppuccin Addon</h3>
                 <p class="addon-description">Gives Meteor Client a soft, pastel look using the popular Catppuccin color
                     scheme.</p>
                 <a class="cta-button" href="https://github.com/X-C-0/Catpuccin-Addon" target="_blank">
@@ -361,8 +369,8 @@
         </button>
         <div class="popover-content">
             <h2 class="title" id="popover-title">Thanks for downloading!</h2>
-            <p>Your download should begin shortly. If it doesn’t start automatically, <a id="download-link">click
-                    here</a>.
+            <p>Your download should begin shortly. If it doesn’t start automatically,
+                <a id="download-link">click here</a>.
             </p>
             <p>To install Meteorist, follow these steps:</p>
             <ol>
@@ -373,11 +381,13 @@
             </ol>
             <p>For activating extended features, consider installing these mods:</p>
             <ul>
-                <li><a href="https://meteorclient.com/" rel="noopener" target="_blank">Baritone</a> - for Item Sucker
-                    module
+                <li>
+                    <a href="https://meteorclient.com/" rel="noopener" target="_blank">Baritone</a>
+                    - for Item Sucker module
                 </li>
-                <li><a href="https://minescript.net/downloads" rel="noopener" target="_blank">Minescript</a> - for
-                    Minescript Integration module
+                <li>
+                    <a href="https://minescript.net/downloads" rel="noopener" target="_blank">Minescript</a>
+                    - for Minescript Integration module
                 </li>
             </ul>
         </div>
