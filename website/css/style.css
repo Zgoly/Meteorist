@@ -166,7 +166,7 @@ header a {
     align-content: center;
     display: flex;
     flex-wrap: wrap;
-    height: calc(100vh - 5.5rem);
+    min-height: calc(100vh - 4rem);
 }
 
 .hero-content {
@@ -177,13 +177,14 @@ header a {
 }
 
 .scroll-down-indicator {
-    animation: bounce 2s infinite;
-    bottom: 1rem;
+    bottom: 0.5rem;
     left: 50%;
     position: absolute;
+    transform: translateX(-50%);
 }
 
 .scroll-down-indicator>.material-symbols-rounded {
+    animation: bounce 2s infinite;
     font-size: 3rem;
 }
 
@@ -194,15 +195,15 @@ header a {
     50%,
     80%,
     100% {
-        transform: translateY(0) translateX(-50%);
+        transform: translateY(0);
     }
 
     40% {
-        transform: translateY(-15px) translateX(-50%);
+        transform: translateY(-15px);
     }
 
     60% {
-        transform: translateY(-8px) translateX(-50%);
+        transform: translateY(-8px);
     }
 }
 
