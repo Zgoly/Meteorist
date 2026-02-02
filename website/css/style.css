@@ -234,6 +234,7 @@ header a {
 
 .hero-logo {
     animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 6px 25px var(--shadow-primary));
 }
 
 .hero-logo>img {
