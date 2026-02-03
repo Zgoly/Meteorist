@@ -9,7 +9,7 @@
     "IngredientAccessor",
     "MinescriptAccessor",
     "MobSpawnerLogicAccessor",
-    "ModulesScreenMixin",
+    "ModulesMixin",
     "MouseMixin",
     "RecipeFinderAccessor",
     "TrapdoorBlockAccessor"
