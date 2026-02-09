@@ -24,6 +24,7 @@ import net.minecraft.world.phys.HitResult;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.MeteoristUtils;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class ZKillaura extends Module {
@@ -392,35 +393,19 @@ public class ZKillaura extends Module {
     }
 
     private boolean entityCheck(Entity entity) {
-        if (entity.equals(mc.player) || entity.equals(mc.getCameraEntity())) return false;
-        if ((entity instanceof LivingEntity livingEntity && livingEntity.isDeadOrDying()) || !entity.isAlive())
-            return false;
-
+        if (!(entity instanceof LivingEntity livingEntity)) return false;
+        if (entity == mc.player || entity == mc.getCameraEntity()) return false;
+        if (livingEntity.isDeadOrDying() || !entity.isAlive()) return false;
         if (!entities.get().contains(entity.getType())) return false;
         if (ignoreNamed.get() && entity.hasCustomName()) return false;
 
-        if (ignoreTamed.get()) {
-            if (entity instanceof OwnableEntity tameable
-                    && tameable.getOwner() != null
-                    && tameable.getOwner().equals(mc.player)
-            ) return false;
+        if (ignoreTamed.get()
+                && entity instanceof OwnableEntity ownable
+                && Objects.equals(ownable.getOwner(), mc.player)) {
+            return false;
         }
 
-        if (ignorePassive.get()) {
-            switch (entity) {
-                case EnderMan enderman when !enderman.isCreepy() -> {
-                    return false;
-                }
-                case ZombifiedPiglin piglin when !piglin.isAggressive() -> {
-                    return false;
-                }
-                case Wolf wolf when !wolf.isAggressive() -> {
-                    return false;
-                }
-                default -> {
-                }
-            }
-        }
+        if (ignorePassive.get() && isPassive(entity)) return false;
 
         if (entity instanceof Player player) {
             if (ignoreCreative.get() && player.isCreative()) return false;
@@ -437,6 +422,15 @@ public class ZKillaura extends Module {
         }
 
         return true;
+    }
+
+    private boolean isPassive(Entity entity) {
+        return switch (entity) {
+            case EnderMan enderman -> !enderman.isCreepy();
+            case ZombifiedPiglin piglin -> !piglin.isAggressive();
+            case Wolf wolf -> !wolf.isAggressive();
+            default -> false;
+        };
     }
 
     public enum OnFallMode {
