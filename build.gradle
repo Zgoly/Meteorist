@@ -58,10 +58,10 @@ dependencies {
     modCompileOnly "maven.modrinth:minescript:${project.properties['minescript_version']}"
 
     // JavaParser
-    devImplementation 'com.github.javaparser:javaparser-core:3.27.0'
+    devImplementation 'com.github.javaparser:javaparser-core:3.28.0'
 
-    // Catppuccin theme TODO rename later
-    modCompileOnly "com.github.X-C-0.catpuccin-addon:${project.properties['minecraft_version']}:stonecutter-SNAPSHOT"
+    // Catppuccin theme
+    modCompileOnly "com.github.X-C-0.catppuccin-addon:${project.properties['minecraft_version']}:stonecutter-SNAPSHOT"
 }
 
 tasks.withType(JavaCompile).configureEach {
