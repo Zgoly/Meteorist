@@ -17,22 +17,124 @@
 
 </div>
 
-## ✅ Information
+## 📖 About
 
+Add-on for [Meteor Client](https://meteorclient.com) that adds modules, commands, and other useful features for anarchy servers.
+
+<div align="center">
+    <a href="https://meteorist.pages.dev" target="_blank">
+        <img align="center" height="64px" alt="Meteorist Download" src="website/button.svg">
+    </a>
+</div>
+
+## 📦 Requirements
+
+### Required
+- **[Java](https://adoptium.net/temurin/releases)**: 21 or higher
+- **[Fabric Loader](https://fabricmc.net/use/installer/)**
+- **[Meteor Client](https://meteorclient.com/)**
+
+### Optional
+- **[Baritone](https://meteorclient.com/api/downloadBaritone)** - required for **ItemSucker** module (pathfinding to items and returning to origin)
+- **[Minescript](https://minescript.net/downloads)** - required for **Minescript Integration** module (custom script execution)
+
+## 🧩 Features
+
+### Modules
+A wide variety of modules for automation, combat, movement, rendering, and general quality of life improvements.
+
+[**View all modules**](https://meteorist.pages.dev/#modules)
+
+### Commands
+Custom commands for running scheduled instructions, managing player data, inspecting NBT data, and more.
+
+[**View all commands**](https://meteorist.pages.dev/#commands)
+
+### Presets
+Additional HUD presets for displaying various statistics.
+
+[**View all presets**](https://meteorist.pages.dev/#presets)
+
+## 📁 Project Structure
+```
+Meteorist/
+├── src/
+│   ├── main/
+│   │   ├── java/zgoly/meteorist/
+│   │   │   ├── commands/      # Custom commands
+│   │   │   ├── devmodules/    # Development-only modules
+│   │   │   ├── events/        # Event handlers
+│   │   │   ├── gui/           # Custom GUI screens
+│   │   │   ├── hud/           # HUD elements
+│   │   │   ├── mixin/         # Mixin classes
+│   │   │   ├── modules/       # Game modules
+│   │   │   ├── settings/      # Configuration settings
+│   │   │   ├── utils/         # Utility classes
+│   │   │   └── Meteorist.java # Main entry point
+│   │   └── resources/
+│   │       ├── assets/        # Mod stuff (icons, etc.)
+│   │       ├── fabric.mod.json
+│   │       └── meteorist.mixins.json
+│   └── dev/java/              # Development stuff
+├── gradle/                    # Gradle wrapper stuff
+└── website/                   # Website stuff (meteorist.pages.dev)
+```
+
+## 🛠️ Building from Source
+
+### Prerequisites
+- **[JDK](https://adoptium.net/temurin/releases)**: 21 or higher
+- **[Git](https://git-scm.com/install/)**
+
+### Steps
+```bash
+# Clone the repository
+git clone https://github.com/Zgoly/Meteorist.git
+cd Meteorist
+
+# Build with Gradle
+./gradlew build
+```
+
+The compiled JAR will be in `build/libs/`.
+
+### Development Commands
+```bash
+# Run in development environment
+./gradlew runClient
+
+# Generate module/command/preset info JSON
+./gradlew generateMeteoristInfo
+
+# Clean build artifacts
+./gradlew clean
+```
+
+## 🤝 Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+- [Report a bug][report-bug]
+- [Suggest a feature][suggest-feature]
+- [Report a crash][report-crash]
+
+## 📄 License
+This project is licensed under the [MIT License][repo-license].
+
+## 👥 Community
 [![Join Discord][shield-discord-server]][discord]
 [![Join Discord][shield-discord-members]][discord]
-[![Contribute][shield-contribute]][contribute]
-[![Suggest a feature][shield-suggest-feature]][suggest-feature]
-[![Report a bug][shield-report-bug]][report-bug]
-[![Report a crash][shield-report-crash]][report-crash]
 
-Add-on for Meteor that adds modules, commands and other useful stuff for primary non-vanilla anarchy servers.
+Join our [Discord server][discord] for support and discussions.
+
+---
+
+<div align="center">
 
 <a href="https://github.com/Zgoly/Meteorist/stargazers">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://reporoster.com/stars/dark/Zgoly/Meteorist">
-        <source media="(prefers-color-scheme: light)" srcset="https://reporoster.com/stars/light/Zgoly/Meteorist">
-        <img alt="Stargazers" src="https://reporoster.com/stars/dark/Zgoly/Meteorist">
+        <source media="(prefers-color-scheme: dark)" srcset="https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?theme=dark&user=Zgoly&repo=Meteorist">
+        <source media="(prefers-color-scheme: light)" srcset="https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?theme=light&user=Zgoly&repo=Meteorist">
+        <img alt="Stargazers" src="https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?theme=dark&user=Zgoly&repo=Meteorist">
     </picture>
 </a>
 
@@ -44,32 +146,7 @@ Add-on for Meteor that adds modules, commands and other useful stuff for primary
     </picture>
 </a>
 
-<div align="center">
-    <a href="https://meteorist.pages.dev" target="_blank">
-        <img align="center" height="64px" alt="Meteorist Download" src="website/button.svg">
-    </a>
 </div>
-
-## 🧩 Modules
-
-[![Join Discord][shield-discord-server]][discord]
-[![Join Discord][shield-discord-members]][discord]
-
-[**View all modules**](https://meteorist.pages.dev/#modules)
-
-## 📘 Commands
-
-[![Join Discord][shield-discord-server]][discord]
-[![Join Discord][shield-discord-members]][discord]
-
-[**View all commands**](https://meteorist.pages.dev/#commands)
-
-## 🎨 Presets
-
-[![Join Discord][shield-discord-server]][discord]
-[![Join Discord][shield-discord-members]][discord]
-
-[**View all presets**](https://meteorist.pages.dev/#presets)
 
 [meteorist-banner-download]: website/banner.svg
 [meteorist-button-download]: website/button.svg
@@ -77,28 +154,28 @@ Add-on for Meteor that adds modules, commands and other useful stuff for primary
 [meteor-download]: https://meteorclient.com
 [baritone-download]: https://meteorclient.com/api/downloadBaritone
 
-[shield-repo-license]: https://img.shields.io/github/license/Zgoly/Meteorist?style=flat&labelColor=004a94&color=004a94
+[shield-repo-license]: https://img.shields.io/github/license/Zgoly/Meteorist?style=flat&labelColor=001932&color=001932
 [repo-license]: https://github.com/Zgoly/Meteorist/blob/main/LICENSE
 
-[shield-repo-latest]: https://img.shields.io/github/v/release/Zgoly/Meteorist?display_name=release&labelColor=153F8D&color=153F8D
+[shield-repo-latest]: https://img.shields.io/github/v/release/Zgoly/Meteorist?display_name=release&labelColor=001932&color=001932
 [repo-latest]: https://github.com/Zgoly/Meteorist/releases/latest
 
-[shield-repo-releases]: https://img.shields.io/github/downloads/Zgoly/Meteorist/total?labelColor=2A3585&color=2A3585
+[shield-repo-releases]: https://img.shields.io/github/downloads/Zgoly/Meteorist/total?labelColor=001932&color=001932
 [repo-releases]: https://tooomm.github.io/github-release-stats/?username=Zgoly&repository=Meteorist
 
-[shield-repo-stargazers]: https://img.shields.io/github/stars/Zgoly/Meteorist?style=flat&labelColor=3F2A7E&color=3F2A7E
+[shield-repo-stargazers]: https://img.shields.io/github/stars/Zgoly/Meteorist?style=flat&labelColor=001932&color=001932
 [repo-stargazers]: https://github.com/Zgoly/Meteorist/stargazers
 
-[shield-repo-code-size]: https://img.shields.io/github/languages/code-size/Zgoly/Meteorist?labelColor=%23552076&color=%23552076
+[shield-repo-code-size]: https://img.shields.io/github/languages/code-size/Zgoly/Meteorist?labelColor=001932&color=001932
 [repo-code-size]: https://github.com/Zgoly/Meteorist/archive/refs/heads/main.zip
 
-[shield-repo-issues]: https://img.shields.io/github/issues/Zgoly/Meteorist?labelColor=6A156F&color=6A156F
+[shield-repo-issues]: https://img.shields.io/github/issues/Zgoly/Meteorist?labelColor=001932&color=001932
 [repo-issues]: https://github.com/Zgoly/Meteorist/issues
 
-[shield-repo-pulls]: https://img.shields.io/github/issues-pr/Zgoly/Meteorist?labelColor=7F0B67&color=7F0B67
+[shield-repo-pulls]: https://img.shields.io/github/issues-pr/Zgoly/Meteorist?labelColor=001932&color=001932
 [repo-pulls]: https://github.com/Zgoly/Meteorist/pulls
 
-[shield-repo-forks]: https://img.shields.io/github/forks/Zgoly/Meteorist?style=flat&labelColor=940060&color=940060
+[shield-repo-forks]: https://img.shields.io/github/forks/Zgoly/Meteorist?style=flat&labelColor=001932&color=001932
 [repo-forks]: https://github.com/Zgoly/Meteorist/network/members
 
 [vidget-discord]: https://invidget.switchblade.xyz/y8fBWPNJFm
