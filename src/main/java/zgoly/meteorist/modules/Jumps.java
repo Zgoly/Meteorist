@@ -1,6 +1,6 @@
 package zgoly.meteorist.modules;
 
-import meteordevelopment.meteorclient.events.meteor.KeyEvent;
+import meteordevelopment.meteorclient.events.meteor.KeyInputEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.IntSetting;
@@ -46,7 +46,7 @@ public class Jumps extends Module {
     }
 
     @EventHandler
-    private void onKey(KeyEvent event) {
+    private void onKey(KeyInputEvent event) {
         if (event.action != KeyAction.Press || !mc.options.keyJump.matches(event.input)) return;
 
         if (mc.player == null) return;

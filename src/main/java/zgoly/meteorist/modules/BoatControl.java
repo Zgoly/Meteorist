@@ -11,7 +11,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
-import net.minecraft.world.level.block.WaterlilyBlock;
+import net.minecraft.world.level.block.LilyPadBlock;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
@@ -285,7 +285,7 @@ public class BoatControl extends Module {
     private List<BlockPos> getBlockPos(AABB box) {
         return BlockPos.betweenClosedStream(box).map(BlockPos::new)
                 .filter(blockPos -> !mc.level.getBlockState(blockPos).getCollisionShape(mc.level, blockPos).isEmpty())
-                .filter(blockPos -> !(mc.level.getBlockState(blockPos).getBlock() instanceof WaterlilyBlock))
+                .filter(blockPos -> !(mc.level.getBlockState(blockPos).getBlock() instanceof LilyPadBlock))
                 .toList();
     }
 

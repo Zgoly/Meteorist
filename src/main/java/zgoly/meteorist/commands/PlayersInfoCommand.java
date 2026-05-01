@@ -3,8 +3,8 @@ package zgoly.meteorist.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import meteordevelopment.meteorclient.commands.Command;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.ClientAsset;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -21,7 +21,7 @@ public class PlayersInfoCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
+    public void build(LiteralArgumentBuilder<ClientSuggestionProvider> builder) {
         builder.then(literal("copy")
                 .executes(this::copyPlayersInfo)
                 .then(argument("properties", PlayerPropertiesArgumentType.create()).executes(this::copyPlayersInfo)));
@@ -30,7 +30,7 @@ public class PlayersInfoCommand extends Command {
                 .then(argument("properties", PlayerPropertiesArgumentType.create()).executes(this::savePlayersInfo)));
     }
 
-    private int savePlayersInfo(CommandContext<SharedSuggestionProvider> context) {
+    private int savePlayersInfo(CommandContext<ClientSuggestionProvider> context) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             PointerBuffer filterBuffer = stack.mallocPointer(1);
             filterBuffer.put(stack.UTF8("*.csv"));
@@ -50,13 +50,13 @@ public class PlayersInfoCommand extends Command {
         return SINGLE_SUCCESS;
     }
 
-    private int copyPlayersInfo(CommandContext<SharedSuggestionProvider> context) {
+    private int copyPlayersInfo(CommandContext<ClientSuggestionProvider> context) {
         mc.keyboardHandler.setClipboard(getPlayersInfo(context));
         info("Players info was copied to clipboard");
         return SINGLE_SUCCESS;
     }
 
-    private String getPlayersInfo(CommandContext<SharedSuggestionProvider> context) {
+    private String getPlayersInfo(CommandContext<ClientSuggestionProvider> context) {
         List<String> properties;
 
         try {

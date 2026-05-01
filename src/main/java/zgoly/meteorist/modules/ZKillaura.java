@@ -369,13 +369,13 @@ public class ZKillaura extends Module {
         if (currOnFallMode == OnFallMode.RandomValue) {
             float min = Math.min(onFallMinRandomValue.get().floatValue(), onFallMaxRandomValue.get().floatValue());
             float max = Math.max(onFallMinRandomValue.get().floatValue(), onFallMaxRandomValue.get().floatValue());
-            randomOnFallFloat = min + mc.level.random.nextFloat() * (max - min);
+            randomOnFallFloat = min + mc.level.getRandom().nextFloat() * (max - min);
         }
 
         if (currHitSpeedMode == HitSpeedMode.RandomValue) {
             float min = Math.min(hitSpeedMinRandomValue.get().floatValue(), hitSpeedMaxRandomValue.get().floatValue());
             float max = Math.max(hitSpeedMinRandomValue.get().floatValue(), hitSpeedMaxRandomValue.get().floatValue());
-            randomHitSpeedFloat = min + mc.level.random.nextFloat() * (max - min);
+            randomHitSpeedFloat = min + mc.level.getRandom().nextFloat() * (max - min);
         }
     }
 
@@ -388,7 +388,7 @@ public class ZKillaura extends Module {
     private int calculateDelay(DelayMode mode, int value, int minRandom, int maxRandom) {
         return switch (mode) {
             case Value -> value;
-            case RandomValue -> minRandom + mc.level.random.nextInt(maxRandom - minRandom + 1);
+            case RandomValue -> minRandom + mc.level.getRandom().nextInt(maxRandom - minRandom + 1);
         };
     }
 

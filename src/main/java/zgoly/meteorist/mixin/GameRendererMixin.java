@@ -2,7 +2,8 @@ package zgoly.meteorist.mixin;
 
 import meteordevelopment.meteorclient.MeteorClient;
 import net.minecraft.client.renderer.GameRenderer;
-import org.joml.Matrix4f;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import org.joml.Matrix4fc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,7 +13,7 @@ import zgoly.meteorist.events.HandRenderEvent;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
-    private void renderHand(float tickProgress, boolean sleeping, Matrix4f positionMatrix, CallbackInfo ci) {
+    private void renderHand(CameraRenderState cameraState, float deltaPartialTick, Matrix4fc modelViewMatrix, CallbackInfo ci) {
         if (!MeteorClient.EVENT_BUS.post(HandRenderEvent.get(true)).renderHand) ci.cancel();
     }
 }

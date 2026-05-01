@@ -19,6 +19,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
@@ -137,9 +138,10 @@ public class SignSearch extends Module {
                 table.row();
 
                 BlockPos pos = signBlockEntity.getBlockPos();
-                Item signItem = mc.level.getBlockState(pos).getBlock().asItem();
+                Block sign = mc.level.getBlockState(pos).getBlock();
+                Item signItem = sign.asItem();
                 table.add(currentTheme.item(signItem.getDefaultInstance())).expandX();
-                table.add(currentTheme.label(signItem.getName().getString())).expandX();
+                table.add(currentTheme.label(sign.getName().getString())).expandX();
                 table.add(currentTheme.label(String.format(pos.getX() + ", " + pos.getY() + ", " + pos.getZ()))).expandX();
 
                 WVerticalList frontTextList = table.add(currentTheme.verticalList()).expandX().widget();

@@ -19,7 +19,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -56,7 +56,7 @@ public class AutoCrafter extends Module {
 
     public static List<BaseAutoCraft> autoCrafts = new ArrayList<>();
     public boolean shouldCraft = false;
-    public ClickType actionType;
+    public ContainerInput actionType;
 
     private final DebugLogger debugLogger;
 
@@ -182,7 +182,7 @@ public class AutoCrafter extends Module {
 
         if (shouldCraft) {
             if (currentScreenHandler.slots.getFirst().hasItem()) {
-                mc.gameMode.handleInventoryMouseClick(currentScreenHandler.containerId, 0, 1, actionType, mc.player);
+                mc.gameMode.handleContainerInput(currentScreenHandler.containerId, 0, 1, actionType, mc.player);
                 debugLogger.info("Crafting...");
             }
             shouldCraft = false;
@@ -197,7 +197,7 @@ public class AutoCrafter extends Module {
                 if (foundRecipe == null) continue;
 
                 mc.gameMode.handlePlaceRecipe(currentScreenHandler.containerId, foundRecipe.id(), autoCraft.stackPerTick.get());
-                actionType = autoCraft.dropOnCraft.get() ? ClickType.THROW : ClickType.QUICK_MOVE;
+                actionType = autoCraft.dropOnCraft.get() ? ContainerInput.THROW : ContainerInput.QUICK_MOVE;
                 debugLogger.info("Selecting recipe...");
                 shouldCraft = true;
                 return;

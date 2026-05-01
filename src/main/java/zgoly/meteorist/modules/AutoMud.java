@@ -79,7 +79,7 @@ public class AutoMud extends Module {
             if (target == null) return;
 
             InvUtils.swap(waterBottle.slot(), swapBack.get());
-            BlockUtils.interact(new BlockHitResult(Utils.vec3d(target), Direction.UP, target, false), InteractionHand.MAIN_HAND, swingHand.get());
+            BlockUtils.interact(new BlockHitResult(Utils.vec3(target), Direction.UP, target, false), InteractionHand.MAIN_HAND, swingHand.get());
         } else if (emptyBottle.found() && fillBottle.get()) {
             BlockPos target = findBlockPos(blockState -> blockState.getFluidState().isSource());
             if (target == null) return;

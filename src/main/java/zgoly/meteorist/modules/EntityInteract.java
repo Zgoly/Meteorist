@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.EntityHitResult;
 import zgoly.meteorist.Meteorist;
 
 import java.util.ArrayList;
@@ -94,7 +95,8 @@ public class EntityInteract extends Module {
             if (swingHand.get()) mc.player.swing(hand.get());
             if (oneTime.get()) used.add(entity);
 
-            mc.gameMode.interact(mc.player, entity, hand.get());
+            EntityHitResult location = new EntityHitResult(entity, entity.getBoundingBox().getCenter());
+            mc.gameMode.interact(mc.player, entity, location, hand.get());
 
             if (oneInteractionPerTick.get()) break;
         }

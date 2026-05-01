@@ -22,7 +22,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.gui.screens.SlotSelectionScreen;
@@ -372,17 +372,17 @@ public class SlotClick extends Module {
                             }
                         }
 
-                        if (mc.gameMode != null && screenHandler != null) {
+                        if (mc.gameMode != null) {
                             try {
                                 switch (defaultSlotSelection) {
                                     case SingleSlotSelection singleSlotSelection ->
-                                            mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, singleSlotSelection.slot.get(), singleSlotSelection.button.get(), singleSlotSelection.action.get(), mc.player);
+                                            mc.gameMode.handleContainerInput(screenHandler.containerId, singleSlotSelection.slot.get(), singleSlotSelection.button.get(), singleSlotSelection.action.get(), mc.player);
                                     case SwapSlotSelection swapSlotSelection -> {
-                                        mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, swapSlotSelection.fromSlot.get(), 0, ClickType.PICKUP, mc.player);
-                                        mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, swapSlotSelection.toSlot.get(), 0, ClickType.PICKUP, mc.player);
+                                        mc.gameMode.handleContainerInput(screenHandler.containerId, swapSlotSelection.fromSlot.get(), 0, ContainerInput.PICKUP, mc.player);
+                                        mc.gameMode.handleContainerInput(screenHandler.containerId, swapSlotSelection.toSlot.get(), 0, ContainerInput.PICKUP, mc.player);
                                     }
                                     case SlotRangeSelection slotRangeSelection ->
-                                            mc.gameMode.handleInventoryMouseClick(screenHandler.containerId, slotRangeSelection.calculatedSlot, slotRangeSelection.button.get(), slotRangeSelection.action.get(), mc.player);
+                                            mc.gameMode.handleContainerInput(screenHandler.containerId, slotRangeSelection.calculatedSlot, slotRangeSelection.button.get(), slotRangeSelection.action.get(), mc.player);
                                     default -> {
                                     }
                                 }

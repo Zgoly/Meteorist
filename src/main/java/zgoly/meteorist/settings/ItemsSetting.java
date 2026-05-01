@@ -97,7 +97,7 @@ public class ItemsSetting extends Setting<List<Item>> {
             WContainer container = table.add(theme.horizontalList()).expandX().widget();
 
             WWidget icon = container.add(theme.item(item.getDefaultInstance())).widget();
-            icon.tooltip = item.getName().getString();
+            icon.tooltip = item.getName(item.getDefaultInstance()).getString();
 
             WButton edit = container.add(theme.button(EDIT)).widget();
             edit.tooltip = "Edit the item.";

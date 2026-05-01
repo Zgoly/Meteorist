@@ -4,7 +4,7 @@ import meteordevelopment.meteorclient.settings.EnumSetting;
 import meteordevelopment.meteorclient.settings.IntSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 
 public class SlotRangeSelection extends DefaultSlotSelection {
     public static final String type = "Range";
@@ -14,7 +14,7 @@ public class SlotRangeSelection extends DefaultSlotSelection {
             .description("The first slot to select.")
             .defaultValue(0)
             .min(0)
-            .onChanged(value -> reloadParent())
+            .onChanged(_ -> reloadParent())
             .build()
     );
     public final Setting<Integer> toSlot = sgMultipleSlotSelection.add(new IntSetting.Builder()
@@ -22,13 +22,13 @@ public class SlotRangeSelection extends DefaultSlotSelection {
             .description("The last slot to select.")
             .defaultValue(8)
             .min(0)
-            .onChanged(value -> reloadParent())
+            .onChanged(_ -> reloadParent())
             .build()
     );
-    public final Setting<ClickType> action = sgMultipleSlotSelection.add(new EnumSetting.Builder<ClickType>()
+    public final Setting<ContainerInput> action = sgMultipleSlotSelection.add(new EnumSetting.Builder<ContainerInput>()
             .name("action")
             .description("Action to perform.")
-            .defaultValue(ClickType.PICKUP)
+            .defaultValue(ContainerInput.PICKUP)
             .build()
     );
     public final Setting<Integer> button = sgMultipleSlotSelection.add(new IntSetting.Builder()

@@ -94,40 +94,31 @@ public class AutoSleep extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.level == null) return;
-        if (dimensionRestrict.get() && !mc.level.dimensionType().hasSkyLight()) return;
+        if (mc.level == null || (dimensionRestrict.get() && !mc.level.dimensionType().hasSkyLight())) return;
 
         if (mc.player.isSleeping()) {
-            if (useMaxSleepTime.get()) {
-                sleepTimer++;
-                if (sleepTimer >= maxSleepTime.get()) {
-                    sleepTimer = 0;
-                    mc.getConnection().send(new ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.STOP_SLEEPING));
-                }
+            if (useMaxSleepTime.get() && ++sleepTimer >= maxSleepTime.get()) {
+                sleepTimer = 0;
+                mc.getConnection().send(new ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.STOP_SLEEPING));
             }
         } else if (sleepMode.get() == SleepMode.Default) {
-            sleepDelayTimer++;
-            if (sleepDelayTimer < sleepDelay.get()) return;
-
+            if (++sleepDelayTimer < sleepDelay.get()) return;
             sleepDelayTimer = sleepDelay.get();
 
+            boolean shouldWait = false;
+
             if (atNight.get() && atThunderstorm.get()) {
-                if (isDay() && !mc.level.isThundering()) return;
+                shouldWait = mc.level.isBrightOutside() && !mc.level.isThundering();
             } else if (atNight.get()) {
-                if (isDay()) return;
+                shouldWait = mc.level.isBrightOutside();
             } else if (atThunderstorm.get()) {
-                if (!mc.level.isThundering()) return;
+                shouldWait = !mc.level.isThundering();
             }
+
+            if (shouldWait) return;
 
             if (sleepInNearestBed(bedSearchRadius.get())) sleepDelayTimer = 0;
         }
-    }
-
-    // Yeah, hacky, but looks like `world.isDay()` and `world.isNight()` doesn't work on the client
-    private boolean isDay() {
-        if (mc.level == null) return true;
-        float time = mc.level.getDayTime() % 24000;
-        return mc.level.isRaining() ? (!(time > 12010) || !(time < 23991)) : (!(time > 12542) || !(time < 23459));
     }
 
     private boolean sleepInNearestBed(int radius) {

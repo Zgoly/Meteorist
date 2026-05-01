@@ -4,7 +4,7 @@ import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
-import meteordevelopment.meteorclient.mixininterface.IVec3d;
+import meteordevelopment.meteorclient.mixininterface.IVec3;
 import meteordevelopment.meteorclient.pathing.BaritoneUtils;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
 import meteordevelopment.meteorclient.settings.*;
@@ -273,7 +273,7 @@ public class ItemSucker extends Module {
     public void onMove(PlayerMoveEvent event) {
         if (modifySpeed.get() && baritoneUtils.isPathing()) {
             Vec3 vel = PlayerUtils.getHorizontalVelocity(moveSpeed.get());
-            ((IVec3d) event.movement).meteor$set(vel.x(), event.movement.y, vel.z());
+            ((IVec3) event.movement).meteor$set(vel.x(), event.movement.y, vel.z());
         }
     }
 

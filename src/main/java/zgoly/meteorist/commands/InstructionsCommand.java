@@ -8,7 +8,7 @@ import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -41,7 +41,7 @@ public class InstructionsCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
+    public void build(LiteralArgumentBuilder<ClientSuggestionProvider> builder) {
         builder.then(literal("run")
                 .then(argument("instruction", InstructionArgumentType.instruction())
                         .then(argument("count", IntegerArgumentType.integer(1))
@@ -60,7 +60,7 @@ public class InstructionsCommand extends Command {
                 )
         );
 
-        builder.then(literal("debug").executes(context -> {
+        builder.then(literal("debug").executes(_ -> {
             boolean value = debugLogger.isDebugEnabled();
 
             debugLogger.toggleDebug();
@@ -69,7 +69,7 @@ public class InstructionsCommand extends Command {
             return SINGLE_SUCCESS;
         }));
 
-        builder.then(literal("stop").executes(context -> {
+        builder.then(literal("stop").executes(_ -> {
             if (!map.isEmpty()) {
                 info("Stopping (highlight)%d(default) instructions", map.size());
                 map.clear();

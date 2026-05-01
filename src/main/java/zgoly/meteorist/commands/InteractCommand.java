@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.systems.modules.player.Reach;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,9 +21,9 @@ public class InteractCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
+    public void build(LiteralArgumentBuilder<ClientSuggestionProvider> builder) {
         builder.then(argument("block", ItemArgument.item(REGISTRY_ACCESS)).executes(context -> {
-            Item item = ItemArgument.getItem(context, "block").getItem();
+            Item item = ItemArgument.getItem(context, "block").item().value();
             if (item instanceof BlockItem blockItem) {
                 BlockPos blockPos = findClosestBlock(blockItem.getBlock());
                 if (blockPos != null) {

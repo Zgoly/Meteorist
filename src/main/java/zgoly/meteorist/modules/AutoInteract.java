@@ -85,7 +85,7 @@ public class AutoInteract extends Module {
                 };
 
                 if (shouldOpen != isOpen) {
-                    BlockUtils.interact(new BlockHitResult(Utils.vec3d(blockPos), Direction.UP, blockPos, false), InteractionHand.MAIN_HAND, swingHand.get());
+                    BlockUtils.interact(new BlockHitResult(Utils.vec3(blockPos), Direction.UP, blockPos, false), InteractionHand.MAIN_HAND, swingHand.get());
                     break;
                 }
             }

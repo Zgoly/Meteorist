@@ -42,8 +42,8 @@ import java.util.Random;
 public class Meteorist extends MeteorAddon {
     public static final Logger LOG = LoggerFactory.getLogger("Meteorist");
 
-    public static final Category CATEGORY = new Category("Meteorist", Items.FIRE_CHARGE.getDefaultInstance());
-    public static final Category DEV_CATEGORY = new Category("MeteoristDev", Items.REPEATING_COMMAND_BLOCK.getDefaultInstance());
+    public static final Category CATEGORY = new Category("Meteorist", Items.FIRE_CHARGE::getDefaultInstance);
+    public static final Category DEV_CATEGORY = new Category("MeteoristDev", Items.REPEATING_COMMAND_BLOCK::getDefaultInstance);
 
     public static final HudGroup HUD_GROUP = new HudGroup("Meteorist");
     private static final String[] MESSAGES = {

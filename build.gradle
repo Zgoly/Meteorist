@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
 }
 
 base {
@@ -44,29 +44,27 @@ sourceSets {
 
 dependencies {
     // Fabric
-    minecraft "com.mojang:minecraft:${project.properties['minecraft_version']}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.properties['loader_version']}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Meteor
-    modImplementation "meteordevelopment:meteor-client:${project.properties['minecraft_version']}-SNAPSHOT"
+    implementation "meteordevelopment:meteor-client:${project.minecraft_version}-SNAPSHOT"
 
     // Baritone
-    modCompileOnly "meteordevelopment:baritone:${project.properties['baritone_version']}-SNAPSHOT"
+    compileOnly "meteordevelopment:baritone:${project.baritone_version}-SNAPSHOT"
 
     // Minescript
-    modCompileOnly "maven.modrinth:minescript:${project.properties['minescript_version']}"
+    compileOnly "maven.modrinth:minescript:${project.minescript_version}-fabric-${project.minecraft_version}"
+    
+    // Catppuccin theme
+    compileOnly "com.github.X-C-0.catppuccin-addon:1.21.11:stonecutter-SNAPSHOT" // TODO UPDATE 26.1+
 
     // JavaParser
     devImplementation 'com.github.javaparser:javaparser-core:3.28.0'
-
-    // Catppuccin theme
-    modCompileOnly "com.github.X-C-0.catppuccin-addon:${project.properties['minecraft_version']}:stonecutter-SNAPSHOT"
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    options.release = 21
+    options.release = 25
 }
 
 processResources {
@@ -93,9 +91,4 @@ tasks.register('generateMeteoristInfo', JavaExec) {
     classpath = sourceSets.dev.runtimeClasspath
     workingDir = project.projectDir
     standardOutput = System.out
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
 }

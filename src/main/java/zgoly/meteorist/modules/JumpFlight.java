@@ -3,7 +3,7 @@ package zgoly.meteorist.modules;
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseScrollEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
-import meteordevelopment.meteorclient.mixininterface.IVec3d;
+import meteordevelopment.meteorclient.mixininterface.IVec3;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -86,7 +86,7 @@ public class JumpFlight extends Module {
     public void onMove(PlayerMoveEvent event) {
         if (modifyHorizontalSpeed.get()) {
             Vec3 vel = PlayerUtils.getHorizontalVelocity(horizontalSpeed.get());
-            ((IVec3d) event.movement).meteor$set(vel.x(), event.movement.y, vel.z());
+            ((IVec3) event.movement).meteor$set(vel.x(), event.movement.y, vel.z());
         }
     }
 

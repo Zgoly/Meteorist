@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.commands.arguments.PlayerArgumentType;
 import net.minecraft.advancements.criterion.NbtPredicate;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -22,24 +22,24 @@ public class DataCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<SharedSuggestionProvider> builder) {
-        builder.executes(context -> getDataOrStates(false));
+    public void build(LiteralArgumentBuilder<ClientSuggestionProvider> builder) {
+        builder.executes(_ -> getDataOrStates(false));
         buildCommand(builder, "get", false);
         buildCommand(builder, "copy", true);
     }
 
-    private void buildCommand(LiteralArgumentBuilder<SharedSuggestionProvider> builder, String commandName, boolean copy) {
+    private void buildCommand(LiteralArgumentBuilder<ClientSuggestionProvider> builder, String commandName, boolean copy) {
         builder.then(literal(commandName)
-                .executes(context -> getDataOrStates(copy))
+                .executes(_ -> getDataOrStates(copy))
                 .then(literal("player")
-                        .executes(context -> getEntityData(mc.player, copy))
+                        .executes(_ -> getEntityData(mc.player, copy))
                         .then(argument("player", PlayerArgumentType.create())
                                 .executes(context -> getEntityData(PlayerArgumentType.get(context), copy)))
                 )
                 .then(literal("target")
-                        .executes(context -> getDataOrStates(copy))
-                        .then(literal("data").executes(context -> getFullData(copy)))
-                        .then(literal("states").executes(context -> getFullStates(copy)))
+                        .executes(_ -> getDataOrStates(copy))
+                        .then(literal("data").executes(_ -> getFullData(copy)))
+                        .then(literal("states").executes(_ -> getFullStates(copy)))
                 )
         );
     }
