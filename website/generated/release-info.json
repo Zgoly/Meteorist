@@ -1,8 +1,8 @@
 {
-  "name": "v1.21.11-2",
-  "body": "## What's Changed\r\n* Update to latest Yarn mappings, Fabric Loader and Loom\r\n* Replace `JumpJump` with new `Jumps` module, now supports ground-only activation\r\n* Overhaul `JumpFlight`: add tick-delayed ascent/descent\r\n* Add sign counter to `SignSearch` info string\r\n* Enhance `ItemsOffer` in AutoTrade with NBT-based filtering, regex matching, and flexible item/count rules\r\n* Add Catppuccin theme support and register custom category icon\r\n* Launch updated official website with better download button, SEO metadata, and showcase images\r\n* Add `meteor-addon-list.json` for future addon discovery\r\n* Bump Baritone version to 1.21.11\r\n\r\n**Full Changelog**: https://github.com/Zgoly/Meteorist/compare/v1.21.11-1...v1.21.11-2",
-  "tag_name": "v1.21.11-2",
-  "size": 401840,
-  "updated_at": "2026-01-25T11:58:55Z",
-  "url": "https://github.com/Zgoly/Meteorist/releases/download/v1.21.11-2/meteorist-1.21.11-2.jar"
+  "name": "v26.1.2-1",
+  "body": "## What's Changed\r\n- Update to 26.1.2\r\n- Major refactor of `MeteoristStarscript` - added new functions `is_falling` and `would_take_damage`; improved fall damage/distance calculations with proper caching and edge-case handling\r\n- Baritone & Minescript updated to versions 26.1 and 5.0b11 respectively\r\n- `AutoSleep` logic simplified\r\n\r\n**Full Changelog**: https://github.com/Zgoly/Meteorist/compare/v1.21.11-2...v26.1.2-1",
+  "tag_name": "v26.1.2-1",
+  "size": 404503,
+  "updated_at": "2026-05-01T04:48:54Z",
+  "url": "https://github.com/Zgoly/Meteorist/releases/download/v26.1.2-1/meteorist-26.1.2-1.jar"
 }
