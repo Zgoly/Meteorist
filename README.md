@@ -1,3 +1,6 @@
+> [!CAUTION]
+> The only official website for Meteorist is **[https://meteorist.pages.dev/](https://meteorist.pages.dev/)**. Any other websites claiming to be Meteorist are **NOT** controlled by me and may contain malware or malicious content. Always download from the official source only.
+
 <div align="center">
 
 [![Meteorist Download][meteorist-banner-download]][meteorist-download]
