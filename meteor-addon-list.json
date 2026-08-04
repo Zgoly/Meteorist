@@ -14,5 +14,15 @@
     "Social",
     "Utility",
     "World"
-  ]
+  ],
+  "discord": "https://dsc.gg/zgoly",
+  "homepage": "https://meteoraddons.com",
+  "feature_directories": {
+    "commands": [
+      "commands"
+    ],
+    "modules": [
+      "modules"
+    ]
+  }
 }
