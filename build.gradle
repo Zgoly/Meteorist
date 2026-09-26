@@ -2,10 +2,12 @@ plugins {
     id 'net.fabricmc.fabric-loom' version "${loom_version}"
 }
 
+group = project.maven_group
+version = "$minecraft_version-$mod_version"
+
 base {
     archivesName = project.archives_base_name
-    group = project.maven_group
-    version = "$minecraft_version-$mod_version"
+
 }
 
 repositories {
@@ -60,7 +62,11 @@ dependencies {
     compileOnly "com.github.X-C-0.catppuccin-addon:1.21.11:stonecutter-SNAPSHOT" // TODO UPDATE 26.1+
 
     // JavaParser
-    devImplementation 'com.github.javaparser:javaparser-core:3.28.0'
+    devImplementation 'com.github.javaparser:javaparser-core:3.27.0'
+
+    // Catppuccin theme TODO rename later
+    // Catppuccin theme TODO rename later
+    modCompileOnly "com.github.X-C-0.catppuccin-addon:${project.properties['minecraft_version']}:v2.0.3"
 }
 
 tasks.withType(JavaCompile).configureEach {
