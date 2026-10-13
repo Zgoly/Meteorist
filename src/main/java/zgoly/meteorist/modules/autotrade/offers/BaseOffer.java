@@ -25,7 +25,7 @@ public class BaseOffer implements ISerializable<BaseOffer> {
     );
 
     public static void reloadParent() {
-        Screen screen = mc.screen;
+        Screen screen = mc.gui.screen();
         if (screen instanceof OfferScreen offerScreen) {
             if (offerScreen.parent instanceof WindowScreen windowScreen) {
                 windowScreen.reload();

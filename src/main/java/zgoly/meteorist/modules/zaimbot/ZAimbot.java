@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.combat.BowAimbot;
-import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
+import meteordevelopment.meteorclient.utils.entity.EntityAgeTest;
 import meteordevelopment.meteorclient.utils.entity.SortPriority;
 import meteordevelopment.meteorclient.utils.entity.Target;
 import meteordevelopment.meteorclient.utils.entity.TargetUtils;
@@ -24,6 +24,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.Animal;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
@@ -52,7 +54,7 @@ public class ZAimbot extends Module {
             .name("entities")
             .description("Entities to aim at.")
             .onlyAttackable()
-            .defaultValue(EntityType.PLAYER)
+            .defaultValue(EntityTypes.PLAYER)
             .build()
     );
     private final Setting<Double> range = sgFilter.add(new DoubleSetting.Builder()
@@ -63,10 +65,10 @@ public class ZAimbot extends Module {
             .sliderMax(6)
             .build()
     );
-    private final Setting<KillAura.EntityAge> mobAgeFilter = sgFilter.add(new EnumSetting.Builder<KillAura.EntityAge>()
+    private final Setting<EntityAgeTest> mobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
             .name("mob-age-filter")
             .description("Determines the age of the mobs to target (baby, adult, or both).")
-            .defaultValue(KillAura.EntityAge.Adult)
+            .defaultValue(EntityAgeTest.Adult)
             .build()
     );
     private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
@@ -129,6 +131,26 @@ public class ZAimbot extends Module {
             .name("priority")
             .description("Sorting method to prioritize targets within range.")
             .defaultValue(SortPriority.ClosestAngle)
+            .build()
+    );
+    private final Setting<OperationMode> itemFilteringMode = sgFilter.add(new EnumSetting.Builder<OperationMode>()
+            .name("item-filtering-mode")
+            .description("Defines how held items control aimbot activation.")
+            .defaultValue(OperationMode.Blacklist)
+            .build()
+    );
+    private final Setting<List<Item>> itemBlacklist = sgFilter.add(new ItemListSetting.Builder()
+            .name("item-blacklist")
+            .description("Aimbot will NOT activate when holding these items.")
+            .defaultValue(Items.COBWEB)
+            .visible(() -> itemFilteringMode.get() == OperationMode.Blacklist)
+            .build()
+    );
+    private final Setting<List<Item>> itemWhitelist = sgFilter.add(new ItemListSetting.Builder()
+            .name("item-whitelist")
+            .description("Aimbot only activates when holding one of these items.")
+            .defaultValue(Items.BOW, Items.CROSSBOW, Items.TRIDENT)
+            .visible(() -> itemFilteringMode.get() == OperationMode.Whitelist)
             .build()
     );
 
@@ -319,6 +341,12 @@ public class ZAimbot extends Module {
 
         Entity target = TargetUtils.get(this::entityCheck, priority.get());
 
+        Item heldItem = mc.player.getMainHandItem().getItem();
+
+        if (itemFilteringMode.get() == OperationMode.Blacklist
+                ? itemBlacklist.get().contains(heldItem)
+                : !itemWhitelist.get().contains(heldItem)) return;
+
         if (target == null) return;
         aim(mc.player, target);
     }
@@ -422,6 +450,11 @@ public class ZAimbot extends Module {
 
         double pitchRad = Math.atan((vSq - Math.sqrt(sqrtPart)) / (g * hDist));
         return (float) -Math.toDegrees(pitchRad);
+    }
+
+    public enum OperationMode {
+        Blacklist,
+        Whitelist
     }
 
     public enum AimAxes {

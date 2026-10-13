@@ -106,7 +106,7 @@ public class JumpFlight extends Module {
             targetYInitialized = true;
         }
 
-        if (!Modules.get().isActive(Freecam.class) && mc.screen == null) {
+        if (!Modules.get().isActive(Freecam.class) && mc.gui.screen() == null) {
             jumpHeld = mc.options.keyJump.isDown();
             sneakHeld = mc.options.keyShift.isDown();
         }

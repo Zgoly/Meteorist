@@ -37,10 +37,8 @@ public class PlayersInfoCommand extends Command {
             filterBuffer.flip();
             String result = TinyFileDialogs.tinyfd_saveFileDialog("Save Players Info", "players_info.csv", filterBuffer, "CSV File (*.csv)");
             if (result != null) {
-                try {
-                    FileOutputStream outputStream = new FileOutputStream(result);
+                try (FileOutputStream outputStream = new FileOutputStream(result)) {
                     outputStream.write(getPlayersInfo(context).getBytes());
-                    outputStream.close();
                     info("Players info was saved to (highlight)%s(default)", result);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -88,7 +86,7 @@ public class PlayersInfoCommand extends Command {
                 case "gamemode" -> finalString.add(String.valueOf(player.getGameMode()));
                 case "skin_url" -> {
                     String string2 = player.getSkin().body() instanceof ClientAsset.DownloadedTexture skinAssetInfo ? skinAssetInfo.url() : null;
-                    finalString.add(string2);
+                    finalString.add(string2 == null ? "" : string2);
                 }
                 case "latency" -> finalString.add(String.valueOf(player.getLatency()));
             }

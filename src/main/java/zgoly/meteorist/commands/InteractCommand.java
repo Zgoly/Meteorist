@@ -2,7 +2,6 @@ package zgoly.meteorist.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
-import meteordevelopment.meteorclient.systems.modules.player.Reach;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.arguments.item.ItemArgument;
@@ -39,7 +38,7 @@ public class InteractCommand extends Command {
     }
 
     public BlockPos findClosestBlock(Block block) {
-        int reach = (int) new Reach().blockReach();
+        int reach = (int) mc.player.blockInteractionRange();
         for (BlockPos pos : BlockPos.withinManhattan(mc.player.blockPosition(), reach, reach, reach)) {
             if (mc.level.getBlockState(pos).getBlock() == block) {
                 return pos;

@@ -104,7 +104,7 @@ public class ZAutoTotem extends Module {
 
             if (locked && mc.player.getOffhandItem().getItem() != Items.TOTEM_OF_UNDYING) {
                 // If the "only in inventory" option is enabled and the inventory is NOT open, do not move
-                if (onlyInInventory.get() && mc.screen == null) return;
+                if (onlyInInventory.get() && mc.gui.screen() == null) return;
 
                 // If the "only when still" option is enabled and the player is moving, do not move
                 if (onlyWhenStill.get() && (mc.player.input.hasForwardImpulse())) return;

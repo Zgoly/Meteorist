@@ -371,7 +371,7 @@ public class ZoomPlus extends Module {
         deactivated = false;
 
         if (!isSubscribed) {
-            if (hideHud.get()) mc.options.hideGui = true;
+            if (hideHud.get() && !mc.gui.hud.isHidden()) mc.gui.hud.toggle();
             MeteorClient.EVENT_BUS.subscribe(this);
             MeteorClient.EVENT_BUS.subscribe(tweenHandler);
             isSubscribed = true;
@@ -457,7 +457,7 @@ public class ZoomPlus extends Module {
     @EventHandler
     public void onTweenEnd(TweenEndEvent event) {
         if (currentZoomFactor.get() == 1) {
-            if (hideHud.get()) mc.options.hideGui = false;
+            if (hideHud.get() && mc.gui.hud.isHidden()) mc.gui.hud.toggle();
             MeteorClient.EVENT_BUS.unsubscribe(this);
             MeteorClient.EVENT_BUS.unsubscribe(tweenHandler);
             isSubscribed = false;

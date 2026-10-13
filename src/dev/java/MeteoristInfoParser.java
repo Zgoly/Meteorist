@@ -2,10 +2,14 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.google.gson.GsonBuilder;
 
 import java.io.File;
@@ -19,18 +23,22 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /// Parses Meteorist's Java source code to generate a JSON file containing metadata
-/// about modules, commands, and HUD preset groups.
+/// about modules, commands, and HUD elements.
 ///
 /// Extracts data by analyzing constructor calls and builder patterns in classes
 /// that extend Module, Command, or use HudElementInfo. Output includes names,
 /// descriptions, settings, and presets with source locations.
 ///
-/// **Note:** Relies on code structure and string literals;
-/// may not resolve complex expressions. Subject to improvement.
+/// Builder arguments are statically evaluated where possible (literals, negated
+/// numbers, string concatenation, `static final` constants). Anything left over
+/// stays source text in backticks, marking it as unevaluated.
 public class MeteoristInfoParser {
     private static final JavaParser JAVA_PARSER = new JavaParser();
     private static final Map<String, String> CATEGORY_NAME_CACHE = new HashMap<>();
     private static final Map<File, CompilationUnit> FILE_TO_CU_CACHE = new HashMap<>();
+    private static final Map<String, ExpressionValue> CONSTANT_CACHE = new HashMap<>();
+    private static final Set<String> ENUM_TYPES = new HashSet<>();
+    private static final int MAX_FOLD_DEPTH = 8;
 
     static class ExpressionValue {
         String value;
@@ -49,6 +57,7 @@ public class MeteoristInfoParser {
         String className;
         String classPath;
         int lineNumber;
+        boolean customGui;
         Map<String, List<SettingInfo>> settings = new LinkedHashMap<>();
     }
 
@@ -65,21 +74,29 @@ public class MeteoristInfoParser {
         String className;
         String classPath;
         int lineNumber;
+        List<String> usage = new ArrayList<>();
+        List<ParameterInfo> parameters = new ArrayList<>();
     }
 
-    static class PresetGroup {
+    static class ParameterInfo {
         String name;
-        String description;
-        String className;
-        String classPath;
-        int lineNumber;
-        List<PresetInfo> presets = new ArrayList<>();
+        String type;
     }
 
     static class PresetInfo {
         String title;
         String text;
         int lineNumber;
+    }
+
+    static class HudElementInfoWrapper {
+        String name;
+        String description;
+        String className;
+        String classPath;
+        int lineNumber;
+        Map<String, List<SettingInfo>> settings = new LinkedHashMap<>();
+        List<PresetInfo> presets = new ArrayList<>();
     }
 
     public static void main(String[] args) {
@@ -89,29 +106,38 @@ public class MeteoristInfoParser {
         try {
             Path start = Paths.get(sourceDir);
             List<File> javaFiles = findAndCacheJavaFiles(start);
-            scanForCategories(javaFiles);
+            indexTypes(javaFiles);
 
             List<ModuleInfo> allModules = new ArrayList<>();
             List<CommandInfo> allCommands = new ArrayList<>();
-            List<PresetGroup> allPresetGroups = new ArrayList<>();
+            List<HudElementInfoWrapper> allHudElements = new ArrayList<>();
+            List<String> unextracted = new ArrayList<>();
+            Set<String> registeredModules = new TreeSet<>();
+            Set<String> registeredCommands = new TreeSet<>();
+            Set<String> registeredHudElements = new TreeSet<>();
 
             for (File file : javaFiles) {
                 CompilationUnit cu = getCompilationUnit(file);
                 if (cu == null) continue;
 
                 String className = cu.getPrimaryTypeName().orElse(file.getName().replace(".java", ""));
-                String classPath = file.getPath();
+                String classPath = file.getPath().replace('\\', '/');
 
                 boolean isModule = cu.findAll(ClassOrInterfaceDeclaration.class).stream()
                         .anyMatch(cls -> extendsClass(cls, "Module"));
                 boolean isCommand = !isModule && cu.findAll(ClassOrInterfaceDeclaration.class).stream()
                         .anyMatch(cls -> extendsClass(cls, "Command"));
 
+                if (className.equals("Meteorist")) {
+                    collectRegistrations(cu, registeredModules, registeredCommands, registeredHudElements);
+                }
                 if (isModule) {
                     ModuleInfo moduleInfo = extractModuleInfo(cu, className, classPath);
                     if (moduleInfo != null) {
                         System.out.println("Processed module: " + moduleInfo.name + " (" + className + ")");
                         allModules.add(moduleInfo);
+                    } else {
+                        unextracted.add(className);
                     }
                 }
                 if (isCommand) {
@@ -119,29 +145,91 @@ public class MeteoristInfoParser {
                     if (cmd != null) {
                         System.out.println("Processed command: " + cmd.name + " (" + className + ")");
                         allCommands.add(cmd);
+                    } else {
+                        unextracted.add(className);
                     }
                 }
-                List<PresetGroup> presetGroups = extractPresetGroups(cu, className, classPath);
-                for (PresetGroup group : presetGroups) {
-                    System.out.println("Processed preset group: " + group.name + " (" + className + ")");
+                List<HudElementInfoWrapper> hudElements = extractHudElements(cu, className, classPath);
+                for (HudElementInfoWrapper element : hudElements) {
+                    System.out.println("Processed HUD element: " + element.name + " (" + className + ")");
                 }
-                allPresetGroups.addAll(presetGroups);
+                allHudElements.addAll(hudElements);
+            }
+
+            List<String> mismatches = crossCheckRegistrations(allModules, allCommands, allHudElements, unextracted,
+                    registeredModules, registeredCommands, registeredHudElements);
+            if (!mismatches.isEmpty()) {
+                System.err.println("Registration cross-check failed:");
+                mismatches.forEach(problem -> System.err.println("  - " + problem));
+                System.err.println("Every Modules.get().add(...) / Commands.add(...) entry must resolve to a");
+                System.err.println("class whose super(...) passes the name and description as literals.");
+                System.exit(1);
             }
 
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("modules", allModules);
             result.put("commands", allCommands);
-            result.put("presets", allPresetGroups);
+            result.put("hud", allHudElements);
 
             writeToJsonFile(result, outputFile);
             System.out.println("Processed " + allModules.size() + " modules, " +
-                    allCommands.size() + " commands, and " + allPresetGroups.size() + " preset groups. Results in " + outputFile);
+                    allCommands.size() + " commands, and " + allHudElements.size() + " HUD elements. Results in " + outputFile);
         } catch (Exception e) {
-            System.err.println("Error processing files: " + e.getMessage());
+            System.err.println("Error processing files: " + e);
+            System.exit(1);
         }
     }
 
-    private static void scanForCategories(List<File> files) {
+    /// Fails the run if the parsed metadata does not match what onInitialize
+    /// registers, since a module that cannot be extracted would silently vanish.
+    private static List<String> crossCheckRegistrations(List<ModuleInfo> modules, List<CommandInfo> commands,
+                                                        List<HudElementInfoWrapper> hudElements, List<String> unextracted,
+                                                        Set<String> registeredModules, Set<String> registeredCommands,
+                                                        Set<String> registeredHudElements) {
+        Set<String> foundModules = new TreeSet<>();
+        Set<String> foundCommands = new TreeSet<>();
+        Set<String> foundHudElements = new TreeSet<>();
+        modules.forEach(module -> foundModules.add(module.className));
+        commands.forEach(command -> foundCommands.add(command.className));
+        hudElements.forEach(element -> foundHudElements.add(element.className));
+
+        List<String> problems = new ArrayList<>();
+        unextracted.forEach(name -> problems.add(name + " extends Module/Command but its metadata was not extracted"));
+        registeredModules.stream().filter(name -> !foundModules.contains(name))
+                .forEach(name -> problems.add("registered module " + name + " is missing from the generated metadata"));
+        registeredCommands.stream().filter(name -> !foundCommands.contains(name))
+                .forEach(name -> problems.add("registered command " + name + " is missing from the generated metadata"));
+        registeredHudElements.stream().filter(name -> !foundHudElements.contains(name))
+                .forEach(name -> problems.add("registered HUD element " + name + " is missing from the generated metadata"));
+        foundModules.stream().filter(name -> !registeredModules.contains(name))
+                .forEach(name -> problems.add("module " + name + " extends Module but is never registered in Meteorist.onInitialize()"));
+        foundCommands.stream().filter(name -> !registeredCommands.contains(name))
+                .forEach(name -> problems.add("command " + name + " extends Command but is never registered in Meteorist.onInitialize()"));
+        foundHudElements.stream().filter(name -> !registeredHudElements.contains(name))
+                .forEach(name -> problems.add("HUD element " + name + " is never registered in Meteorist.onInitialize()"));
+        return problems;
+    }
+
+    private static void collectRegistrations(CompilationUnit cu, Set<String> modules, Set<String> commands,
+                                             Set<String> hudElements) {
+        for (MethodCallExpr call : cu.findAll(MethodCallExpr.class)) {
+            if (call.getArguments().isEmpty()) continue;
+            String scope = call.getScope().map(Object::toString).orElse("");
+            if ("register".equals(call.getNameAsString()) && scope.equals("Hud.get()")) {
+                if (call.getArgument(0) instanceof FieldAccessExpr field && field.getScope() instanceof NameExpr cls) {
+                    hudElements.add(cls.getNameAsString());
+                }
+                continue;
+            }
+            if (!"add".equals(call.getNameAsString())) continue;
+            ObjectCreationExpr creation = call.getArgument(0) instanceof ObjectCreationExpr object ? object : null;
+            if (creation == null) continue;
+            if (scope.equals("Commands")) commands.add(creation.getType().getNameAsString());
+            else if (scope.equals("Modules.get()")) modules.add(creation.getType().getNameAsString());
+        }
+    }
+
+    private static void indexTypes(List<File> files) {
         for (File file : files) {
             try {
                 CompilationUnit cu = getCompilationUnit(file);
@@ -149,40 +237,39 @@ public class MeteoristInfoParser {
 
                 String packageName = cu.getPackageDeclaration().map(NodeWithName::getNameAsString).orElse("");
 
-                cu.findAll(ClassOrInterfaceDeclaration.class).forEach(cls -> {
-                    String className = cls.getNameAsString();
-                    String fullClassName = packageName.isEmpty() ? className : packageName + "." + className;
-
-                    cls.getFields().forEach(field -> {
-                        if (field.isPublic() && field.isStatic() && field.isFinal()) {
-                            String fieldType = field.getCommonType().toString();
-                            if (fieldType.endsWith("Category")) {
-                                field.getVariables().forEach(var -> {
-                                    String fieldName = var.getNameAsString();
-                                    String fullFieldName = fullClassName + "." + fieldName;
-
-                                    var.getInitializer().ifPresent(init -> {
-                                        if (init instanceof ObjectCreationExpr objCreation) {
-                                            String typeName = objCreation.getType().getNameAsString();
-                                            if (typeName.equals("Category") || typeName.endsWith(".Category")) {
-                                                if (!objCreation.getArguments().isEmpty()) {
-                                                    Expression firstArg = objCreation.getArgument(0);
-                                                    if (firstArg instanceof StringLiteralExpr strExpr) {
-                                                        CATEGORY_NAME_CACHE.put(fullFieldName, strExpr.getValue());
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                });
+                for (ClassOrInterfaceDeclaration cls : cu.findAll(ClassOrInterfaceDeclaration.class)) {
+                    String fullClassName = qualify(packageName, cls.getNameAsString());
+                    for (FieldDeclaration field : cls.getFields()) {
+                        if (!field.isPublic() || !field.isStatic() || !field.isFinal()) continue;
+                        for (VariableDeclarator var : field.getVariables()) {
+                            if (field.getCommonType().toString().endsWith("Category")
+                                    && var.getInitializer().orElse(null) instanceof ObjectCreationExpr creation
+                                    && !creation.getArguments().isEmpty()
+                                    && creation.getArgument(0) instanceof StringLiteralExpr literal) {
+                                CATEGORY_NAME_CACHE.put(fullClassName + "." + var.getNameAsString(), literal.getValue());
                             }
+                            var.getInitializer().ifPresent(init -> {
+                                ExpressionValue value = fold(init, 0);
+                                if (!value.isCode) {
+                                    CONSTANT_CACHE.put(fullClassName + "." + var.getNameAsString(), value);
+                                    CONSTANT_CACHE.put(cls.getNameAsString() + "." + var.getNameAsString(), value);
+                                }
+                            });
                         }
-                    });
-                });
+                    }
+                }
+
+                for (EnumDeclaration decl : cu.findAll(EnumDeclaration.class)) {
+                    ENUM_TYPES.add(decl.getNameAsString());
+                }
             } catch (Exception e) {
-                System.err.println("Failed to scan categories in file: " + file.getName());
+                System.err.println("Failed to index types in file: " + file.getName());
             }
         }
+    }
+
+    private static String qualify(String packageName, String simpleName) {
+        return packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
     }
 
     private static boolean extendsClass(ClassOrInterfaceDeclaration cls, String className) {
@@ -249,6 +336,7 @@ public class MeteoristInfoParser {
                     module.className = className;
                     module.classPath = classPath;
                     module.lineNumber = call.getBegin().map(pos -> pos.line).orElse(-1);
+                    module.customGui = hasCustomWidget(cu);
                     module.settings = settings;
                     return module;
                 })
@@ -279,10 +367,28 @@ public class MeteoristInfoParser {
         return exprStr;
     }
 
+    /// True when the module overrides getWidget(GuiTheme), i.e. renders its own
+    /// custom settings GUI instead of the standard Meteor widget.
+    private static boolean hasCustomWidget(CompilationUnit cu) {
+        return cu.findAll(MethodDeclaration.class).stream()
+                .anyMatch(method -> method.getNameAsString().equals("getWidget"));
+    }
+
+    /// True only for a variable declared as exactly `SettingGroup`; a plain
+    /// `getTypeAsString().endsWith("SettingGroup")` also matches `List<SettingGroup>`.
+    private static boolean isSettingGroup(VariableDeclarator var) {
+        return var.getType() instanceof ClassOrInterfaceType type
+                && type.getNameAsString().equals("SettingGroup")
+                && type.getTypeArguments().isEmpty();
+    }
+
+    /// A group name that is not statically evaluatable (e.g.
+    /// `settings.createGroup(slot.getName())`) keeps its source text in backticks so
+    /// the settings it holds are still reported.
     private static Map<String, String> findSettingGroupNames(CompilationUnit cu) {
         Map<String, String> map = new HashMap<>();
         cu.findAll(VariableDeclarator.class).stream()
-                .filter(var -> var.getTypeAsString().endsWith("SettingGroup"))
+                .filter(MeteoristInfoParser::isSettingGroup)
                 .forEach(var -> {
                     String varName = var.getNameAsString();
                     Expression init = var.getInitializer().orElse(null);
@@ -297,20 +403,28 @@ public class MeteoristInfoParser {
                             } else if ("createGroup".equals(methodCall.getNameAsString())) {
                                 methodCall.getArguments().stream().findFirst().ifPresent(argExpr -> {
                                     ExpressionValue arg = getExpressionValue(argExpr);
-                                    map.put(varName, arg.value);
+                                    if (arg.isCode) {
+                                        System.err.println("Warning: setting group '" + varName
+                                                + "' name is not statically evaluatable (" + arg.value
+                                                + "); reported as code in the JSON.");
+                                        map.put(varName, "`" + arg.value + "`");
+                                    } else {
+                                        map.put(varName, arg.value);
+                                    }
                                 });
                                 return;
                             }
                         }
                     }
-                    map.put(varName, "Unknown");
+                    System.err.println("Warning: setting group '" + varName
+                            + "' is not initialised from settings; reported under its variable name.");
+                    map.put(varName, varName);
                 });
         return map;
     }
 
     private static Map<String, List<SettingInfo>> extractSettingsByGroup(CompilationUnit cu, Map<String, String> groupNameMap) {
         Map<String, List<SettingInfo>> groupedSettings = new LinkedHashMap<>();
-        groupedSettings.put("General", new ArrayList<>());
 
         cu.findAll(MethodCallExpr.class).stream()
                 .filter(call -> "add".equals(call.getNameAsString()))
@@ -326,8 +440,9 @@ public class MeteoristInfoParser {
                         return;
                     }
 
-                    String resolvedName = groupNameMap.getOrDefault(groupName, "Unknown");
-                    if ("Unknown".equals(resolvedName)) return;
+                    // Not in the map means the scope is not a SettingGroup (an unrelated list.add).
+                    String resolvedName = groupNameMap.get(groupName);
+                    if (resolvedName == null) return;
                     groupedSettings.putIfAbsent(resolvedName, new ArrayList<>());
 
                     if (call.getArguments().isEmpty()) return;
@@ -353,15 +468,49 @@ public class MeteoristInfoParser {
     }
 
     private static ExpressionValue getExpressionValue(Expression expr) {
-        if (expr instanceof StringLiteralExpr) {
-            return new ExpressionValue(((StringLiteralExpr) expr).getValue(), false);
+        return fold(expr, 0);
+    }
+
+    /// Statically evaluates a builder argument; anything needing the game to resolve
+    /// comes back as code (source text in backticks).
+    private static ExpressionValue fold(Expression expr, int depth) {
+        if (depth > MAX_FOLD_DEPTH) return code(expr);
+
+        if (expr instanceof StringLiteralExpr literal) return new ExpressionValue(literal.getValue(), false);
+        if (expr instanceof BooleanLiteralExpr literal) return new ExpressionValue(String.valueOf(literal.getValue()), false);
+        if (expr instanceof CharLiteralExpr literal) return new ExpressionValue(String.valueOf(literal.asChar()), false);
+        if (expr instanceof NullLiteralExpr) return new ExpressionValue("null", false);
+        if (expr instanceof LiteralExpr) return new ExpressionValue(expr.toString(), false);
+
+        if (expr instanceof EnclosedExpr enclosed) return fold(enclosed.getInner(), depth + 1);
+
+        if (expr instanceof UnaryExpr unary && unary.getOperator() == UnaryExpr.Operator.MINUS) {
+            ExpressionValue operand = fold(unary.getExpression(), depth + 1);
+            return operand.isCode ? code(unary) : new ExpressionValue("-" + operand.value, false);
         }
-        if (expr instanceof IntegerLiteralExpr) {
-            return new ExpressionValue(((IntegerLiteralExpr) expr).getValue(), false);
+
+        if (expr instanceof BinaryExpr binary && binary.getOperator() == BinaryExpr.Operator.PLUS) {
+            ExpressionValue left = fold(binary.getLeft(), depth + 1);
+            ExpressionValue right = fold(binary.getRight(), depth + 1);
+            return left.isCode || right.isCode ? code(binary)
+                    : new ExpressionValue(left.value + right.value, false);
         }
-        if (expr instanceof BooleanLiteralExpr) {
-            return new ExpressionValue(Boolean.toString(((BooleanLiteralExpr) expr).getValue()), false);
+
+        if (expr instanceof NameExpr name) {
+            ExpressionValue constant = CONSTANT_CACHE.get(name.getNameAsString());
+            return constant != null ? constant : code(expr);
         }
+
+        if (expr instanceof FieldAccessExpr access && access.getScope() instanceof NameExpr scope) {
+            ExpressionValue constant = CONSTANT_CACHE.get(scope.getNameAsString() + "." + access.getNameAsString());
+            if (constant != null) return constant;
+            if (ENUM_TYPES.contains(scope.getNameAsString())) return new ExpressionValue(access.toString(), false);
+        }
+
+        return code(expr);
+    }
+
+    private static ExpressionValue code(Expression expr) {
         return new ExpressionValue(expr.toString(), true);
     }
 
@@ -430,13 +579,159 @@ public class MeteoristInfoParser {
                     cmd.className = className;
                     cmd.classPath = classPath;
                     cmd.lineNumber = call.getBegin().map(pos -> pos.line).orElse(-1);
+                    extractCommandParameters(cu, cmd);
                     return cmd;
                 })
                 .orElse(null);
     }
 
-    private static List<PresetGroup> extractPresetGroups(CompilationUnit cu, String className, String classPath) {
-        List<PresetGroup> groups = new ArrayList<>();
+    static class ArgNode {
+        String name;
+        boolean argument;
+        String type;
+        boolean executable;
+        List<ArgNode> children = new ArrayList<>();
+    }
+
+    private static void extractCommandParameters(CompilationUnit cu, CommandInfo cmd) {
+        cu.findFirst(MethodDeclaration.class, method -> "build".equals(method.getNameAsString()) && !method.getParameters().isEmpty())
+                .ifPresent(build -> {
+                    ArgNode root = new ArgNode();
+                    parseBuilderStatements(cu, build, new HashMap<>(), root, new HashSet<>());
+                    Set<String> seenPaths = new LinkedHashSet<>();
+                    collectPaths(root, "", seenPaths, 0);
+                    cmd.usage = new ArrayList<>(seenPaths);
+                    collectParameters(root, cmd);
+                });
+    }
+
+    private static void parseBuilderStatements(CompilationUnit cu, MethodDeclaration method, Map<String, String> bindings,
+                                               ArgNode root, Set<String> visitedHelpers) {
+        for (MethodCallExpr call : method.findAll(MethodCallExpr.class)) {
+            String callName = call.getNameAsString();
+            String scope = call.getScope().map(Object::toString).orElse("");
+            if (call.getArguments().isEmpty()) continue;
+
+            if (!scope.equals("builder")) {
+                if (!call.getScope().isEmpty()) continue;
+                StringBuilder helperKey = new StringBuilder(callName);
+                for (int i = 1; i < call.getArguments().size(); i++) {
+                    Expression arg = call.getArgument(i);
+                    helperKey.append('|').append(arg.toString());
+                }
+                if (!visitedHelpers.add(helperKey.toString())) continue;
+                MethodDeclaration helper = cu.findAll(MethodDeclaration.class).stream()
+                        .filter(m -> m.getNameAsString().equals(callName))
+                        .findFirst().orElse(null);
+                if (helper == null || helper.getParameters().isEmpty()) continue;
+                if (!helper.getParameters().get(0).getTypeAsString().contains("LiteralArgumentBuilder")) continue;
+                Map<String, String> newBindings = new HashMap<>(bindings);
+                for (int i = 1; i < helper.getParameters().size() && i < call.getArguments().size(); i++) {
+                    Expression arg = call.getArgument(i);
+                    if (arg instanceof StringLiteralExpr literal) {
+                        newBindings.put(helper.getParameters().get(i).getNameAsString(), literal.getValue());
+                    }
+                }
+                parseBuilderStatements(cu, helper, newBindings, root, visitedHelpers);
+                continue;
+            }
+
+            if (callName.equals("then")) {
+                ArgNode child = parseChain(call.getArgument(0), bindings);
+                if (child != null) root.children.add(child);
+            } else if (callName.equals("executes")) {
+                root.executable = true;
+            }
+        }
+    }
+
+    private static ArgNode parseChain(Expression expr, Map<String, String> bindings) {
+        List<MethodCallExpr> calls = new ArrayList<>();
+        Expression current = expr;
+        while (current instanceof MethodCallExpr call) {
+            calls.add(call);
+            current = call.getScope().orElse(null);
+        }
+        Collections.reverse(calls);
+
+        ArgNode node = null;
+        for (MethodCallExpr call : calls) {
+            switch (call.getNameAsString()) {
+                case "literal":
+                    String literalValue = boundValue(call.getArgument(0), bindings);
+                    if (literalValue == null) return null;
+                    node = new ArgNode();
+                    node.name = literalValue;
+                    break;
+                case "argument":
+                    String argValue = boundValue(call.getArgument(0), bindings);
+                    if (argValue == null) return null;
+                    node = new ArgNode();
+                    node.name = argValue;
+                    node.argument = true;
+                    node.type = humanizeArgumentType(call.getArgument(1).toString());
+                    break;
+                case "executes":
+                    if (node != null) node.executable = true;
+                    break;
+                case "then":
+                    if (node != null && !call.getArguments().isEmpty()) {
+                        ArgNode child = parseChain(call.getArgument(0), bindings);
+                        if (child != null) node.children.add(child);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return node;
+    }
+
+    private static String boundValue(Expression expr, Map<String, String> bindings) {
+        if (expr instanceof StringLiteralExpr literal) return literal.getValue();
+        if (expr instanceof NameExpr name) return bindings.get(name.getNameAsString());
+        return null;
+    }
+
+    private static String humanizeArgumentType(String type) {
+        int dot = type.indexOf('.');
+        String receiver = dot == -1 ? type : type.substring(0, dot);
+        receiver = receiver.substring(receiver.lastIndexOf(' ') + 1);
+        if (receiver.endsWith("ArgumentType")) {
+            receiver = receiver.substring(0, receiver.length() - "ArgumentType".length());
+        }
+        return receiver.isEmpty() ? type : receiver;
+    }
+
+    private static void collectPaths(ArgNode node, String prefix, Set<String> out, int depth) {
+        if (depth > 8 || out.size() > 60) return;
+        for (ArgNode child : node.children) {
+            String token = child.argument ? "<" + child.name + ">" : child.name;
+            String path = prefix.isEmpty() ? token : prefix + " " + token;
+            if (child.executable || child.children.isEmpty()) out.add(path);
+            collectPaths(child, path, out, depth + 1);
+        }
+    }
+
+    private static void collectParameters(ArgNode node, CommandInfo cmd) {
+        Set<String> seen = new HashSet<>();
+        collectParameterNode(node, seen, cmd);
+    }
+
+    private static void collectParameterNode(ArgNode node, Set<String> seen, CommandInfo cmd) {
+        for (ArgNode child : node.children) {
+            if (child.argument && child.type != null && seen.add(child.name)) {
+                ParameterInfo parameter = new ParameterInfo();
+                parameter.name = child.name;
+                parameter.type = child.type;
+                cmd.parameters.add(parameter);
+            }
+            collectParameterNode(child, seen, cmd);
+        }
+    }
+
+    private static List<HudElementInfoWrapper> extractHudElements(CompilationUnit cu, String className, String classPath) {
+        List<HudElementInfoWrapper> elements = new ArrayList<>();
         cu.findAll(VariableDeclarator.class).stream()
                 .filter(var -> var.getTypeAsString().contains("HudElementInfo"))
                 .filter(var -> var.getInitializer().isPresent())
@@ -448,33 +743,36 @@ public class MeteoristInfoParser {
                     ExpressionValue descExpr = getExpressionValue(init.getArgument(2));
                     if (nameExpr.isCode || descExpr.isCode) return;
 
-                    PresetGroup group = new PresetGroup();
-                    group.name = nameExpr.value;
-                    group.description = descExpr.value;
-                    group.className = className;
-                    group.classPath = classPath;
-                    group.lineNumber = init.getBegin().map(pos -> pos.line).orElse(-1);
-
-                    cu.findAll(MethodCallExpr.class)
-                            .stream()
-                            .filter(call -> "addPreset".equals(call.getNameAsString()))
-                            .filter(call -> call.getArguments().size() >= 2)
-                            .forEach(call -> {
-                                ExpressionValue title = getExpressionValue(call.getArgument(0));
-                                ExpressionValue formula = getExpressionValue(call.getArgument(1));
-                                if (title.isCode || formula.isCode) return;
-                                PresetInfo preset = new PresetInfo();
-                                preset.title = title.value;
-                                preset.text = formula.value;
-                                preset.lineNumber = call.getBegin().map(pos -> pos.line).orElse(-1);
-                                group.presets.add(preset);
-                            });
-
-                    if (!group.presets.isEmpty()) {
-                        groups.add(group);
-                    }
+                    HudElementInfoWrapper element = new HudElementInfoWrapper();
+                    element.name = nameExpr.value;
+                    element.description = descExpr.value;
+                    element.className = className;
+                    element.classPath = classPath;
+                    element.lineNumber = init.getBegin().map(pos -> pos.line).orElse(-1);
+                    element.settings = extractSettingsByGroup(cu, findSettingGroupNames(cu));
+                    element.presets = extractPresets(cu);
+                    elements.add(element);
                 });
-        return groups;
+        return elements;
+    }
+
+    private static List<PresetInfo> extractPresets(CompilationUnit cu) {
+        List<PresetInfo> presets = new ArrayList<>();
+        cu.findAll(MethodCallExpr.class)
+                .stream()
+                .filter(call -> "addPreset".equals(call.getNameAsString()))
+                .filter(call -> call.getArguments().size() >= 2)
+                .forEach(call -> {
+                    ExpressionValue title = getExpressionValue(call.getArgument(0));
+                    ExpressionValue formula = getExpressionValue(call.getArgument(1));
+                    if (title.isCode || formula.isCode) return;
+                    PresetInfo preset = new PresetInfo();
+                    preset.title = title.value;
+                    preset.text = formula.value;
+                    preset.lineNumber = call.getBegin().map(pos -> pos.line).orElse(-1);
+                    presets.add(preset);
+                });
+        return presets;
     }
 
     private static void writeToJsonFile(Object data, String filename) {

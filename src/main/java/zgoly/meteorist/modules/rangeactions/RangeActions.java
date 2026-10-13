@@ -77,6 +77,9 @@ public class RangeActions extends Module {
     public Module fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
+        commandDelayTimers.clear();
+        commandIndex.clear();
+
         rangeActions.clear();
 
         ListTag list = tag.getListOrEmpty("rangeActions");
@@ -217,7 +220,7 @@ public class RangeActions extends Module {
                 case CommandsRangeAction commandsAction -> {
                     int delay = commandsAction.delay.get();
                     int commandsPerTick = commandsAction.commandsPerTick.get();
-                    commandDelayTimers.putIfAbsent(commandsAction, 0);
+                    commandDelayTimers.putIfAbsent(commandsAction, 1);
                     commandIndex.putIfAbsent(commandsAction, 0);
                     int timer = commandDelayTimers.get(commandsAction);
                     int index = commandIndex.get(commandsAction);
@@ -228,7 +231,7 @@ public class RangeActions extends Module {
                             index++;
                         }
                         commandIndex.put(commandsAction, index);
-                        commandDelayTimers.put(commandsAction, 0);
+                        commandDelayTimers.put(commandsAction, 1);
                     } else {
                         commandDelayTimers.put(commandsAction, timer + 1);
                     }
@@ -243,6 +246,12 @@ public class RangeActions extends Module {
         }
 
         if (shouldSneak) mc.options.keyShift.setDown(true);
+        else mc.options.keyShift.setDown(false);
+    }
+
+    @Override
+    public void onDeactivate() {
+        mc.options.keyShift.setDown(false);
     }
 
     private boolean entityCheck(Entity entity, BaseRangeAction rangeAction) {

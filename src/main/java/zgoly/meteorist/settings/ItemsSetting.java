@@ -70,7 +70,9 @@ public class ItemsSetting extends Setting<List<Item>> {
 
         for (Tag element : listTag) {
             String idStr = element.asString().orElse("");
-            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(idStr));
+            Identifier id = Identifier.tryParse(idStr);
+            if (id == null) continue;
+            Item item = BuiltInRegistries.ITEM.getValue(id);
             if (item != Items.AIR) get().add(item);
         }
 
@@ -104,7 +106,7 @@ public class ItemsSetting extends Setting<List<Item>> {
             edit.action = () -> {
                 ItemSetting tempSetting = new ItemSetting.Builder().defaultValue(item).filter(setting.filter).build();
 
-                mc.setScreen(new ItemSettingScreen(theme, tempSetting) {
+                mc.gui.setScreen(new ItemSettingScreen(theme, tempSetting) {
                     @Override
                     public void onClosed() {
                         Item result = tempSetting.get();
@@ -165,7 +167,7 @@ public class ItemsSetting extends Setting<List<Item>> {
         add.action = () -> {
             ItemSetting tempSetting = new ItemSetting.Builder().filter(setting.filter).build();
 
-            mc.setScreen(new ItemSettingScreen(theme, tempSetting) {
+            mc.gui.setScreen(new ItemSettingScreen(theme, tempSetting) {
                 @Override
                 public void onClosed() {
                     Item result = tempSetting.get();

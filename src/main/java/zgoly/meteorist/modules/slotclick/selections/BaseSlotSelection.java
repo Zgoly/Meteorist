@@ -13,7 +13,7 @@ public class BaseSlotSelection implements ISerializable<BaseSlotSelection> {
     public Settings settings = new Settings();
 
     public static void reloadParent() {
-        Screen screen = mc.screen;
+        Screen screen = mc.gui.screen();
         if (screen instanceof SlotSelectionScreen slotSelectionScreen) {
             if (slotSelectionScreen.parent instanceof WindowScreen windowScreen) {
                 windowScreen.reload();

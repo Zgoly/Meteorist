@@ -104,7 +104,7 @@ public class InstructionsCommand extends Command {
             int totalTicks = tick - worldTime;
             info("Total ticks to run: (highlight)%d(default) (approximately %s)", totalTicks, MeteoristUtils.ticksToTime(totalTicks, false, true));
         } catch (Exception e) {
-            error("Error loading instructions: (highlight)%d(default)", e.getMessage());
+            error("Error loading instructions: (highlight)%s(default)", e.getMessage());
         }
         return SINGLE_SUCCESS;
     }

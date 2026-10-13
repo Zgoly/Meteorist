@@ -20,13 +20,6 @@ public class BaseAutoCraft implements ISerializable<BaseAutoCraft> {
             .build()
     );
 
-    public final Setting<Boolean> useFirstMatchingVariant = sgAutoCraft.add(new BoolSetting.Builder()
-            .name("use-first-matching-variant")
-            .description("If enabled, only the first matching variant per ingredient will be used for " + inputWhitelist.title + " filtering.")
-            .defaultValue(true)
-            .build()
-    );
-
     public final Setting<List<Item>> inputBlacklist = sgAutoCraft.add(new ItemsSetting.Builder()
             .name("input-blacklist")
             .description("Items not allowed as craft ingredients.")

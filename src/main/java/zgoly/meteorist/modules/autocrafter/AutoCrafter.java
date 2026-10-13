@@ -178,7 +178,10 @@ public class AutoCrafter extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (mc.gameMode == null) return;
-        if (!(mc.player.containerMenu instanceof AbstractCraftingMenu currentScreenHandler)) return;
+        if (!(mc.player.containerMenu instanceof AbstractCraftingMenu currentScreenHandler)) {
+            shouldCraft = false;
+            return;
+        }
 
         if (shouldCraft) {
             if (currentScreenHandler.slots.getFirst().hasItem()) {
@@ -235,7 +238,7 @@ public class AutoCrafter extends Module {
 
             // Output check
             List<ItemStack> outputStacks = recipe.display().result().resolveForStacks(SlotDisplayContext.fromLevel(mc.level));
-            if (!outputStacks.getFirst().is(baseAutoCraft.outputItem.get())) continue;
+            if (outputStacks.isEmpty() || !outputStacks.getFirst().is(baseAutoCraft.outputItem.get())) continue;
             debugLogger.info("Output check passed");
 
             // Check input for extra item
@@ -259,24 +262,19 @@ public class AutoCrafter extends Module {
 
             // Whitelist
             if (!inputWhitelist.isEmpty()) {
-                List<Item> whitelistCopy = new ArrayList<>(inputWhitelist);
-
                 for (Ingredient ingredient : craftingRequirements.get()) {
                     HolderSet<Item> entries = ((IngredientAccessor) (Object) ingredient).getEntries();
 
+                    boolean allowed = false;
                     for (Holder<Item> entry : entries) {
-                        Item item = entry.value();
-
-                        if (whitelistCopy.contains(item)) {
-                            whitelistCopy.remove(item);
-                            if (baseAutoCraft.useFirstMatchingVariant.get()) {
-                                break;
-                            }
+                        if (inputWhitelist.contains(entry.value())) {
+                            allowed = true;
+                            break;
                         }
                     }
-                }
 
-                if (!whitelistCopy.isEmpty()) continue;
+                    if (!allowed) continue recipeLabel;
+                }
             }
             debugLogger.info("Whitelist check passed");
 

@@ -33,7 +33,8 @@ public class InstructionArgumentType implements ArgumentType<String> {
             for (File file : files) {
                 if (file.isFile()) {
                     String name = file.getName();
-                    instructionNames.add(name.substring(0, name.lastIndexOf(".")));
+                    int dot = name.lastIndexOf('.');
+                    instructionNames.add(dot == -1 ? name : name.substring(0, dot));
                 }
             }
         }

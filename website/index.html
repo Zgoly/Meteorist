@@ -1,488 +1,1342 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta
-        content="Meteorist is a handy multi-tool add-on for Meteor Client, packed with utilities for everyday gameplay."
-        name="description">
+      content="Meteorist is a free, open-source add-on for Meteor Client: modules for combat, building, automation and visualization."
+      name="description"
+    />
     <meta
-        content="Meteorist, Meteor Client, Minecraft addon, Minecraft mod, anarchy Minecraft, automation Minecraft, Kill Aura, Aimbot, Nerd Vision, Minecraft utilities, Zgoly"
-        name="keywords">
-    <meta content="Zgoly" name="author">
-    <meta content="Meteorist" name="application-name">
-    <meta content="6DOFbSofHVCGFpI-SnuhOPjKhvKuJSwQHrNuOt1QupE" name="google-site-verification">
+      content="Meteorist, Meteor Client, Minecraft addon, Minecraft mod, anarchy Minecraft, automation Minecraft, Kill Aura, Aimbot, Nerd Vision, Minecraft utilities, Zgoly"
+      name="keywords"
+    />
+    <meta content="Zgoly" name="author" />
+    <meta content="Meteorist" name="application-name" />
+    <meta content="6DOFbSofHVCGFpI-SnuhOPjKhvKuJSwQHrNuOt1QupE" name="google-site-verification" />
+    <meta content="#000c18" name="theme-color" />
+    <meta content="dark" name="color-scheme" />
 
     <!-- Open Graph / Social -->
-    <meta content="Meteorist" property="og:title">
+    <meta content="Meteorist" property="og:title" />
     <meta
-        content="Meteorist is a handy multi-tool add-on for Meteor Client, packed with utilities for everyday gameplay."
-        property="og:description">
-    <meta content="website" property="og:type">
-    <meta content="https://meteorist.pages.dev" property="og:url">
-    <meta content="https://meteorist.pages.dev/favicon-96x96.png" property="og:image">
+      content="Meteorist is a handy multi-tool add-on for Meteor Client, packed with utilities for everyday gameplay."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://meteorist.pages.dev" property="og:url" />
+    <meta content="https://meteorist.pages.dev/favicon-96x96.png" property="og:image" />
 
     <title>Meteorist</title>
     <link href="favicon-96x96.png" rel="icon" sizes="96x96" type="image/png" />
     <link href="favicon.svg" rel="icon" type="image/svg+xml" />
-    <link href="https://cdn.jsdelivr.net/npm/photoswipe/dist/photoswipe.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://cdn.jsdelivr.net/npm/photoswipe/dist/photoswipe.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
 
     <!-- Schema.org structured data -->
-    <script type="application/ld+json">
+    <script id="schema-jsonld" type="application/ld+json">
+      [
         {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Meteorist",
-            "alternateName": [
-                "Meteorist Website",
-                "Meteorist Official Website"
-            ],
-            "url": "https://meteorist.pages.dev"
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Meteorist",
+          "alternateName": ["Meteorist Website", "Meteorist Official Website"],
+          "url": "https://meteorist.pages.dev"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Meteorist",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Windows, macOS, Linux",
+          "url": "https://meteorist.pages.dev",
+          "downloadUrl": "https://github.com/Zgoly/Meteorist/releases/latest",
+          "license": "https://github.com/Zgoly/Meteorist/blob/main/LICENSE",
+          "author": {
+            "@type": "Person",
+            "name": "Zgoly",
+            "url": "https://github.com/Zgoly"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
         }
+      ]
     </script>
-</head>
+  </head>
 
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a class="logo" href="#">
-                    <img alt="Meteorist" src="favicon.svg">
-                    <div class="logo-text">Meteorist</div>
-                </a>
-                <div class="menu-toggle-wrapper">
-                    <button aria-label="Toggle menu" class="menu-toggle">
-                        <span class="material-symbols-rounded">menu</span>
-                    </button>
-                    <div class="nav-links">
-                        <a href="#">Download</a>
-                        <a href="#showcase">Showcase</a>
-                        <a href="#features">Features</a>
-                        <a href="#modules">Modules</a>
-                        <a href="#donate">Donate</a>
-                        <a href="#also-try">Also Try</a>
-                        <a href="https://github.com/Zgoly/Meteorist" target="_blank">
-                            GitHub
-                            <span class="material-symbols-rounded small-icon">open_in_new</span>
-                        </a>
-                        <a href="https://dsc.gg/zgoly" target="_blank">
-                            Discord
-                            <span class="material-symbols-rounded small-icon">open_in_new</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+  <body>
+    <a class="skip-link" href="#showcase">Skip to content</a>
+
+    <header id="site-header">
+      <div class="container">
+        <div class="header-content">
+          <a aria-label="Meteorist - back to top" class="logo" href="#top">
+            <img alt="" height="32" src="favicon.svg" width="32" />
+            <span class="logo-text">Meteorist</span>
+          </a>
+          <button
+            aria-controls="nav-links"
+            aria-expanded="false"
+            aria-label="Toggle menu"
+            class="menu-toggle"
+            id="menu-toggle"
+            type="button"
+          >
+            <span class="material-symbols-rounded icon-menu">menu</span>
+            <span class="material-symbols-rounded icon-close">close</span>
+          </button>
+          <nav aria-label="Main" class="nav-links" id="nav-links">
+            <a href="#showcase">
+              <span aria-hidden="true" class="material-symbols-rounded nav-icon">image</span>
+              Showcase
+            </a>
+            <a href="#install">
+              <span aria-hidden="true" class="material-symbols-rounded nav-icon">download</span>
+              Install
+            </a>
+            <a href="#modules">
+              <span aria-hidden="true" class="material-symbols-rounded nav-icon">extension</span>
+              Modules
+            </a>
+            <a href="#changelog">
+              <span aria-hidden="true" class="material-symbols-rounded nav-icon">history</span>
+              Changelog
+            </a>
+            <a href="#faq">
+              <span aria-hidden="true" class="material-symbols-rounded nav-icon">help</span>
+              FAQ
+            </a>
+            <a href="https://github.com/Zgoly/Meteorist" rel="noopener" target="_blank">
+              <img
+                alt=""
+                class="nav-icon github-icon"
+                height="18"
+                src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"
+                width="18"
+              />
+              GitHub
+              <span class="material-symbols-rounded small-icon">open_in_new</span>
+            </a>
+            <a href="https://dsc.gg/zgoly" rel="noopener" target="_blank">
+              <img
+                alt=""
+                class="nav-icon discord-icon"
+                height="18"
+                src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg"
+                width="18"
+              />
+              Discord
+              <span class="material-symbols-rounded small-icon">open_in_new</span>
+            </a>
+            <button
+              class="btn btn-primary btn-sm nav-download"
+              data-download-trigger
+              popovertarget="install-popover"
+              type="button"
+            >
+              <span class="material-symbols-rounded">download</span>
+              Download <span class="tag-name">...</span>
+            </button>
+          </nav>
+          <button
+            class="btn btn-primary btn-sm header-download"
+            data-download-trigger
+            popovertarget="install-popover"
+            type="button"
+          >
+            <span class="material-symbols-rounded">download</span>
+            Download
+          </button>
         </div>
+      </div>
+      <div aria-hidden="true" id="scroll-progress"></div>
     </header>
 
-    <section class="hero">
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="top">
+        <div aria-hidden="true" class="hero-bg">
+          <div class="starfield starfield-a"></div>
+          <div class="starfield starfield-b"></div>
+          <span class="meteor"></span>
+          <span class="meteor"></span>
+        </div>
+        <div class="container hero-inner">
+          <div class="hero-text">
+            <h1>Meteorist</h1>
+            <p class="hero-tagline">
+              A free toolbox for
+              <a href="https://meteorclient.com/" rel="noopener" target="_blank">Meteor Client</a>: modules, chat
+              commands and HUD elements for combat, building, automation and visualization.
+            </p>
+            <div class="hero-actions">
+              <button
+                class="btn btn-primary btn-lg"
+                data-download-trigger
+                id="download-btn"
+                popovertarget="install-popover"
+                type="button"
+              >
+                <span class="material-symbols-rounded">download</span>
+                Download <span class="tag-name">...</span>
+              </button>
+              <a
+                class="btn btn-ghost btn-lg github-button"
+                href="https://github.com/Zgoly/Meteorist"
+                rel="noopener"
+                target="_blank"
+              >
+                <img
+                  alt=""
+                  class="github-icon"
+                  height="20"
+                  src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"
+                  width="20"
+                />
+                View on GitHub
+                <span id="github-star-badge">
+                  <span class="material-symbols-rounded">star</span>
+                  <span class="js-star-count">0</span>
+                </span>
+              </a>
+            </div>
+            <p class="hero-meta">
+              <span class="mono tag-name">?</span>
+              <span class="dot">·</span>
+              <span class="mono file-size">?</span>
+              <span class="dot">·</span>
+              <span class="mono time-ago">?</span>
+              <span class="dot js-mc-dot" hidden>·</span>
+              <span class="mono js-mc-version" hidden></span>
+            </p>
+            <p class="hero-older">
+              <a href="https://github.com/Zgoly/Meteorist/releases" rel="noopener" target="_blank">
+                Older versions & full changelog history
+                <span class="material-symbols-rounded small-icon">open_in_new</span>
+              </a>
+            </p>
+            <div class="hero-stats">
+              <div class="stat js-dl-box" id="hero-download-counter">
+                <span aria-hidden="true" class="material-symbols-rounded stat-icon">download</span>
+                <span class="stat-col">
+                  <span class="stat-num js-dl-count">?</span>
+                  <span class="stat-label">downloads</span>
+                </span>
+              </div>
+              <div class="stat js-star-box">
+                <span aria-hidden="true" class="material-symbols-rounded stat-icon">star</span>
+                <span class="stat-col">
+                  <span class="stat-num js-star-count">?</span>
+                  <span class="stat-label">stars</span>
+                </span>
+              </div>
+              <div class="stat">
+                <span aria-hidden="true" class="material-symbols-rounded stat-icon">extension</span>
+                <span class="stat-col">
+                  <span class="stat-num js-module-count">?</span>
+                  <span class="stat-label">modules</span>
+                </span>
+              </div>
+              <div class="stat">
+                <span aria-hidden="true" class="material-symbols-rounded stat-icon">tune</span>
+                <span class="stat-col">
+                  <span class="stat-num js-setting-count">?</span>
+                  <span class="stat-label">settings</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div aria-hidden="true" class="hero-logo">
+            <img alt="" height="192" src="favicon.svg" width="192" />
+          </div>
+        </div>
+        <a aria-label="Scroll to showcase" class="scroll-cue" href="#showcase">
+          <span class="material-symbols-rounded">expand_more</span>
+        </a>
+      </section>
+
+      <!-- SHOWCASE -->
+      <section class="section reveal" id="showcase">
         <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Meteorist</h1>
-                    <p>Handy multi-tool add-on for <a href="https://meteorclient.com/">Meteor Client</a>,
-                        packed with utilities for everyday gameplay.</p>
-                    <div id="hero-buttons">
-                        <button class="cta-button" id="download-btn" popovertarget="install-popover">
-                            <span class="material-symbols-rounded">download</span>Download
-                            <span class="tag-name"></span>
-                        </button>
-                        <a class="cta-button github-button" href="https://github.com/Zgoly/Meteorist" target="_blank">
-                            <img alt="GitHub" class="github-icon"
-                                src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg">View on GitHub
-                            <span class="material-symbols-rounded small-icon">open_in_new</span>
-                            <span id="github-star-badge">
-                                <span class="material-symbols-rounded">star</span>
-                                <span id="github-star-count">0</span>
-                            </span>
-                        </a>
-                    </div>
-                    <div id="hero-version-info">
-                        <span class="tag-name">v1.0.0</span>
-                        <span class="dot">·</span>
-                        <span class="file-size">0 B</span>
-                        <span class="dot">·</span>
-                        <span class="time-ago">Just now</span>
-                    </div>
-                    <a class="older-versions-link" href="https://github.com/Zgoly/Meteorist/releases" target="_blank">
-                        View older versions
-                    </a>
-                    <div id="hero-download-counter">
-                        <span class="material-symbols-rounded">download</span>
-                        <div id="hero-download-counter-content">
-                            <span id="hero-download-counter-number">0</span>
-                            <span id="hero-download-counter-text">downloads</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-logo">
-                    <img alt="Meteorist" src="favicon.svg">
-                </div>
-                <a class="scroll-down-indicator" href="#showcase">
-                    <span class="material-symbols-rounded">expand_more</span>
-                </a>
-            </div>
+          <div class="section-head">
+            <h2 class="title">See it in action</h2>
+            <p class="section-sub">Real screenshots, real modules. Click any shot to open it full-size.</p>
+          </div>
+          <div class="showcase-grid" id="showcase-gallery">
+            <figure class="showcase-item">
+              <a
+                data-pswp-height="1080"
+                data-pswp-width="1920"
+                href="showcase/placer.webp"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <img
+                  alt="Placer module placing blocks mid-air around the player"
+                  decoding="async"
+                  loading="lazy"
+                  src="showcase/placer.webp"
+                />
+              </a>
+              <figcaption class="showcase-overlay">
+                <span class="showcase-tag">module</span>
+                <h3>
+                  <button class="module-link" data-goto-module="placer" type="button">Placer</button>
+                </h3>
+                <p>Places blocks in range (exactly where you need them).</p>
+              </figcaption>
+            </figure>
+            <figure class="showcase-item">
+              <a
+                data-pswp-height="1080"
+                data-pswp-width="1920"
+                href="showcase/grid.webp"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <img
+                  alt="Grid module placing blocks with perfect spacing"
+                  decoding="async"
+                  loading="lazy"
+                  src="showcase/grid.webp"
+                />
+              </a>
+              <figcaption class="showcase-overlay">
+                <span class="showcase-tag">module</span>
+                <h3>
+                  <button class="module-link" data-goto-module="grid" type="button">Grid</button>
+                </h3>
+                <p>Snaps every block to a perfect grid.</p>
+              </figcaption>
+            </figure>
+            <figure class="showcase-item">
+              <a
+                data-pswp-height="1080"
+                data-pswp-width="1920"
+                href="showcase/sign_search.webp"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <img
+                  alt="Sign Search module highlighting a matching sign"
+                  decoding="async"
+                  loading="lazy"
+                  src="showcase/sign_search.webp"
+                />
+              </a>
+              <figcaption class="showcase-overlay">
+                <span class="showcase-tag">module</span>
+                <h3>
+                  <button class="module-link" data-goto-module="sign-search" type="button">Sign Search</button>
+                </h3>
+                <p>Regex-searches nearby signs and highlights the matches.</p>
+              </figcaption>
+            </figure>
+            <figure class="showcase-item">
+              <a
+                data-pswp-height="1080"
+                data-pswp-width="1920"
+                href="showcase/nerd_vision.webp"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <img
+                  alt="Nerd Vision module rendering mob spawn ranges"
+                  decoding="async"
+                  loading="lazy"
+                  src="showcase/nerd_vision.webp"
+                />
+              </a>
+              <figcaption class="showcase-overlay">
+                <span class="showcase-tag">module</span>
+                <h3>
+                  <button class="module-link" data-goto-module="nerd-vision" type="button">Nerd Vision</button>
+                </h3>
+                <p>Renders spawn ranges, spawner areas and other nerdy stuff.</p>
+              </figcaption>
+            </figure>
+            <figure class="showcase-item">
+              <a
+                data-pswp-height="1080"
+                data-pswp-width="1920"
+                href="showcase/boat_control.webp"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <img
+                  alt="Boat Control module steering a boat automatically"
+                  decoding="async"
+                  loading="lazy"
+                  src="showcase/boat_control.webp"
+                />
+              </a>
+              <figcaption class="showcase-overlay">
+                <span class="showcase-tag">module</span>
+                <h3>
+                  <button class="module-link" data-goto-module="boat-control" type="button">Boat Control</button>
+                </h3>
+                <p>Autopilot for boats.</p>
+              </figcaption>
+            </figure>
+            <figure class="showcase-item">
+              <a
+                data-pswp-height="1080"
+                data-pswp-width="1920"
+                href="showcase/auto_sneak.webp"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <img
+                  alt="Auto Sneak module preventing a fall at a block edge"
+                  decoding="async"
+                  loading="lazy"
+                  src="showcase/auto_sneak.webp"
+                />
+              </a>
+              <figcaption class="showcase-overlay">
+                <span class="showcase-tag">module</span>
+                <h3>
+                  <button class="module-link" data-goto-module="auto-sneak" type="button">Auto Sneak</button>
+                </h3>
+                <p>Sneaks at block edges so you never walk off a ledge again.</p>
+              </figcaption>
+            </figure>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <section class="container" id="showcase">
-        <h2 class="title">Showcase</h2>
-        <div class="showcase-grid" id="showcase-gallery">
-            <div class="showcase-item">
-                <a data-pswp-height="1080" data-pswp-width="1980" href="showcase/placer.webp" target="_blank">
-                    <img alt="Build Smarter" src="showcase/placer.webp">
-                </a>
-                <div class="showcase-overlay">
-                    <h3>Build Smarter</h3>
-                    <p>Place blocks exactly where you need them</p>
-                </div>
-            </div>
-            <div class="showcase-item">
-                <a data-pswp-height="1080" data-pswp-width="1980" href="showcase/grid.webp" target="_blank">
-                    <img alt="Place Precisely" src="showcase/grid.webp">
-                </a>
-                <div class="showcase-overlay">
-                    <h3>Place Precisely</h3>
-                    <p>Build with perfect spacing and alignment</p>
-                </div>
-            </div>
-            <div class="showcase-item">
-                <a data-pswp-height="1080" data-pswp-width="1980" href="showcase/sign_search.webp" target="_blank">
-                    <img alt="Find What Matters" src="showcase/sign_search.webp">
-                </a>
-                <div class="showcase-overlay">
-                    <h3>Find What Matters</h3>
-                    <p>Locate important signs instantly</p>
-                </div>
-            </div>
-            <div class="showcase-item">
-                <a data-pswp-height="1080" data-pswp-width="1980" href="showcase/nerd_vision.webp" target="_blank">
-                    <img alt="See the Invisible" src="showcase/nerd_vision.webp">
-                </a>
-                <div class="showcase-overlay">
-                    <h3>See the Invisible</h3>
-                    <p>Visualize hidden game mechanics</p>
-                </div>
-            </div>
-            <div class="showcase-item">
-                <a data-pswp-height="1080" data-pswp-width="1980" href="showcase/boat_control.webp" target="_blank">
-                    <img alt="Use autopilot" src="showcase/boat_control.webp">
-                </a>
-                <div class="showcase-overlay">
-                    <h3>Install autopilot</h3>
-                    <p>Travel without manual boat control</p>
-                </div>
-            </div>
-            <div class="showcase-item">
-                <a data-pswp-height="1080" data-pswp-width="1980" href="showcase/auto_sneak.webp" target="_blank">
-                    <img alt="Stay Safe" src="showcase/auto_sneak.webp">
-                </a>
-                <div class="showcase-overlay">
-                    <h3>Stay Safe</h3>
-                    <p>Prevent accidental falls automatically</p>
-                </div>
-            </div>
+      <!-- FEATURES -->
+      <section class="section reveal" id="features">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">What's in the box</h2>
+            <p class="section-sub">Six reasons players install Meteorist.</p>
+          </div>
+          <div class="features-grid">
+            <article class="feature-card">
+              <div class="feature-top">
+                <span aria-hidden="true" class="material-symbols-rounded feature-icon">swords</span>
+                <h3>Combat that respects your aim</h3>
+              </div>
+              <p>
+                Z Kill Aura only attacks what your crosshair is already on. Z Aimbot weighs distance, angle and rotation
+                limits before locking on. Z Auto Totem keeps a totem in your offhand.
+              </p>
+              <div class="chip-row">
+                <button class="chip" data-goto-module="z-kill-aura" type="button">Z Kill Aura</button>
+                <button class="chip" data-goto-module="z-aimbot" type="button">Z Aimbot</button>
+                <button class="chip" data-goto-module="z-auto-totem" type="button">Z Auto Totem</button>
+              </div>
+            </article>
+            <article class="feature-card">
+              <div class="feature-top">
+                <span aria-hidden="true" class="material-symbols-rounded feature-icon">construction</span>
+                <h3>Building with machine precision</h3>
+              </div>
+              <p>
+                Placer puts blocks anywhere in range, Grid keeps spacing and alignment perfect, and Auto Mud turns dirt
+                into mud.
+              </p>
+              <div class="chip-row">
+                <button class="chip" data-goto-module="placer" type="button">Placer</button>
+                <button class="chip" data-goto-module="grid" type="button">Grid</button>
+                <button class="chip" data-goto-module="auto-mud" type="button">Auto Mud</button>
+              </div>
+            </article>
+            <article class="feature-card">
+              <div class="feature-top">
+                <span aria-hidden="true" class="material-symbols-rounded feature-icon">smart_toy</span>
+                <h3>Automation for the boring stuff</h3>
+              </div>
+              <p>
+                Trade with villagers, craft items, sleep, open doors, ride boats and click inventory slots. All
+                hands-free and configurable.
+              </p>
+              <div class="chip-row">
+                <button class="chip" data-goto-module="auto-trade" type="button">Auto Trade</button>
+                <button class="chip" data-goto-module="auto-crafter" type="button">Auto Crafter</button>
+                <button class="chip" data-goto-module="auto-sleep" type="button">Auto Sleep</button>
+                <button class="chip" data-goto-module="boat-control" type="button">Boat Control</button>
+                <button class="chip" data-goto-module="slot-click" type="button">Slot Click</button>
+              </div>
+            </article>
+            <article class="feature-card">
+              <div class="feature-top">
+                <span aria-hidden="true" class="material-symbols-rounded feature-icon">visibility</span>
+                <h3>See the invisible</h3>
+              </div>
+              <p>
+                Nerd Vision renders mob spawn ranges, spawner areas and other stuff. Sign Search regex-scans every sign
+                around you and highlights the matches.
+              </p>
+              <div class="chip-row">
+                <button class="chip" data-goto-module="nerd-vision" type="button">Nerd Vision</button>
+                <button class="chip" data-goto-module="sign-search" type="button">Sign Search</button>
+                <button class="chip" data-goto-module="zoom-plus" type="button">Zoom Plus</button>
+              </div>
+            </article>
+            <article class="feature-card">
+              <div class="feature-top">
+                <span aria-hidden="true" class="material-symbols-rounded feature-icon">favorite</span>
+                <h3>Stay alive longer</h3>
+              </div>
+              <p>
+                Auto Heal, Auto Feed and Auto Repair react before you do. Auto Sneak catches you at every ledge, and
+                Jumps gets you extra height.
+              </p>
+              <div class="chip-row">
+                <button class="chip" data-goto-module="auto-heal" type="button">Auto Heal</button>
+                <button class="chip" data-goto-module="auto-feed" type="button">Auto Feed</button>
+                <button class="chip" data-goto-module="auto-repair" type="button">Auto Repair</button>
+                <button class="chip" data-goto-module="auto-sneak" type="button">Auto Sneak</button>
+              </div>
+            </article>
+            <article class="feature-card">
+              <div class="feature-top">
+                <span aria-hidden="true" class="material-symbols-rounded feature-icon">code</span>
+                <h3>Script your own combos</h3>
+              </div>
+              <p>
+                Instructions runs command sequences with delays, cycles and Starscript support. Minescript Integration
+                bridges Meteor with your custom scripts.
+              </p>
+              <div class="chip-row">
+                <button class="chip" data-goto-module="instructions" type="button">Instructions</button>
+                <button class="chip" data-goto-module="minescript-integration" type="button">
+                  Minescript Integration
+                </button>
+              </div>
+            </article>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <section class="container" id="features">
-        <h2 class="title">Key Features</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon"><span class="material-symbols-rounded">smart_toy</span></div>
-                <h3>Smart Automation</h3>
-                <p>Automate gameplay actions like trading with villagers, crafting, sleeping, interacting with doors,
-                    using mud bottles, and controlling boats.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><span class="material-symbols-rounded">visibility</span></div>
-                <h3>Enhanced Visualization</h3>
-                <p>Visualize game mechanics with Nerd Vision: see mob spawn ranges, turtle egg zones, spawner areas, and
-                    more.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><span class="material-symbols-rounded">swords</span></div>
-                <h3>Combat Systems</h3>
-                <p>Dominate PvP with Z Aimbot, Z Kill Aura, Z Auto Totem, and smart targeting that respects your aim
-                    direction.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><span class="material-symbols-rounded">build</span></div>
-                <h3>Utility Toolkit</h3>
-                <p>Essential tools like auto login, item sucker, sign search, disconnect alerts, double-door opener, and
-                    slot click automation.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><span class="material-symbols-rounded">self_improvement</span></div>
-                <h3>Self-Maintenance</h3>
-                <p>Automatically heal, feed, repair gear, and sneak at block edges - keeping you safe and efficient
-                    without manual input.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><span class="material-symbols-rounded">code</span></div>
-                <h3>Scripting & Control</h3>
-                <p>Run complex command sequences with the Instructions module and run custom scripts via Minescript
-                    Integration.</p>
-            </div>
+      <!-- INSTALL -->
+      <section class="section reveal" id="install">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">Up and running in a minute</h2>
+            <p class="section-sub">Meteorist is a regular Fabric mod. No installers, no configs, no accounts.</p>
+          </div>
+          <div class="steps-grid">
+            <article class="step-card">
+              <span class="step-num">1</span>
+              <h3>Get the base</h3>
+              <p>
+                Install
+                <a href="https://fabricmc.net/use/installer/" rel="noopener" target="_blank">Fabric Loader</a>
+                and
+                <a href="https://meteorclient.com/" rel="noopener" target="_blank">Meteor Client</a>. Meteorist runs
+                <em>on top of</em> Meteor, not instead of it.
+              </p>
+            </article>
+            <article class="step-card">
+              <span class="step-num">2</span>
+              <h3>Download the jar</h3>
+              <p>
+                <button
+                  class="btn btn-primary btn-sm"
+                  data-download-trigger
+                  popovertarget="install-popover"
+                  type="button"
+                >
+                  <span class="material-symbols-rounded">download</span>
+                  Download <span class="tag-name">...</span>
+                </button>
+              </p>
+              <p class="step-note">
+                Current build targets
+                <strong class="js-mc-version-inline">the latest Minecraft release</strong>. Need another version?
+                <a href="https://github.com/Zgoly/Meteorist/releases" rel="noopener" target="_blank"
+                  >Grab an older jar</a
+                >.
+              </p>
+            </article>
+            <article class="step-card">
+              <span class="step-num">3</span>
+              <h3>Drop it in <code>mods</code></h3>
+              <p>
+                Put <code>meteorist-*.jar</code> into your <code>.minecraft/mods</code> folder and launch the game.
+                Modules appear in the ClickGUI under the <strong>Meteorist</strong> category.
+              </p>
+            </article>
+          </div>
+          <div class="req-grid">
+            <article class="req-card">
+              <h4 class="req-title">
+                <span aria-hidden="true" class="material-symbols-rounded">check_circle</span>
+                Required
+              </h4>
+              <ul class="req-list">
+                <li>
+                  <span class="req-name">Java</span>
+                  <span class="req-note">25 or newer</span>
+                </li>
+                <li>
+                  <span class="req-name">Fabric Loader</span>
+                  <span class="req-note">any recent build</span>
+                </li>
+                <li>
+                  <span class="req-name">Meteor Client</span>
+                  <span class="req-note">matching Minecraft version</span>
+                </li>
+              </ul>
+            </article>
+            <article class="req-card">
+              <h4 class="req-title">
+                <span aria-hidden="true" class="material-symbols-rounded">add_circle</span>
+                Optional
+              </h4>
+              <ul class="req-list">
+                <li>
+                  <a
+                    class="req-name"
+                    href="https://meteorclient.com/api/downloadBaritone"
+                    rel="noopener"
+                    target="_blank"
+                    >Baritone</a
+                  >
+                  <span class="req-note">powers Item Sucker pathfinding</span>
+                </li>
+                <li>
+                  <a class="req-name" href="https://minescript.net/downloads" rel="noopener" target="_blank"
+                    >Minescript</a
+                  >
+                  <span class="req-note">enables Minescript Integration</span>
+                </li>
+              </ul>
+            </article>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <section class="container" id="about">
-        <h2 class="title">About the Project</h2>
-        <div class="content-container">
-            <div class="about-wrapper">
-                <div class="about-author">
-                    <img alt="Zgoly" class="author-avatar"
-                        src="https://avatars.githubusercontent.com/u/46041044?v=4&size=128">
-                    <div class="author-info">
-                        <h3>Zgoly</h3>
-                        <p>Developer of Meteorist</p>
-                        <div class="about-links">
-                            <a class="cta-button" href="https://github.com/Zgoly" target="_blank">
-                                <img alt="GitHub" class="github-icon"
-                                    src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg">
-                                GitHub
-                                <span class="material-symbols-rounded small-icon">open_in_new</span>
-                            </a>
-                            <a class="cta-button" href="https://dsc.gg/zgoly" target="_blank">
-                                <img alt="Discord" class="github-icon"
-                                    src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg">
-                                Discord
-                                <span class="material-symbols-rounded small-icon">open_in_new</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <a href="https://github.com/Zgoly/Meteorist/graphs/contributors" target="_blank">
-                    <div class="content-card about-thanks">
-                        <h4>Also thanks to</h4>
-                        <img alt="Meteorist Contributors" class="contributors-img"
-                            src="https://contrib.rocks/image?repo=zgoly/meteorist&columns=8">
-                    </div>
-                </a>
+      <!-- MODULES -->
+      <section class="section reveal" id="modules">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">Module browser</h2>
+            <p class="section-sub">
+              Every module with every setting generated from source on each release. Search, filter by category, click a
+              card to open its settings. Press <kbd>/</kbd> to jump to search.
+            </p>
+          </div>
+          <div class="modules-toolbar" id="modules-toolbar">
+            <div class="search-wrap">
+              <span aria-hidden="true" class="material-symbols-rounded search-icon">search</span>
+              <input
+                aria-label="Search modules and settings"
+                autocomplete="off"
+                id="module-search"
+                placeholder="Search modules and settings..."
+                type="search"
+              />
+              <kbd aria-hidden="true" class="search-kbd">/</kbd>
+              <button aria-label="Clear search" class="search-clear" hidden id="search-clear" type="button">
+                <span class="material-symbols-rounded">close</span>
+              </button>
             </div>
-            <div class="about-container">
+            <div class="toolbar-row">
+              <div aria-label="Filter by category" class="seg" id="module-tabs" role="group">
+                <button aria-pressed="true" class="seg-btn active" data-cat="all" type="button">
+                  All <span class="seg-count" data-count-for="all"></span>
+                </button>
+                <button aria-pressed="false" class="seg-btn" data-cat="Meteorist" type="button">
+                  Meteorist
+                  <span class="seg-count" data-count-for="Meteorist"></span>
+                </button>
+                <button aria-pressed="false" class="seg-btn" data-cat="MeteoristDev" type="button">
+                  Dev
+                  <span class="seg-count" data-count-for="MeteoristDev"></span>
+                </button>
+              </div>
+              <span aria-live="polite" class="modules-shown" id="modules-shown"></span>
+            </div>
+          </div>
+          <div class="modules-grid" id="modules-grid"></div>
+          <p class="modules-empty" hidden id="modules-empty">
+            <span aria-hidden="true" class="material-symbols-rounded">search_off</span>
+            Nothing matches that search.
+            <button class="link-btn" id="modules-empty-clear" type="button">Clear filters</button>
+          </p>
+        </div>
+      </section>
+
+      <!-- COMMANDS -->
+      <section class="section reveal" id="commands">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">Chat commands</h2>
+            <p class="section-sub">
+              Type them in the Minecraft chat or bind them to keys. Click a card to copy the command.
+            </p>
+          </div>
+          <div class="cards-grid" id="commands-grid"></div>
+        </div>
+      </section>
+
+      <!-- HUD ELEMENTS -->
+      <section class="section reveal" id="hud">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">HUD elements</h2>
+            <p class="section-sub">
+              Custom HUD elements for Meteor's Text HUD element. Click an element to browse its settings and HUD
+              presets.
+            </p>
+          </div>
+          <div class="cards-grid" id="hud-grid"></div>
+        </div>
+      </section>
+
+      <!-- CHANGELOG -->
+      <section class="section reveal" id="changelog">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">What's new</h2>
+            <p class="section-sub">Release notes for the current build, pulled from GitHub.</p>
+          </div>
+          <article class="changelog-card">
+            <header class="changelog-head">
+              <span class="version-chip mono tag-name">...</span>
+              <span class="changelog-meta">
+                <span class="mono changelog-date time-ago">...</span>
+                <span class="mono changelog-size file-size">...</span>
+              </span>
+              <a
+                class="changelog-all"
+                href="https://github.com/Zgoly/Meteorist/releases"
+                rel="noopener"
+                target="_blank"
+              >
+                All releases
+                <span class="material-symbols-rounded small-icon">open_in_new</span>
+              </a>
+            </header>
+            <div class="changelog-body" id="changelog-body">
+              <p class="dim">Loading changelog...</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- REVIEWS -->
+      <section class="section reveal" id="reviews">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">From the community</h2>
+            <p class="section-sub">Unedited words from players, linked back to the original Discord messages.</p>
+          </div>
+          <div class="reviews-grid">
+            <figure class="review-card">
+              <figcaption class="review-head">
+                <a
+                  class="review-link"
+                  href="https://discord.com/channels/1035620564133490809/1397865020745846875/1404599798467657861"
+                  rel="noopener"
+                  target="_blank"
+                >
+                  <span aria-hidden="true" class="review-avatar">S</span>
+                  <span class="review-author">@.sans_nom</span>
+                </a>
+              </figcaption>
+              <blockquote>
+                ⭐⭐⭐⭐⭐/⭐⭐⭐⭐⭐<br /><br />Very good addon - the features like ZKillaura, etc. are the best
+                available in the market - and also are pretty good at avoiding AC detection.
+              </blockquote>
+            </figure>
+            <figure class="review-card">
+              <figcaption class="review-head">
+                <a
+                  class="review-link"
+                  href="https://discord.com/channels/1035620564133490809/1397865020745846875/1449370171863994461"
+                  rel="noopener"
+                  target="_blank"
+                >
+                  <span aria-hidden="true" class="review-avatar">M</span>
+                  <span class="review-author">@murzikk</span>
+                </a>
+              </figcaption>
+              <blockquote>
+                I highly recommend downloading Meteorist because every single function actually helped me a lot while
+                playing on different servers it's good literally for everything, for farming, building, surviving and
+                especially for pvp, I ain't gonna lie, with Z Auto Totem, Z Kill Aura, Z Aim Bot you will win any fight
+                you got into.<br />In conclusion it's a great addon which makes the game easier by far you definitely
+                should try it!
+              </blockquote>
+            </figure>
+            <figure class="review-card">
+              <figcaption class="review-head">
+                <a
+                  class="review-link"
+                  href="https://discord.com/channels/1035620564133490809/1397865020745846875/1534232496458174504"
+                  rel="noopener"
+                  target="_blank"
+                >
+                  <span aria-hidden="true" class="review-avatar">L</span>
+                  <span class="review-author">@leplainbagel</span>
+                </a>
+              </figcaption>
+              <blockquote>
+                Meteorist not only has stuff for pvp, but they also have tons of informational stuff to that ive not
+                seen on other meteor addons or utility mods in general. A genuinely useful addon i could not imagine
+                going without.
+              </blockquote>
+            </figure>
+          </div>
+          <p class="review-note">
+            <span aria-hidden="true" class="material-symbols-rounded small-icon">info</span>
+            All reviews were handpicked from our
+            <a
+              href="https://discord.com/channels/1035620564133490809/1397865020745846875"
+              rel="noopener"
+              target="_blank"
+              >Discord channel</a
+            >. Click a name to open the original message.
+          </p>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="section reveal" id="about">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="title">Who makes this</h2>
+          </div>
+          <div class="about-grid">
+            <div class="about-side">
+              <article class="author-card">
+                <div class="author-head">
+                  <img
+                    alt="Zgoly's GitHub avatar"
+                    class="author-avatar"
+                    height="88"
+                    src="https://avatars.githubusercontent.com/u/46041044?v=4&size=128"
+                    width="88"
+                  />
+                  <div class="author-info">
+                    <h3>Zgoly</h3>
+                    <p class="author-role">Creator & maintainer</p>
+                  </div>
+                </div>
+                <div class="author-links">
+                  <a class="btn btn-ghost btn-sm" href="https://github.com/Zgoly" rel="noopener" target="_blank">
+                    <img
+                      alt=""
+                      class="github-icon"
+                      height="16"
+                      src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"
+                      width="16"
+                    />
+                    GitHub
+                  </a>
+                  <a class="btn btn-ghost btn-sm" href="https://dsc.gg/zgoly" rel="noopener" target="_blank">
+                    <img
+                      alt=""
+                      class="discord-icon"
+                      height="16"
+                      src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg"
+                      width="16"
+                    />
+                    Discord
+                  </a>
+                </div>
+              </article>
+              <a
+                class="contributors-card"
+                href="https://github.com/Zgoly/Meteorist/graphs/contributors?all=1"
+                rel="noopener"
+                target="_blank"
+              >
+                <h4>Contributors</h4>
+                <img
+                  alt="Avatars of Meteorist contributors"
+                  class="contributors-img"
+                  decoding="async"
+                  loading="lazy"
+                  src="https://contrib.rocks/image?repo=zgoly/meteorist&columns=8"
+                />
+                <span class="dim">Everyone who shipped code, ideas and bug reports</span>
+              </a>
+            </div>
+            <div class="about-main">
+              <div class="about-text">
                 <p>Hi! I'm <strong>Zgoly</strong>, the developer behind Meteorist.</p>
-                <p>Meteorist is an open-source add-on for Meteor Client, designed to enhance your Minecraft experience
-                    with a collection of utilities and automation tools. I built this project to help players on
-                    advanced anarchy servers and beyond enjoy a smoother, more efficient gameplay.</p>
-                <p>The project is licensed under <a href="https://github.com/Zgoly/Meteorist/blob/main/LICENSE"
-                        target="_blank">GPL-3.0</a> and continues to grow thanks to community feedback and support.
-                    Special thanks to all the <a href="https://github.com/Zgoly/Meteorist/graphs/contributors"
-                        target="_blank">contributors</a> who help make Meteorist better with their code, ideas, and
-                    bug reports.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="container" id="reviews">
-        <h2 class="title">User Reviews</h2>
-        <div class="review-card">
-            <h3 class="review-author">@.sans_nom</h3>
-            <div class="review-text">⭐⭐⭐⭐⭐/⭐⭐⭐⭐⭐<br><br>Very good addon - the features like ZKillaura, etc.
-                are the best available in the market - and also are pretty good at avoiding AC detection.
-            </div>
-        </div>
-        <div class="review-card">
-            <h3 class="review-author">@h3llside</h3>
-            <div class="review-text">I used this client add-on for a while now. It brings a ton of new features that
-                other Devs would never add. The developer was also friendly enough to bring my idea to life (the boat
-                thingy)
-            </div>
-        </div>
-        <div class="review-card">
-            <h3 class="review-author">@murzikk</h3>
-            <div class="review-text">I highly recommend downloading Meteorist because every single function actually
-                helped me a lot while playing on different servers it's good literally for everything, for farming,
-                building, surviving and especially for pvp, I ain't gonna lie, with Z Auto Totem, Z Kill Aura, Z Aim Bot
-                you will win any fight you got into.<br>In conclusion it's a great addon which makes the game easier by
-                far you definitely should try it!
-            </div>
-        </div>
-        <p class="review-source"><span class="material-symbols-rounded small-icon">info</span>All reviews were
-            handpicked from <a href="https://discord.com/channels/1035620564133490809/1397865020745846875"
-                target="_blank"> this Discord channel</a>. Feel free to check the original messages to verify their
-            authenticity.</p>
-    </section>
-
-    <section class="container" id="modules">
-        <h2 class="title">Modules</h2>
-        <div class="content-container">
-            <div id="modules-grid"></div>
-        </div>
-    </section>
-
-    <section class="container" id="commands">
-        <h2 class="title">Commands</h2>
-        <div class="content-container">
-            <div class="content-grid" id="commands-grid"></div>
-        </div>
-    </section>
-
-    <section class="container" id="presets">
-        <h2 class="title">HUD Presets</h2>
-        <div class="content-container">
-            <div class="content-grid" id="presets-grid"></div>
-        </div>
-    </section>
-
-    <section class="container" id="donate">
-        <h2 class="title">Support the Project</h2>
-        <div class="content-container donate-content">
-            <p>If you find Meteorist useful and want to support its development, consider making a donation. Your
-                support helps keep the project alive and allows me to continue adding new features and improvements.</p>
-            <div class="donate-buttons">
-                <a class="cta-button donate-button" href="https://donationalerts.com/r/Zgoly" target="_blank">
-                    <span class="material-symbols-rounded">favorite</span>
-                    Donate via DonationAlerts
-                    <span class="material-symbols-rounded small-icon">open_in_new</span>
-                </a>
-            </div>
-            <p class="donate-note">Every contribution, no matter how small, is greatly appreciated!</p>
-        </div>
-    </section>
-
-    <section class="container" id="also-try">
-        <h2 class="title">Also Try</h2>
-        <div class="addon-grid">
-            <div class="addon-card">
-                <div class="addon-icon">
-                    <img alt="Meteor Addons" src="https://meteoraddons.com/favicon.svg">
+                <p>
+                  It started with a few simple modules I made for myself and my friends to make anarchy servers more
+                  fun. Once I put the project on
+                  <a href="https://github.com/Zgoly/Meteorist" rel="noopener" target="_blank">GitHub</a>, other players
+                  found it, and it slowly grew into the big open-source toolbox it is today. Honestly, the best features
+                  still come directly from the community and ideas from players.
+                </p>
+                <p>
+                  The code is completely open under the
+                  <a href="https://github.com/Zgoly/Meteorist/blob/main/LICENSE" rel="noopener" target="_blank"
+                    >GPL-3.0 license</a
+                  >
+                  (including this website), so feel free to make a pull request. If you have an idea for a new module,
+                  just open an issue or join our Discord. That is how most updates happen here!
+                </p>
+              </div>
+              <div class="involved-card">
+                <h4>Get involved</h4>
+                <p>
+                  Meteorist grows from community ideas because most modules here started as a suggestion or a bug
+                  report.
+                </p>
+                <div class="involved-links">
+                  <a
+                    class="btn btn-ghost btn-sm"
+                    href="https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&projects=&template=suggestion.yml"
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    <span class="material-symbols-rounded">lightbulb</span>
+                    Suggest a feature
+                  </a>
+                  <a
+                    class="btn btn-ghost btn-sm"
+                    href="https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&projects=&template=bug.yml"
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    <span class="material-symbols-rounded">bug_report</span>
+                    Report a bug
+                  </a>
+                  <a class="btn btn-ghost btn-sm" href="https://dsc.gg/zgoly" rel="noopener" target="_blank">
+                    <img
+                      alt=""
+                      class="discord-icon"
+                      height="16"
+                      src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg"
+                      width="16"
+                    />
+                    Join Discord
+                  </a>
                 </div>
-                <h3>Meteor Addons</h3>
-                <p class="addon-description">A collection of Meteor Client addons automatically scraped from GitHub,
-                    making it easy to discover and install new ones.</p>
-                <a class="cta-button" href="https://meteoraddons.com/" target="_blank">
-                    Visit Website
-                    <span class="material-symbols-rounded small-icon">open_in_new</span>
-                </a>
+              </div>
             </div>
-            <div class="addon-card">
-                <div class="addon-icon">
-                    <img alt="Meteor Villager Roller"
-                        src="https://raw.githubusercontent.com/maxsupermanhd/meteor-villager-roller/refs/heads/main/src/main/resources/assets/roller/icon.png">
-                </div>
-                <h3>Meteor Villager Roller</h3>
-                <p class="addon-description">Automatically breaks and places villagers job blocks until they offer the
-                    trades you want.</p>
-                <a class="cta-button" href="https://github.com/maxsupermanhd/meteor-villager-roller" target="_blank">
-                    GitHub Repository
-                    <span class="material-symbols-rounded small-icon">open_in_new</span>
-                </a>
-            </div>
-            <div class="addon-card">
-                <div class="addon-icon">
-                    <img alt="Meteor+" src="https://meteorclientplus.github.io/assets/img/icon.png">
-                </div>
-                <h3>Meteor+</h3>
-                <p class="addon-description">Addon that adds many additional features and modules for an even more
-                    powerful Minecraft experience.</p>
-                <a class="cta-button" href="https://github.com/MeteorClientPlus/MeteorPlus" target="_blank">
-                    GitHub Repository
-                    <span class="material-symbols-rounded small-icon">open_in_new</span>
-                </a>
-            </div>
-            <div class="addon-card">
-                <div class="addon-icon">
-                    <img alt="Catppuccin Addon"
-                        src="https://raw.githubusercontent.com/X-C-0/catppuccin-addon/refs/heads/stonecutter/src/main/resources/assets/catppuccin-addon/icon.png">
-                </div>
-                <h3>Catppuccin Addon</h3>
-                <p class="addon-description">Gives Meteor Client a soft, pastel look using the popular Catppuccin color
-                    scheme.</p>
-                <a class="cta-button" href="https://github.com/X-C-0/catppuccin-addon" target="_blank">
-                    GitHub Repository
-                    <span class="material-symbols-rounded small-icon">open_in_new</span>
-                </a>
-            </div>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <section class="credits">
-        <h2 class="title">About Website</h2>
-        <div class="credits-container">
-            <div class="content-container">
-                <p><span class="material-symbols-rounded small-icon">query_stats</span> Stats by <a
-                        href="https://shields.io/" target="_blank">shields.io</a><span class="dot">·</span></p>
-                <p><span class="material-symbols-rounded small-icon">groups</span> Contributors by <a
-                        href="https://contrib.rocks/" target="_blank">contrib.rocks</a><span class="dot">·</span></p>
-                <p><span class="material-symbols-rounded small-icon">palette</span> Icons by <a
-                        href="https://fonts.google.com/icons" target="_blank">Material Symbols</a> & <a
-                        href="https://simpleicons.org/" target="_blank">Simple Icons</a><span class="dot">·</span></p>
-                <p><span class="material-symbols-rounded small-icon">cloud</span> Hosted on <a
-                        href="https://pages.cloudflare.com/" target="_blank">Cloudflare Pages</a></p>
-            </div>
+      <!-- FAQ -->
+      <section class="section reveal" id="faq">
+        <div class="container narrow">
+          <div class="section-head">
+            <h2 class="title">Questions, answered</h2>
+          </div>
+          <div class="faq-list">
+            <details class="faq-item">
+              <summary>
+                Is Meteorist a standalone client?<span aria-hidden="true" class="material-symbols-rounded faq-icon"
+                  >add</span
+                >
+              </summary>
+              <div class="faq-body">
+                <p>
+                  No, because it is an add-on for
+                  <a href="https://meteorclient.com/" rel="noopener" target="_blank">Meteor Client</a>, packaged as a
+                  regular Fabric mod. You need to install Meteor first and then drop the Meteorist jar into your
+                  <code>mods</code> folder alongside it.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary>
+                Which Minecraft versions are supported?<span
+                  aria-hidden="true"
+                  class="material-symbols-rounded faq-icon"
+                  >add</span
+                >
+              </summary>
+              <div class="faq-body">
+                <p>
+                  Each jar targets one specific Minecraft version, which you can see right in the release tag. For
+                  example,
+                  <code class="mono tag-name">...</code> is built specifically for
+                  <code class="js-mc-version-inline">...</code>. Meteorist always follows Meteor Client releases, so the
+                  current build matches the latest supported version. You can find older jars in the
+                  <a href="https://github.com" rel="noopener" target="_blank">Releases archive</a>.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary>
+                Where do I find everything in-game?<span aria-hidden="true" class="material-symbols-rounded faq-icon"
+                  >add</span
+                >
+              </summary>
+              <div class="faq-body">
+                <p>
+                  To use modules, open the Meteor ClickGUI and look for the
+                  <strong>Meteorist</strong> category. To run commands, simply type them directly into the chat, like
+                  <code>.interact</code>. For HUD presets, just add a regular <strong>Text</strong> element in the HUD
+                  editor and paste the snippet, since the values update live via Starscript.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary>
+                Do I need Baritone or Minescript?<span aria-hidden="true" class="material-symbols-rounded faq-icon"
+                  >add</span
+                >
+              </summary>
+              <div class="faq-body">
+                <p>
+                  No, since both of them are completely optional.
+                  <a href="https://meteorclient.comapi/downloadBaritone" rel="noopener" target="_blank">Baritone</a>
+                  is only required if you use the Item Sucker module for pathfinding to items and back.
+                  <a href="https://minescript.net" rel="noopener" target="_blank">Minescript</a>
+                  is only needed if you want to use the Minescript Integration module. Everything else works out of the
+                  box.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary>
+                Is it really free?<span aria-hidden="true" class="material-symbols-rounded faq-icon">add</span>
+              </summary>
+              <div class="faq-body">
+                <p>
+                  Yes. The full source code is hosted on
+                  <a href="https://github.com" rel="noopener" target="_blank">GitHub</a>
+                  under the
+                  <a href="https://github.com/Zgoly/Meteorist/blob/main/LICENSE" rel="noopener" target="_blank"
+                    >GPL-3.0</a
+                  >
+                  license. Donations exist purely to support development costs.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary>
+                Can I suggest a module or feature?<span aria-hidden="true" class="material-symbols-rounded faq-icon"
+                  >add</span
+                >
+              </summary>
+              <div class="faq-body">
+                <p>
+                  Please do! You can open a
+                  <a
+                    href="https://github.com/issues/new?assignees=&labels=enhancement&projects=&template=suggestion.yml"
+                    rel="noopener"
+                    target="_blank"
+                    >suggestion on GitHub</a
+                  >
+                  or talk about it in my
+                  <a href="https://dsc.gg" rel="noopener" target="_blank">Discord</a>. A lot of existing features
+                  actually started out as community ideas.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary>
+                Something broke. Where do I report it?<span aria-hidden="true" class="material-symbols-rounded faq-icon"
+                  >add</span
+                >
+              </summary>
+              <div class="faq-body">
+                <p>
+                  You can open a
+                  <a href="https://github.com" rel="noopener" target="_blank">bug report on GitHub</a>. Please include
+                  your Minecraft version, the Meteor and Meteorist versions, and quick steps to reproduce the issue. If
+                  the mod crashed, make sure to attach the log file. For quick troubleshooting help, joining the Discord
+                  is usually your best bet.
+                </p>
+              </div>
+            </details>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <footer>
+      <!-- DONATE -->
+      <section class="section reveal" id="donate">
+        <div class="container narrow">
+          <div class="donate-card">
+            <h2 class="title">Keep the meteors falling</h2>
+            <p>
+              The mod is free and always will be. If it saved your totem or just made your day, you can support
+              development or simply star the repo. It really helps.
+            </p>
+            <div class="donate-actions">
+              <a class="btn btn-primary" href="https://donationalerts.com/r/Zgoly" rel="noopener" target="_blank">
+                <span class="material-symbols-rounded">favorite</span> Donate via DonationAlerts
+              </a>
+              <a class="btn btn-ghost" href="https://github.com/Zgoly/Meteorist" rel="noopener" target="_blank">
+                <img
+                  class="github-icon"
+                  height="18"
+                  src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"
+                  width="18"
+                  alt=""
+                />
+                Star on GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALSO TRY -->
+      <section class="section reveal" id="also-try">
         <div class="container">
-            <p>Meteorist is an open-source project built for <a href="https://meteorclient.com/">Meteor Client</a></p>
-            <div class="footer-links">
-                <a href="https://github.com/Zgoly/Meteorist/wiki">Wiki</a>
-                <a href="https://github.com/Zgoly/Meteorist/issues">Issues</a>
-                <a href="https://github.com/Zgoly/Meteorist/contribute">Contribute</a>
-                <a href="https://github.com/Zgoly/Meteorist/blob/main/LICENSE">License</a>
-            </div>
-            <div class="social-icons">
-                <a aria-label="GitHub" href="https://github.com/Zgoly/Meteorist" target="_blank">
-                    <img alt="GitHub" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg">
-                </a>
-                <a aria-label="Discord" href="https://dsc.gg/zgoly">
-                    <img alt="Discord" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg">
-                </a>
-            </div>
-            <p>© 2026 Zgoly. Not affiliated with Meteor Development Group or Microsoft.</p>
+          <div class="section-head">
+            <h2 class="title">Also worth a look</h2>
+            <p class="section-sub">Other community projects that pair well with Meteorist and Meteor Client.</p>
+          </div>
+          <div class="addons-grid">
+            <article class="addon-card">
+              <div class="addon-icon">
+                <img alt="" height="32" loading="lazy" src="https://meteoraddons.com/favicon.svg" width="32" />
+              </div>
+              <h3>Meteor Addons</h3>
+              <p class="addon-description">
+                A list of Meteor Client Addons automatically scraped from GitHub. Designed to make discovering and
+                downloading Meteor addons as seamless as possible.
+              </p>
+              <a class="btn btn-ghost btn-sm" href="https://meteoraddons.com/" rel="noopener" target="_blank">
+                Visit website
+                <span class="material-symbols-rounded small-icon">open_in_new</span>
+              </a>
+            </article>
+            <article class="addon-card">
+              <div class="addon-icon">
+                <img
+                  alt=""
+                  height="32"
+                  loading="lazy"
+                  src="https://raw.githubusercontent.com/maxsupermanhd/meteor-villager-roller/refs/heads/main/src/main/resources/assets/roller/icon.png"
+                  width="32"
+                />
+              </div>
+              <h3>Meteor Villager Roller</h3>
+              <p class="addon-description">
+                Module for Meteor Client that continiously breaks and places work block of villager until it has desired
+                trade.
+              </p>
+              <a
+                class="btn btn-ghost btn-sm"
+                href="https://github.com/maxsupermanhd/meteor-villager-roller"
+                rel="noopener"
+                target="_blank"
+              >
+                GitHub
+                <span class="material-symbols-rounded small-icon">open_in_new</span>
+              </a>
+            </article>
+            <article class="addon-card">
+              <div class="addon-icon">
+                <img
+                  alt=""
+                  height="32"
+                  loading="lazy"
+                  src="https://meteorclientplus.github.io/assets/img/icon.png"
+                  width="32"
+                />
+              </div>
+              <h3>Meteor+</h3>
+              <p class="addon-description">An addon for Meteor client that adds many blatant features.</p>
+              <a
+                class="btn btn-ghost btn-sm"
+                href="https://github.com/MeteorClientPlus/MeteorPlus"
+                rel="noopener"
+                target="_blank"
+              >
+                GitHub
+                <span class="material-symbols-rounded small-icon">open_in_new</span>
+              </a>
+            </article>
+            <article class="addon-card">
+              <div class="addon-icon">
+                <img
+                  alt=""
+                  height="32"
+                  loading="lazy"
+                  src="https://raw.githubusercontent.com/X-C-0/catppuccin-addon/refs/heads/stonecutter/src/main/resources/assets/catppuccin-addon/icon.png"
+                  width="32"
+                />
+              </div>
+              <h3>Catppuccin Addon</h3>
+              <p class="addon-description">🌠 Soothing pastel theme for Meteor Client.</p>
+              <a
+                class="btn btn-ghost btn-sm"
+                href="https://github.com/X-C-0/catppuccin-addon"
+                rel="noopener"
+                target="_blank"
+              >
+                GitHub
+                <span class="material-symbols-rounded small-icon">open_in_new</span>
+              </a>
+            </article>
+          </div>
         </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="logo" href="#top">
+              <img alt="" height="28" src="favicon.svg" width="28" />
+              <span class="logo-text">Meteorist</span>
+            </a>
+            <p>
+              An open-source add-on for
+              <a href="https://meteorclient.com/" rel="noopener" target="_blank">Meteor Client</a>. Free forever,
+              licensed under
+              <a href="https://github.com/Zgoly/Meteorist/blob/main/LICENSE" rel="noopener" target="_blank">GPL-3.0</a>.
+            </p>
+            <div class="social-icons">
+              <a aria-label="GitHub" href="https://github.com/Zgoly/Meteorist" rel="noopener" target="_blank">
+                <img
+                  alt=""
+                  height="20"
+                  src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"
+                  width="20"
+                />
+              </a>
+              <a aria-label="Discord" href="https://dsc.gg/zgoly" rel="noopener" target="_blank">
+                <img
+                  alt=""
+                  height="20"
+                  src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg"
+                  width="20"
+                />
+              </a>
+            </div>
+          </div>
+          <nav aria-label="Project links" class="footer-col">
+            <h4>Project</h4>
+            <a href="https://github.com/Zgoly/Meteorist/wiki" rel="noopener" target="_blank">Wiki</a>
+            <a href="https://github.com/Zgoly/Meteorist/releases" rel="noopener" target="_blank">Releases</a>
+            <a href="https://github.com/Zgoly/Meteorist/issues" rel="noopener" target="_blank">Issues</a>
+            <a href="https://github.com/Zgoly/Meteorist/contribute" rel="noopener" target="_blank">Contribute</a>
+            <a href="https://github.com/Zgoly/Meteorist/blob/main/LICENSE" rel="noopener" target="_blank">License</a>
+          </nav>
+          <nav aria-label="On this page" class="footer-col">
+            <h4>On this page</h4>
+            <a href="#showcase"><span class="material-symbols-rounded nav-icon">image</span>Showcase</a>
+            <a href="#install"><span class="material-symbols-rounded nav-icon">download</span>Install</a>
+            <a href="#modules"><span class="material-symbols-rounded nav-icon">extension</span>Modules</a>
+            <a href="#commands"><span class="material-symbols-rounded nav-icon">terminal</span>Commands</a>
+            <a href="#hud"><span class="material-symbols-rounded nav-icon">tv</span>HUD</a>
+            <a href="#changelog"><span class="material-symbols-rounded nav-icon">history</span>Changelog</a>
+            <a href="#faq"><span class="material-symbols-rounded nav-icon">help</span>FAQ</a>
+          </nav>
+          <div class="footer-col footer-get">
+            <h4>Get Meteorist</h4>
+            <button class="btn btn-sm" data-download-trigger popovertarget="install-popover" type="button">
+              <span class="material-symbols-rounded">download</span>
+              Download <span class="tag-name"></span>
+            </button>
+            <a class="footer-older" href="https://github.com/Zgoly/Meteorist/releases" rel="noopener" target="_blank">
+              Older versions
+              <span class="material-symbols-rounded small-icon">open_in_new</span>
+            </a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2026 Zgoly · Not affiliated with Meteor Development Group, Mojang or Microsoft.</p>
+          <p class="footer-credits">
+            Stats by
+            <a href="https://shields.io/" rel="noopener" target="_blank">shields.io</a>
+            · Contributors by
+            <a href="https://contrib.rocks/" rel="noopener" target="_blank">contrib.rocks</a>
+            · Icons by
+            <a href="https://fonts.google.com/icons" rel="noopener" target="_blank">Material Symbols</a>
+            &amp;
+            <a href="https://simpleicons.org/" rel="noopener" target="_blank">Simple Icons</a>
+            · Gallery by
+            <a href="https://photoswipe.com/" rel="noopener" target="_blank">PhotoSwipe</a>
+            · Hosted on
+            <a href="https://pages.cloudflare.com/" rel="noopener" target="_blank">Cloudflare Pages</a>
+          </p>
+        </div>
+      </div>
     </footer>
 
+    <!-- DOWNLOAD POPOVER -->
     <div id="install-popover" popover>
-        <button aria-label="Close popover" class="popover-close" popovertarget="install-popover"
-            popovertargetaction="hide">
-            <span class="material-symbols-rounded">close</span>
-        </button>
-        <div class="popover-content">
-            <h2 class="title" id="popover-title">Thanks for downloading!</h2>
-            <p>Your download should begin shortly. If it doesn’t start automatically,
-                <a id="download-link">click here</a>.
-            </p>
-            <p>To install Meteorist, follow these steps:</p>
-            <ol>
-                <li>If you haven’t already, download <a href="https://meteorclient.com/" rel="noopener"
-                        target="_blank">Meteor Client</a>.
-                </li>
-                <li>Place the downloaded JAR file(s) into your <code>.minecraft/mods</code> folder.</li>
-            </ol>
-            <p>For activating extended features, consider installing these mods:</p>
-            <ul>
-                <li>
-                    <a href="https://meteorclient.com/" rel="noopener" target="_blank">Baritone</a>
-                    - for Item Sucker module
-                </li>
-                <li>
-                    <a href="https://minescript.net/downloads" rel="noopener" target="_blank">Minescript</a>
-                    - for Minescript Integration module
-                </li>
-            </ul>
-        </div>
+      <button
+        aria-label="Close"
+        class="popover-close"
+        popovertarget="install-popover"
+        popovertargetaction="hide"
+        type="button"
+      >
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <h2 id="popover-title">Thanks for downloading!</h2>
+      <p>
+        Your download will start in a moment. Click
+        <a id="download-link">here</a> if it doesn't.
+      </p>
+      <p>Quick install:</p>
+      <ol>
+        <li>
+          Install
+          <a href="https://meteorclient.com/" rel="noopener" target="_blank">Meteor Client</a>.
+        </li>
+        <li>
+          Drop the downloaded jar file into your
+          <code>.minecraft/mods</code> folder.
+        </li>
+        <li>
+          Start Minecraft and open the ClickGUI to find your modules under
+          <strong>Meteorist</strong>.
+        </li>
+      </ol>
+      <p class="popover-note">
+        Optional:
+        <a href="https://meteorclient.com/api/downloadBaritone" rel="noopener" target="_blank">Baritone</a>
+        for Item Sucker ·
+        <a href="https://minescript.net/downloads" rel="noopener" target="_blank">Minescript</a>
+        for Minescript Integration.
+      </p>
+      <p class="popover-more">
+        <a href="#install">Read the full install guide →</a>
+      </p>
     </div>
 
-    <script src="js/script.js"></script>
+    <!-- MODULE DIALOG -->
+    <dialog aria-labelledby="module-dialog-title" class="module-dialog" id="module-dialog"></dialog>
+
+    <!-- FLOATING UI -->
+    <button aria-label="Back to top" class="to-top" id="to-top" type="button">
+      <span class="material-symbols-rounded">arrow_upward</span>
+    </button>
+    <div aria-live="polite" class="toast" id="toast" role="status">
+      <span class="material-symbols-rounded">check</span>
+      <span id="toast-text">Copied!</span>
+    </div>
+
+    <script defer src="js/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/photoswipe/dist/umd/photoswipe.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/photoswipe/dist/umd/photoswipe-lightbox.umd.min.js"></script>
-    <script defer>
+    <script>
+      window.addEventListener("load", () => {
+        if (typeof PhotoSwipeLightbox === "undefined" || typeof PhotoSwipe === "undefined") return;
         const lightbox = new PhotoSwipeLightbox({
-            gallery: '#showcase-gallery',
-            children: 'a',
-            showAnimationDuration: 500,
-            hideAnimationDuration: 500,
-            pswpModule: PhotoSwipe
+          gallery: "#showcase-gallery",
+          children: "a",
+          showAnimationDuration: 350,
+          hideAnimationDuration: 350,
+          pswpModule: PhotoSwipe,
         });
         lightbox.init();
+      });
     </script>
-</body>
-
+  </body>
 </html>

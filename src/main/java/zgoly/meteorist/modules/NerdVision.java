@@ -763,9 +763,9 @@ public class NerdVision extends Module {
         for (NbtDataDisplay display : nbtDataDisplays) {
             if (!NametagUtils.to2D(display.pos, display.size)) continue;
 
-            NametagUtils.begin(display.pos);
+            NametagUtils.begin(display.pos, event.graphics);
             TextRenderer text = TextRenderer.get();
-            text.begin(display.size);
+            text.begin(event.graphics, display.size);
 
             String longestPair = "";
             String separator = ": ";
@@ -793,7 +793,7 @@ public class NerdVision extends Module {
             }
 
             text.end();
-            NametagUtils.end();
+            NametagUtils.end(event.graphics);
         }
     }
 
@@ -850,7 +850,7 @@ public class NerdVision extends Module {
     private void renderTrackedBlocks(Render3DEvent event) {
         for (BlockPos blockPos : trackedBlocks) {
             Block block = mc.level.getBlockState(blockPos).getBlock();
-            Vec3 centerPos = blockPos.getCenter();
+            Vec3 centerPos = Vec3.atCenterOf(blockPos);
 
             if (block == Blocks.TURTLE_EGG && turtleEggsRenderEnabled.get()) {
                 renderTurtleEgg(event, blockPos, centerPos);
@@ -940,7 +940,7 @@ public class NerdVision extends Module {
                 size = size.add(spawnBox.getXsize(), spawnBox.getYsize(), spawnBox.getZsize());
             }
 
-            Vec3 bottomCenterPos = blockPos.getBottomCenter();
+            Vec3 bottomCenterPos = Vec3.atBottomCenterOf(blockPos);
             if (spawnersRenderSpawningZoneRounding.get()) {
                 size = new Vec3(Math.ceil(size.x), Math.ceil(size.y), Math.ceil(size.z));
                 if (size.x % 2 == 0) size = size.add(1, 0, 0);
@@ -1019,7 +1019,7 @@ public class NerdVision extends Module {
                     ? pos.add(mc.player.position())
                     : pos.add(0.5, 1, 0.5);
         } else {
-            Vec3 pos = centerBlockPosition.get().getBottomCenter();
+            Vec3 pos = Vec3.atBottomCenterOf(centerBlockPosition.get());
             return centerPositionMode.get() == CenterPositionMode.Relative
                     ? pos.add(Vec3.atLowerCornerOf(mc.player.blockPosition()))
                     : pos.add(0, 1, 0);

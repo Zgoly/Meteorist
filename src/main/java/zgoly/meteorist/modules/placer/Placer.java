@@ -27,9 +27,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.util.Tuple;
+import zgoly.meteorist.utils.Tuple;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.gui.screens.PlacerScreen;
 import zgoly.meteorist.gui.widgets.WVisibilityCheckbox;
@@ -136,6 +138,7 @@ public class Placer extends Module {
             .defaultValue(true)
             .build()
     );
+
     List<BasePlacer> placers = new ArrayList<>();
 
     private int timer;
@@ -193,7 +196,7 @@ public class Placer extends Module {
         WTable table = list.add(theme.table()).expandX().widget();
 
         for (BasePlacer placer : placers) {
-            WTextBox name = table.add(theme.textBox(placer.name.get(), "Name")).expandX().widget();
+            WTextBox name = table.add(theme.textBox(placer.name.get(), "Placer #" + (placers.indexOf(placer) + 1))).expandX().widget();
             name.tooltip = placer.name.description;
             name.actionOnUnfocused = () -> placer.name.set(name.get());
 
@@ -207,7 +210,7 @@ public class Placer extends Module {
 
             WButton edit = table.add(theme.button(EDIT)).widget();
             edit.tooltip = "Edit the placer.";
-            edit.action = () -> mc.setScreen(new PlacerScreen(theme, placer));
+            edit.action = () -> mc.gui.setScreen(new PlacerScreen(theme, placer));
 
             if (placers.size() > 1) {
                 WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
@@ -261,7 +264,6 @@ public class Placer extends Module {
         create.action = () -> {
             BasePlacer placer = new BasePlacer();
             placer.settings.registerColorSettings(null);
-            placer.name.set("Placer #" + (placers.size() + 1));
             placers.add(placer);
             fillWidget(theme, list);
         };
@@ -273,7 +275,79 @@ public class Placer extends Module {
             fillWidget(theme, list);
         };
 
-        MeteoristConfigManager.configManager(theme, list, this);
+        MeteoristConfigManager.configManager(theme, list, this,
+                MeteoristConfigManager.PresetConfig.of("5x5 Cobblestone Floor", mod -> {
+                    Placer placer = (Placer) mod;
+                    placer.placers.forEach(p -> p.settings.unregisterColorSettings());
+                    placer.placers.clear();
+
+                    BasePlacer floor = new BasePlacer();
+                    floor.name.set("5x5 Cobblestone Floor");
+                    floor.cornerPos1.set(new BlockPos(2, -2, 2));
+                    floor.cornerPos2.set(new BlockPos(-2, -2, -2));
+                    floor.rotateX1.set(false);
+                    floor.rotateX2.set(false);
+                    floor.rotateZ1.set(false);
+                    floor.rotateZ2.set(false);
+                    floor.blocks.set(new ArrayList<>(List.of(Blocks.COBBLESTONE)));
+                    floor.settings.registerColorSettings(null);
+                    placer.placers.add(floor);
+                }),
+                MeteoristConfigManager.PresetConfig.of("Great Wall of China", mod -> {
+                    Placer placer = (Placer) mod;
+                    placer.placers.forEach(p -> p.settings.unregisterColorSettings());
+                    placer.placers.clear();
+
+                    BasePlacer wall = new BasePlacer();
+                    wall.name.set("Great Wall of China");
+                    wall.cornerPos1.set(new BlockPos(0, 4, 4));
+                    wall.cornerPos2.set(new BlockPos(0, -4, -4));
+                    wall.rotateX1.set(false);
+                    wall.rotateX2.set(false);
+                    wall.rotateZ1.set(false);
+                    wall.rotateZ2.set(false);
+                    wall.anchorX1.set(true);
+                    wall.anchorX2.set(true);
+                    wall.blocks.set(new ArrayList<>(List.of(Blocks.STONE_BRICKS)));
+                    wall.settings.registerColorSettings(null);
+                    placer.placers.add(wall);
+                }),
+                MeteoristConfigManager.PresetConfig.of("Facing Wall (7x7)", mod -> {
+                    Placer placer = (Placer) mod;
+                    placer.placers.forEach(p -> p.settings.unregisterColorSettings());
+                    placer.placers.clear();
+
+                    BasePlacer wall = new BasePlacer();
+                    wall.name.set("Facing Wall (7x7)");
+                    wall.cornerPos1.set(new BlockPos(3, 3, 3));
+                    wall.cornerPos2.set(new BlockPos(3, -3, -3));
+                    wall.blocks.set(new ArrayList<>(List.of(Blocks.STONE_BRICKS)));
+                    wall.settings.registerColorSettings(null);
+                    placer.placers.add(wall);
+                }),
+                MeteoristConfigManager.PresetConfig.of("Bunker", mod -> {
+                    Placer placer = (Placer) mod;
+                    placer.placers.forEach(p -> p.settings.unregisterColorSettings());
+                    placer.placers.clear();
+                    placer.placers.add(createStaticPlacer("Floor", -2, -1, -2, 2, -1, 2));
+                    placer.placers.add(createStaticPlacer("Ceiling", -2, 2, -2, 2, 2, 2));
+                    placer.placers.add(createStaticPlacer("Wall N", -2, 0, -2, 2, 1, -2));
+                    placer.placers.add(createStaticPlacer("Wall S", -2, 0, 2, 2, 1, 2));
+                    placer.placers.add(createStaticPlacer("Wall E-N", 2, 0, -1, 2, 1, -1));
+                    placer.placers.add(createStaticPlacer("Wall E-S", 2, 0, 1, 2, 1, 1));
+                    placer.placers.add(createStaticPlacer("Wall W", -2, 0, -1, -2, 1, 1));
+                })
+        );
+    }
+
+    private static BasePlacer createStaticPlacer(String name, int x1, int y1, int z1, int x2, int y2, int z2) {
+        BasePlacer placer = new BasePlacer();
+        placer.name.set(name);
+        placer.cornerPos1.set(new BlockPos(x1, y1, z1));
+        placer.cornerPos2.set(new BlockPos(x2, y2, z2));
+        placer.blocks.set(new ArrayList<>(List.of(Blocks.OBSIDIAN)));
+        placer.settings.registerColorSettings(null);
+        return placer;
     }
 
     private Tuple<BlockPos, BlockPos> getPlacePos(BasePlacer placer) {
@@ -341,9 +415,9 @@ public class Placer extends Module {
                     List<BlockPos> blockPosList = new ArrayList<>();
                     Tuple<BlockPos, BlockPos> finalPos = getPlacePos(placer);
                     BlockPos.betweenClosedStream(finalPos.getA(), finalPos.getB()).filter(blockPos ->
-                            (!limitRange.get() || !(blockPos.getCenter().distanceTo(mc.player.getEyePosition()) > maxRange.get()))
+                            (!limitRange.get() || !(Vec3.atCenterOf(blockPos).distanceTo(mc.player.getEyePosition()) > maxRange.get()))
                     ).forEach(blockPos -> blockPosList.add(new BlockPos(blockPos)));
-                    blockPosList.sort(Comparator.comparingDouble(blockPos -> blockPos.getCenter().distanceTo(mc.player.getEyePosition())));
+                    blockPosList.sort(Comparator.comparingDouble(blockPos -> Vec3.atCenterOf(blockPos).distanceTo(mc.player.getEyePosition())));
 
                     for (BlockPos blockPos : blockPosList) {
                         if (useDelay.get() && loopCount >= maxBlocksPerTick.get()) {

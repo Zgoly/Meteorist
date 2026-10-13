@@ -21,20 +21,119 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import zgoly.meteorist.Meteorist;
-import zgoly.meteorist.utils.baritone.MeteoristBaritoneUtils;
+import zgoly.meteorist.utils.movement.MeteoristBaritoneUtils;
+import zgoly.meteorist.utils.movement.WalkeristUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class ItemSucker extends Module {
-    private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+    private final SettingGroup sgFilter = settings.createGroup("Filter");
     private final SettingGroup sgRender = settings.createGroup("Render");
+
+    private final Setting<MoveMode> moveMode = sgGeneral.add(new EnumSetting.Builder<MoveMode>()
+            .name("move-mode")
+            .description("Set the move mode of the item sucker.")
+            .defaultValue(MoveMode.Walkerist)
+            .build()
+    );
+    private final Setting<Boolean> checkCollisions = sgGeneral.add(new BoolSetting.Builder()
+            .name("check-collisions")
+            .description("Check if player can teleport to an item and not collide with blocks.")
+            .defaultValue(true)
+            .visible(() -> moveMode.get() == MoveMode.Teleport)
+            .build()
+    );
+    private final Setting<Integer> itemRange = sgGeneral.add(new IntSetting.Builder()
+            .name("item-range")
+            .description("The radius within which the movement mode will attempt to pick up items (relative to the item's position).")
+            .defaultValue(0)
+            .min(0)
+            .visible(() -> moveMode.get() != MoveMode.Teleport)
+            .build()
+    );
+    private final Setting<Boolean> tpToOrigin = sgGeneral.add(new BoolSetting.Builder()
+            .name("tp-to-origin")
+            .description("Automatically teleport player to initial position once all items have been picked up.")
+            .defaultValue(true)
+            .visible(() -> moveMode.get() == MoveMode.Teleport)
+            .build()
+    );
+    private final Setting<Integer> waitTime = sgGeneral.add(new IntSetting.Builder()
+            .name("wait-time")
+            .description("Time to wait after teleport (in ticks).")
+            .min(1)
+            .defaultValue(10)
+            .visible(() -> moveMode.get() == MoveMode.Teleport && tpToOrigin.get())
+            .build()
+    );
+    private final Setting<Boolean> resetTimeAfterTp = sgGeneral.add(new BoolSetting.Builder()
+            .name("reset-time-after-tp")
+            .description("Resets wait time after teleport.")
+            .defaultValue(true)
+            .visible(() -> moveMode.get() == MoveMode.Teleport && tpToOrigin.get())
+            .build()
+    );
+    private final Setting<Boolean> returnToOrigin = sgGeneral.add(new BoolSetting.Builder()
+            .name("return-to-origin")
+            .description("Automatically return player to initial position once all items have been picked up.")
+            .defaultValue(true)
+            .visible(() -> moveMode.get() != MoveMode.Teleport)
+            .build()
+    );
+    private final Setting<Integer> returnRange = sgGeneral.add(new IntSetting.Builder()
+            .name("return-range")
+            .description("The radius within which the movement mode will return to its initial position (relative to the initial position).")
+            .defaultValue(0)
+            .min(0)
+            .visible(() -> moveMode.get() != MoveMode.Teleport && returnToOrigin.get())
+            .build()
+    );
+    private final Setting<Boolean> modifySpeed = sgGeneral.add(new BoolSetting.Builder()
+            .name("modify-speed")
+            .description("Whether or not the speed of the player should be altered when moving.")
+            .defaultValue(false)
+            .visible(() -> moveMode.get() != MoveMode.Teleport)
+            .build()
+    );
+    private final Setting<Double> moveSpeed = sgGeneral.add(new DoubleSetting.Builder()
+            .name("move-speed")
+            .description("Modifies the player's movement speed when 'Modify Speed' is enabled.")
+            .defaultValue(5)
+            .min(1)
+            .sliderRange(1, 32)
+            .visible(() -> moveMode.get() != MoveMode.Teleport && modifySpeed.get())
+            .build()
+    );
+    private final Setting<Boolean> disableOnItemCount = sgGeneral.add(new BoolSetting.Builder()
+            .name("disable-on-item-count")
+            .description("Disables the module when a certain number of items are picked up.")
+            .defaultValue(false)
+            .build()
+    );
+    private final Setting<ItemCountMode> itemCountMode = sgGeneral.add(new EnumSetting.Builder<ItemCountMode>()
+            .name("item-count-mode")
+            .description("Defines how the maximum number of items to pick up is calculated.")
+            .defaultValue(ItemCountMode.Stacks)
+            .visible(disableOnItemCount::get)
+            .build()
+    );
+    private final Setting<Integer> maxItemCount = sgGeneral.add(new IntSetting.Builder()
+            .name("max-item-count")
+            .description("Maximum number of items to pick up.")
+            .defaultValue(10)
+            .min(1)
+            .sliderRange(1, 10)
+            .visible(disableOnItemCount::get)
+            .build()
+    );
 
     private final Setting<Boolean> onlyPickupable = sgFilter.add(new BoolSetting.Builder()
             .name("only-pickupable")
@@ -74,103 +173,6 @@ public class ItemSucker extends Module {
             .name("only-on-ground")
             .description("Only pick up items that are on the floor.")
             .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<MoveMode> moveMode = sgGeneral.add(new EnumSetting.Builder<MoveMode>()
-            .name("move-mode")
-            .description("Set the move mode of the item sucker.")
-            .defaultValue(MoveMode.Teleport)
-            .build()
-    );
-    private final Setting<Boolean> checkCollisions = sgGeneral.add(new BoolSetting.Builder()
-            .name("check-collisions")
-            .description("Check if player can teleport to an item and not collide with blocks.")
-            .defaultValue(true)
-            .visible(() -> moveMode.get() == MoveMode.Teleport)
-            .build()
-    );
-    private final Setting<Integer> itemRange = sgGeneral.add(new IntSetting.Builder()
-            .name("item-range")
-            .description("The radius within which Baritone will attempt to pick up items (relative to the item's position).")
-            .defaultValue(0)
-            .min(0)
-            .visible(() -> moveMode.get() == MoveMode.Baritone)
-            .build()
-    );
-    private final Setting<Boolean> tpToOrigin = sgGeneral.add(new BoolSetting.Builder()
-            .name("tp-to-origin")
-            .description("Automatically teleport player to initial position once all items have been picked up.")
-            .defaultValue(true)
-            .visible(() -> moveMode.get() == MoveMode.Teleport)
-            .build()
-    );
-    private final Setting<Integer> waitTime = sgGeneral.add(new IntSetting.Builder()
-            .name("wait-time")
-            .description("Time to wait after teleport (in ticks).")
-            .min(1)
-            .defaultValue(10)
-            .visible(() -> moveMode.get() == MoveMode.Teleport && tpToOrigin.get())
-            .build()
-    );
-    private final Setting<Boolean> resetTimeAfterTp = sgGeneral.add(new BoolSetting.Builder()
-            .name("reset-time-after-tp")
-            .description("Resets wait time after teleport.")
-            .defaultValue(true)
-            .visible(() -> moveMode.get() == MoveMode.Teleport && tpToOrigin.get())
-            .build()
-    );
-    private final Setting<Boolean> returnToOrigin = sgGeneral.add(new BoolSetting.Builder()
-            .name("return-to-origin")
-            .description("Automatically return player to initial position once all items have been picked up.")
-            .defaultValue(true)
-            .visible(() -> moveMode.get() == MoveMode.Baritone)
-            .build()
-    );
-    private final Setting<Integer> returnRange = sgGeneral.add(new IntSetting.Builder()
-            .name("return-range")
-            .description("The radius within which Baritone will return to its initial position (relative to the initial position).")
-            .defaultValue(0)
-            .min(0)
-            .visible(() -> moveMode.get() == MoveMode.Baritone && returnToOrigin.get())
-            .build()
-    );
-    private final Setting<Boolean> modifySpeed = sgGeneral.add(new BoolSetting.Builder()
-            .name("modify-speed")
-            .description("Whether or not the speed of the player should be altered when using Baritone.")
-            .defaultValue(true)
-            .visible(() -> moveMode.get() == MoveMode.Baritone)
-            .build()
-    );
-    private final Setting<Double> moveSpeed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("move-speed")
-            .description("Modifies the player's movement speed when 'Modify Speed' is enabled.")
-            .defaultValue(10)
-            .min(1)
-            .sliderRange(1, 30)
-            .visible(() -> moveMode.get() == MoveMode.Baritone && modifySpeed.get())
-            .build()
-    );
-    private final Setting<Boolean> disableOnItemCount = sgGeneral.add(new BoolSetting.Builder()
-            .name("disable-on-item-count")
-            .description("Disables the module when a certain number of items are picked up.")
-            .defaultValue(false)
-            .build()
-    );
-    private final Setting<ItemCountMode> itemCountMode = sgGeneral.add(new EnumSetting.Builder<ItemCountMode>()
-            .name("item-count-mode")
-            .description("Defines how the maximum number of items to pick up is calculated.")
-            .defaultValue(ItemCountMode.Stacks)
-            .visible(disableOnItemCount::get)
-            .build()
-    );
-    private final Setting<Integer> maxItemCount = sgGeneral.add(new IntSetting.Builder()
-            .name("max-item-count")
-            .description("Maximum number of items to pick up.")
-            .defaultValue(10)
-            .min(1)
-            .sliderRange(1, 10)
-            .visible(disableOnItemCount::get)
             .build()
     );
 
@@ -223,12 +225,16 @@ public class ItemSucker extends Module {
         pickedUpStacksCount = 0;
         pickedUpItemsCount = 0;
 
+        WalkeristUtils.stop();
         baritoneUtils.cancelEverything();
+        baritoneUtils.setBlockBreaking(false);
     }
 
     @Override
     public void onDeactivate() {
+        WalkeristUtils.stop();
         baritoneUtils.cancelEverything();
+        baritoneUtils.setBlockBreaking(true);
     }
 
     public AABB getBoundingBoxAtPosition(Vec3 pos) {
@@ -246,6 +252,11 @@ public class ItemSucker extends Module {
         return collisionsList.isEmpty();
     }
 
+    private BlockPos getBaritoneGoal(Entity entity) {
+        Vec3 pos = entity.position();
+        return new BlockPos(Mth.floor(pos.x()), Mth.ceil(pos.y() - 0.125), Mth.floor(pos.z()));
+    }
+
     private boolean filter(Entity entity) {
         if (entity instanceof ItemEntity itemEntity) {
             boolean isPickupable = true;
@@ -257,9 +268,13 @@ public class ItemSucker extends Module {
             if (onlyOnGround.get()) {
                 isOnGround = entity.onGround();
             }
-            boolean isItemAllowed = (itemFilteringMode.get() == OperationMode.Blacklist && !itemBlacklist.get().contains(itemEntity.getItem().getItem()))
-                    || (itemFilteringMode.get() == OperationMode.Whitelist && itemWhitelist.get().contains(itemEntity.getItem().getItem()));
-            boolean canTeleport = true;
+            Item item = itemEntity.getItem().getItem();
+
+            boolean isItemAllowed = itemFilteringMode.get() == OperationMode.Blacklist
+                    ? !itemBlacklist.get().contains(item)
+                    : itemWhitelist.get().contains(item);
+
+           boolean canTeleport = true;
             if (moveMode.get() == MoveMode.Teleport) {
                 canTeleport = checkCollisions.get() && canTeleportToItem(itemEntity.position());
             }
@@ -284,6 +299,8 @@ public class ItemSucker extends Module {
             if (currentItemCount > maxItemCount.get()) toggle();
         }
 
+        if (moveMode.get() != MoveMode.Walkerist && WalkeristUtils.getState() != WalkeristUtils.State.Idle) WalkeristUtils.stop();
+
         if (moveMode.get() == MoveMode.Teleport) {
             Entity target = TargetUtils.get(this::filter, SortPriority.LowestDistance);
 
@@ -302,14 +319,39 @@ public class ItemSucker extends Module {
                 startPos = null;
                 timer = waitTime.get();
             }
+        } else if (moveMode.get() == MoveMode.Walkerist) {
+            Entity target = TargetUtils.get(this::filter, SortPriority.LowestDistance);
+            BlockPos desired = target != null ? target.blockPosition()
+                    : (returnToOrigin.get() && startPos != null ? BlockPos.containing(startPos) : null);
+
+            boolean walkingOwn = desired != null && desired.equals(WalkeristUtils.getTarget()) && WalkeristUtils.isBusy();
+            if (WalkeristUtils.isBusy() && !walkingOwn) return;
+
+            WalkeristUtils.setSpeedMultiplier(modifySpeed.get() ? moveSpeed.get() : 1.0);
+
+            if (target != null) {
+                if (!desired.equals(WalkeristUtils.getTarget()) || WalkeristUtils.getState() == WalkeristUtils.State.Idle) {
+                    if (returnToOrigin.get() && startPos == null) startPos = Vec3.atCenterOf(mc.player.blockPosition());
+                    WalkeristUtils.walkTo(desired, itemRange.get());
+                }
+            } else if (returnToOrigin.get() && startPos != null) {
+                if (!desired.equals(WalkeristUtils.getTarget()) || WalkeristUtils.getState() == WalkeristUtils.State.Idle) {
+                    WalkeristUtils.walkTo(desired, returnRange.get());
+                }
+                if (WalkeristUtils.getState() == WalkeristUtils.State.Arrived) startPos = null;
+            } else {
+                WalkeristUtils.stop();
+            }
         } else {
             if (BaritoneUtils.IS_AVAILABLE) {
                 List<Entity> targets = new ArrayList<>();
                 TargetUtils.getList(targets, this::filter, SortPriority.LowestDistance, maxItemsAtOnce.get());
 
                 if (!targets.isEmpty()) {
-                    baritoneUtils.setGoalNear(targets, itemRange.get());
-                    if (returnToOrigin.get() && startPos == null) startPos = mc.player.blockPosition().getCenter();
+                    List<BlockPos> goals = new ArrayList<>();
+                    for (Entity target : targets) goals.add(getBaritoneGoal(target));
+                    baritoneUtils.setGoalNear(goals, itemRange.get());
+                    if (returnToOrigin.get() && startPos == null) startPos = Vec3.atCenterOf(mc.player.blockPosition());
                 } else if (returnToOrigin.get() && startPos != null) {
                     baritoneUtils.setGoalNear(BlockPos.containing(startPos), returnRange.get());
                     startPos = null;
@@ -352,7 +394,8 @@ public class ItemSucker extends Module {
     }
 
     public enum MoveMode {
-        Teleport,
-        Baritone
+        Walkerist,
+        Baritone,
+        Teleport
     }
 }

@@ -18,7 +18,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import zgoly.meteorist.Meteorist;
-import zgoly.meteorist.utils.config.MeteoristConfig;
+import zgoly.meteorist.utils.config.MeteoristAddonConfig;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
 import zgoly.meteorist.utils.misc.DebugLogger;
 
@@ -144,13 +144,13 @@ public class AutoLogin extends Module {
             list.add(mTag);
         }
         tag.put("autoLogins", list);
-        MeteoristConfig.save(this.name, "default", tag);
+        MeteoristAddonConfig.save(this.name, "default", tag);
 
         return superTag;
     }
 
     public Module fromTag(CompoundTag superTag) {
-        CompoundTag tag = MeteoristConfig.load(this.name, "default");
+        CompoundTag tag = MeteoristAddonConfig.load(this.name, "default");
 
         autoLogins.clear();
         ListTag list = tag.getListOrEmpty("autoLogins");

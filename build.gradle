@@ -19,7 +19,7 @@ repositories {
     }
     maven {
         name = "jitpack"
-        url = uri("https://jitpack.io")
+        url = 'https://jitpack.io'
     }
     exclusiveContent {
         forRepository {
@@ -37,8 +37,6 @@ repositories {
 sourceSets {
     dev {
         java.srcDir 'src/dev/java'
-        compileClasspath += main.output + configurations.runtimeClasspath
-        runtimeClasspath += output + compileClasspath
     }
 }
 
@@ -57,10 +55,13 @@ dependencies {
     compileOnly "maven.modrinth:minescript:${project.minescript_version}-fabric-${project.minecraft_version}"
     
     // Catppuccin theme
-    compileOnly "com.github.X-C-0.catppuccin-addon:1.21.11:stonecutter-SNAPSHOT" // TODO UPDATE 26.1+
+    compileOnly "maven.modrinth:catppuccin-theme-addon:${project.catppuccin_version}+mc${project.minecraft_version}"
 
     // JavaParser
-    devImplementation 'com.github.javaparser:javaparser-core:3.28.0'
+    devImplementation "com.github.javaparser:javaparser-core:${project.javaparser_version}"
+
+    // Gson (serialization only)
+    devImplementation "com.google.code.gson:gson:${project.gson_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -84,11 +85,13 @@ jar {
 }
 
 tasks.register('generateMeteoristInfo', JavaExec) {
-    description = 'Generates a JSON file with metadata about Meteorist modules, commands, and presets.'
+    description = 'Generates a JSON file with metadata about Meteorist modules, commands, and HUD elements.'
     group = 'development'
 
     mainClass = 'MeteoristInfoParser'
     classpath = sourceSets.dev.runtimeClasspath
+    dependsOn sourceSets.dev.classesTaskName
     workingDir = project.projectDir
     standardOutput = System.out
+    errorOutput = System.err
 }

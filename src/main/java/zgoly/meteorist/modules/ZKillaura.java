@@ -4,13 +4,14 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
+import meteordevelopment.meteorclient.utils.entity.EntityAgeTest;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.Animal;
@@ -19,11 +20,14 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.MeteoristUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,7 +41,7 @@ public class ZKillaura extends Module {
             .name("entities")
             .description("Entities to attack.")
             .onlyAttackable()
-            .defaultValue(EntityType.PLAYER)
+            .defaultValue(EntityTypes.PLAYER)
             .build()
     );
     private final Setting<Double> range = sgFilter.add(new DoubleSetting.Builder()
@@ -48,10 +52,10 @@ public class ZKillaura extends Module {
             .sliderMax(6)
             .build()
     );
-    private final Setting<KillAura.EntityAge> mobAgeFilter = sgFilter.add(new EnumSetting.Builder<KillAura.EntityAge>()
+    private final Setting<EntityAgeTest> mobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
             .name("mob-age-filter")
             .description("Determines the age of the mobs to target (baby, adult, or both).")
-            .defaultValue(KillAura.EntityAge.Adult)
+            .defaultValue(EntityAgeTest.Adult)
             .build()
     );
     private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
@@ -88,6 +92,25 @@ public class ZKillaura extends Module {
             .name("ignore-walls")
             .description("Whether or not to attack mobs through walls.")
             .defaultValue(false)
+            .build()
+    );
+    private final Setting<OperationMode> itemFilteringMode = sgFilter.add(new EnumSetting.Builder<OperationMode>()
+            .name("item-filtering-mode")
+            .description("Defines how held items control Z Killaura activation.")
+            .defaultValue(OperationMode.Blacklist)
+            .build()
+    );
+    private final Setting<List<Item>> itemBlacklist = sgFilter.add(new ItemListSetting.Builder()
+            .name("item-blacklist")
+            .description("Z Killaura will NOT activate when holding these items.")
+            .visible(() -> itemFilteringMode.get() == OperationMode.Blacklist)
+            .build()
+    );
+    private final Setting<List<Item>> itemWhitelist = sgFilter.add(new ItemListSetting.Builder()
+            .name("item-whitelist")
+            .description("Z Killaura only activates when holding one of these items.")
+            .defaultValue(Items.NETHERITE_SWORD, Items.NETHERITE_AXE, Items.NETHERITE_SPEAR)
+            .visible(() -> itemFilteringMode.get() == OperationMode.Whitelist)
             .build()
     );
 
@@ -287,6 +310,11 @@ public class ZKillaura extends Module {
     private void onTick(TickEvent.Pre event) {
         if (mc.player.isDeadOrDying() || mc.level == null) return;
 
+        Item held = mc.player.getMainHandItem().getItem();
+        if (!(itemFilteringMode.get() == OperationMode.Whitelist
+                ? itemWhitelist.get().contains(held)
+                : !itemBlacklist.get().contains(held))) return;
+
         HitResult hitResult = MeteoristUtils.getCrosshairTarget(mc.player, range.get(), ignoreWalls.get(), this::entityCheck);
         if (hitResult == null || hitResult.getType() != HitResult.Type.ENTITY) return;
 
@@ -461,5 +489,10 @@ public class ZKillaura extends Module {
         SwapAxe,
         Attack,
         SwapBack
+    }
+
+    public enum OperationMode {
+        Whitelist,
+        Blacklist
     }
 }

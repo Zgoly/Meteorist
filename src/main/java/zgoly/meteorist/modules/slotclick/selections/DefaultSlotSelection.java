@@ -1,9 +1,8 @@
 package zgoly.meteorist.modules.slotclick.selections;
 
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.settings.*;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.MenuType;
-import zgoly.meteorist.settings.StringPairSetting;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,28 +55,16 @@ public class DefaultSlotSelection extends BaseSlotSelection {
             .defaultValue(false)
             .build()
     );
-    public final Setting<List<Tuple<String, String>>> slotItemData = sgGeneral.add(new StringPairSetting.Builder()
-            .name("slot-item-data")
-            .description("Checks data of the slot item.")
-            .placeholder(new Tuple<>("Path", "RegEx"))
-            .defaultValue(List.of(new Tuple<>("", "")))
-            .visible(checkSlotItemData::get)
-            .build()
-    );
-    public final Setting<SlotItemMatchMode> slotItemMatchMode = sgGeneral.add(new EnumSetting.Builder<SlotItemMatchMode>()
-            .name("slot-item-match-mode")
-            .description("Determines how the slot item data should be matched.")
-            .defaultValue(SlotItemMatchMode.All)
+    public final Setting<String> slotItemDataExpression = sgGeneral.add(new StringSetting.Builder()
+            .name("slot-item-data-expression")
+            .description("Starscript expression for the slot item; wrap in {braces} and produce true/false.")
+            .defaultValue("{true}")
+            .renderer(StarscriptTextBoxRenderer.class)
             .visible(checkSlotItemData::get)
             .build()
     );
 
     public DefaultSlotSelection() {
-    }
-
-    public enum SlotItemMatchMode {
-        All,
-        Any
     }
 
     public enum ContainerTypeMode {

@@ -149,6 +149,7 @@ public class Instructions extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Post event) {
+        if (mc.level == null) return;
         int currentTick = (int) mc.level.getGameTime();
         if (startTick == -1) startTick = currentTick;
 

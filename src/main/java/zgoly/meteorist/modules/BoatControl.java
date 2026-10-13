@@ -231,13 +231,19 @@ public class BoatControl extends Module {
 
         if (!leftList.isEmpty()) {
             currentState = leftAction;
-            hold(stateToKeyBinding.get(leftAction));
+            KeyMapping key = stateToKeyBinding.get(leftAction);
+            if (key != null) hold(key);
         } else if (!rightList.isEmpty()) {
             currentState = rightAction;
-            hold(stateToKeyBinding.get(rightAction));
+            KeyMapping key = stateToKeyBinding.get(rightAction);
+            if (key != null) hold(key);
         }
 
-        if (!leftList.isEmpty() && !rightList.isEmpty()) currentState = bothCollisionAction.get();
+        if (!leftList.isEmpty() && !rightList.isEmpty()) {
+            currentState = bothCollisionAction.get();
+            KeyMapping key = stateToKeyBinding.get(currentState);
+            if (key != null) hold(key);
+        }
 
         double yawDifference = Mth.wrapDegrees(yaw.get() - boat.getYRot());
         if ((currentState == State.MOVING_FORWARD || currentState == State.NOTHING) && turnToYaw.get() && Math.abs(yawDifference) > accuracy.get()) {

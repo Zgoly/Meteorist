@@ -1,6 +1,5 @@
 package zgoly.meteorist.modules.autotrade;
 
-import com.mojang.serialization.DataResult;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
@@ -18,17 +17,13 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundMerchantOffersPacket;
 import net.minecraft.network.protocol.game.ServerboundSelectTradePacket;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import zgoly.meteorist.Meteorist;
@@ -38,10 +33,10 @@ import zgoly.meteorist.modules.autotrade.offers.IdOffer;
 import zgoly.meteorist.modules.autotrade.offers.ItemsOffer;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
 import zgoly.meteorist.utils.misc.DebugLogger;
+import zgoly.meteorist.utils.misc.Filterist;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.COPY;
 import static meteordevelopment.meteorclient.gui.renderer.GuiRenderer.EDIT;
@@ -132,7 +127,7 @@ public class AutoTrade extends Module {
             if (offer instanceof ItemsOffer itemsOffer) {
                 int pad = 16;
 
-                if (itemsOffer.checkFirstInputItem.get() && itemsOffer.firstInputFilterMode.get() == ItemsOffer.FilterMode.Item) {
+                if (itemsOffer.checkFirstInputItem.get() && itemsOffer.firstInputFilterMode.get() == ItemsOffer.FilterMode.Simple) {
                     if (itemsOffer.checkFirstInputItemCount.get()) {
                         int min = itemsOffer.minFirstInputItemCount.get();
                         int max = itemsOffer.maxFirstInputItemCount.get();
@@ -147,7 +142,7 @@ public class AutoTrade extends Module {
                     container.add(theme.label(" + ")).padRight(pad);
                 }
 
-                if (itemsOffer.checkSecondInputItem.get() && itemsOffer.secondInputFilterMode.get() == ItemsOffer.FilterMode.Item) {
+                if (itemsOffer.checkSecondInputItem.get() && itemsOffer.secondInputFilterMode.get() == ItemsOffer.FilterMode.Simple) {
                     if (itemsOffer.checkSecondInputItemCount.get()) {
                         int min = itemsOffer.minSecondInputItemCount.get();
                         int max = itemsOffer.maxSecondInputItemCount.get();
@@ -160,7 +155,7 @@ public class AutoTrade extends Module {
 
                 container.add(theme.label(">")).padRight(pad);
 
-                if (itemsOffer.checkOutputItem.get() && itemsOffer.outputFilterMode.get() == ItemsOffer.FilterMode.Item) {
+                if (itemsOffer.checkOutputItem.get() && itemsOffer.outputFilterMode.get() == ItemsOffer.FilterMode.Simple) {
                     if (itemsOffer.checkOutputItemCount.get()) {
                         int min = itemsOffer.minOutputItemCount.get();
                         int max = itemsOffer.maxOutputItemCount.get();
@@ -178,7 +173,7 @@ public class AutoTrade extends Module {
 
             WButton edit = table.add(theme.button(EDIT)).widget();
             edit.tooltip = "Edit the offer.";
-            edit.action = () -> mc.setScreen(new OfferScreen(theme, offer));
+            edit.action = () -> mc.gui.setScreen(new OfferScreen(theme, offer));
 
             if (offers.size() > 1) {
                 WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
@@ -247,62 +242,11 @@ public class AutoTrade extends Module {
         MeteoristConfigManager.configManager(theme, list, this);
     }
 
-    private boolean matchesNbtFilters(ItemStack stack, List<Tuple<String, String>> filters, boolean matchAll) {
-        if (filters.isEmpty()) return true;
-        if (stack.isEmpty()) return false;
-
-        DataResult<Tag> result = ItemStack.CODEC.encodeStart(mc.player.registryAccess().createSerializationContext(NbtOps.INSTANCE), stack);
-        if (result.result().isEmpty()) return false;
-
-        Tag nbt = result.result().get();
-        boolean anyMatch = false;
-        boolean allMatch = true;
-
-        for (Tuple<String, String> pair : filters) {
-            try {
-                String path = pair.getA();
-                String regex = pair.getB();
-                Pattern pattern = Pattern.compile(regex);
-                List<Tag> found = NbtPathArgument.NbtPath.of(path).get(nbt);
-                boolean matched = false;
-
-                debugLogger.info("Evaluating NBT filter: path=(highlight)%s(default), regex=(highlight)%s", path, regex);
-                debugLogger.info("Found (highlight)%d(default) elements", found.size());
-
-                for (Tag tag : found) {
-                    String tagStr = tag.toString();
-                    debugLogger.info("Checking element: (highlight)%s", tagStr);
-                    if (pattern.matcher(tagStr).find()) {
-                        debugLogger.info("Match succeeded");
-                        matched = true;
-                        break;
-                    } else {
-                        debugLogger.info("Match failed");
-                    }
-                }
-
-                if (matched) {
-                    anyMatch = true;
-                } else {
-                    allMatch = false;
-                }
-            } catch (Exception e) {
-                debugLogger.error("Exception during NBT filter evaluation: (highlight)%s", e.getMessage());
-                allMatch = false;
-            }
-        }
-
-        boolean resultBool = matchAll ? allMatch : anyMatch;
-        debugLogger.info("NBT filter result: match mode=(highlight)%s(default), anyMatch=(highlight)%s(default), allMatch=(highlight)%s(default) -> returning (highlight)%s",
-                matchAll ? "All" : "Any", anyMatch, allMatch, resultBool);
-
-        return resultBool;
-    }
-
     @EventHandler
     private void onTick(TickEvent.Post event) {
         boolean successfulOffer = false;
-        if (lastTrade != null && mc.screen instanceof MerchantScreen) {
+        if (lastTrade != null && mc.gui.screen() instanceof MerchantScreen) {
+            Filterist.clearNbtCache();
             MerchantOffers tradeOffers = lastTrade.getOffers();
             boolean offerMatched = false;
             for (MerchantOffer tradeOffer : tradeOffers) {
@@ -315,7 +259,7 @@ public class AutoTrade extends Module {
                         boolean outputItemMatched = true;
 
                         if (itemsOffer.checkFirstInputItem.get()) {
-                            if (itemsOffer.firstInputFilterMode.get() == ItemsOffer.FilterMode.Item) {
+                            if (itemsOffer.firstInputFilterMode.get() == ItemsOffer.FilterMode.Simple) {
                                 Item item = itemsOffer.firstInputItem.get();
                                 Item tradeItem = tradeOffer.getItemCostA().item().value();
                                 if (item == tradeItem) {
@@ -333,20 +277,16 @@ public class AutoTrade extends Module {
                                     debugLogger.info("First input item mismatch: expected (highlight)%s(default), got (highlight)%s", item, tradeItem);
                                 }
                             } else {
-                                firstInputItemMatched = matchesNbtFilters(
-                                        tradeOffer.getCostA(),
-                                        itemsOffer.firstInputNbtFilter.get(),
-                                        itemsOffer.firstInputMatchMode.get() == ItemsOffer.MatchMode.All
-                                );
+                                firstInputItemMatched = Filterist.evaluate(itemsOffer.firstInputExpression.get(), tradeOffer.getCostA());
                                 if (!firstInputItemMatched) {
-                                    debugLogger.info("First input NBT filter failed");
+                                    debugLogger.info("First input expression did not match");
                                 }
                             }
                         }
 
                         if (itemsOffer.checkSecondInputItem.get()) {
                             if (tradeOffer.getItemCostB().isPresent()) {
-                                if (itemsOffer.secondInputFilterMode.get() == ItemsOffer.FilterMode.Item) {
+                                if (itemsOffer.secondInputFilterMode.get() == ItemsOffer.FilterMode.Simple) {
                                     Item item = itemsOffer.secondInputItem.get();
                                     Item tradeItem = tradeOffer.getItemCostB().get().item().value();
                                     if (item == tradeItem) {
@@ -364,13 +304,9 @@ public class AutoTrade extends Module {
                                         debugLogger.info("Second input item mismatch: expected (highlight)%s(default), got (highlight)%s", item, tradeItem);
                                     }
                                 } else {
-                                    secondInputItemMatched = matchesNbtFilters(
-                                            tradeOffer.getCostB(),
-                                            itemsOffer.secondInputNbtFilter.get(),
-                                            itemsOffer.secondInputMatchMode.get() == ItemsOffer.MatchMode.All
-                                    );
+                                    secondInputItemMatched = Filterist.evaluate(itemsOffer.secondInputExpression.get(), tradeOffer.getCostB());
                                     if (!secondInputItemMatched) {
-                                        debugLogger.info("Second input NBT filter failed");
+                                        debugLogger.info("Second input expression did not match");
                                     }
                                 }
                             } else {
@@ -380,7 +316,7 @@ public class AutoTrade extends Module {
                         }
 
                         if (itemsOffer.checkOutputItem.get()) {
-                            if (itemsOffer.outputFilterMode.get() == ItemsOffer.FilterMode.Item) {
+                            if (itemsOffer.outputFilterMode.get() == ItemsOffer.FilterMode.Simple) {
                                 Item item = itemsOffer.outputItem.get();
                                 Item tradeItem = tradeOffer.getResult().getItem();
                                 if (item == tradeItem) {
@@ -398,13 +334,9 @@ public class AutoTrade extends Module {
                                     debugLogger.info("Output item mismatch: expected (highlight)%s(default), got (highlight)%s", item, tradeItem);
                                 }
                             } else {
-                                outputItemMatched = matchesNbtFilters(
-                                        tradeOffer.getResult(),
-                                        itemsOffer.outputNbtFilter.get(),
-                                        itemsOffer.outputMatchMode.get() == ItemsOffer.MatchMode.All
-                                );
+                                outputItemMatched = Filterist.evaluate(itemsOffer.outputExpression.get(), tradeOffer.getResult());
                                 if (!outputItemMatched) {
-                                    debugLogger.info("Output NBT filter failed");
+                                    debugLogger.info("Output expression did not match");
                                 }
                             }
                         }
@@ -430,7 +362,7 @@ public class AutoTrade extends Module {
                     if (oneOfferPerTick.get()) break;
                 }
             }
-            if (closeWhenDone.get() && successfulOffer) mc.screen.onClose();
+            if (closeWhenDone.get() && successfulOffer) mc.gui.screen().onClose();
         }
     }
 

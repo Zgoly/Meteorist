@@ -5,14 +5,20 @@
   "client": [
     "ClientRecipeBookAccessor",
     "DisconnectedScreenMixin",
+    "EntityMoveRelativeMixin",
     "GameRendererMixin",
     "IngredientAccessor",
     "MinescriptAccessor",
     "MobSpawnerLogicAccessor",
     "ModulesMixin",
     "MouseMixin",
+    "MultiPlayerGameModeMixin",
     "RecipeFinderAccessor",
-    "TrapdoorBlockAccessor"
+    "TrapdoorBlockAccessor",
+    "WMeteorWindowAccessor",
+    "WMeteorWindowMixin",
+    "ThemeAccessor",
+    "ThreeSCAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -15,8 +15,10 @@ import meteordevelopment.meteorclient.utils.render.prompts.YesNoPrompt;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 
@@ -29,13 +31,15 @@ import static zgoly.meteorist.Meteorist.MOD_ID;
 import static zgoly.meteorist.utils.MeteoristUtils.removeInvalidChars;
 
 public class MeteoristConfigManager {
+    public record PresetConfig(String name, java.util.function.Consumer<Module> applyAction) {
+        public static PresetConfig of(String name, java.util.function.Consumer<Module> applyAction) {
+            return new PresetConfig(name, applyAction);
+        }
+    }
+
     /// Reloads the currently displayed config screen.
-    /// If fromPrompt is true and the current screen is a child of another screen, the parent screen is reloaded instead.
-    /// This is used when the user is prompted to save a config and chooses not to, in which case the parent screen should be reloaded.
-    ///
-    /// @param fromPrompt Whether the reload is from a prompt (i.e. the user was prompted to save a config and chose not to).
     public static void reload(boolean fromPrompt) {
-        if (mc.screen instanceof WidgetScreen screen) {
+        if (mc.gui.screen() instanceof WidgetScreen screen) {
             if (fromPrompt) {
                 if (screen.parent instanceof WidgetScreen screen1) screen1.reload();
             } else {
@@ -45,20 +49,15 @@ public class MeteoristConfigManager {
     }
 
     /// Returns the file path of the directory associated with the given module.
-    /// The directory is determined based on the module's name after removing invalid characters.
-    ///
-    /// @param module The module for which to get the directory path.
-    /// @return A File object representing the path of the module's directory.
     public static File getFolderPath(Module module) {
         return new File(Paths.get(FabricLoader.getInstance().getGameDir().toString(), MOD_ID, removeInvalidChars(module.name)).toString());
     }
 
-    /// Adds a config manager to the given list for the given module, allowing the user to save and load configurations of the module.
-    ///
-    /// @param theme  The GuiTheme to use for the config manager.
-    /// @param list   The WVerticalList to add the config manager to.
-    /// @param module The module for which to display the config manager.
     public static void configManager(GuiTheme theme, WVerticalList list, Module module) {
+        configManager(theme, list, module, new PresetConfig[0]);
+    }
+
+    public static void configManager(GuiTheme theme, WVerticalList list, Module module, PresetConfig... presets) {
         File folderPath = getFolderPath(module);
 
         list.add(theme.horizontalSeparator()).expandX();
@@ -73,6 +72,11 @@ public class MeteoristConfigManager {
         control.row();
 
         WHorizontalList buttons = control.add(theme.horizontalList()).expandX().widget();
+
+        if (presets != null && presets.length > 0) {
+            WButton presetsButton = buttons.add(theme.button("Presets")).expandX().widget();
+            presetsButton.action = () -> mc.gui.setScreen(new zgoly.meteorist.gui.screens.PresetsScreen(theme, module, presets));
+        }
 
         WButton reloadButton = buttons.add(theme.button("Reload")).expandX().widget();
         reloadButton.action = () -> {
@@ -100,6 +104,25 @@ public class MeteoristConfigManager {
             File file = new File(folderPath, textBox.get() + ".nbt");
             save(module, file);
         };
+    }
+
+    /// Counts entries in the given module tag without relying on specific key names
+    /// (sums the sizes of all top-level lists)
+    public static int countEntries(CompoundTag tag) {
+        int total = 0;
+
+        CompoundTag settings = tag.getCompoundOrEmpty("settings");
+        for (Tag group : settings.getListOrEmpty("groups")) {
+            if (group instanceof CompoundTag groupTag) {
+                total += groupTag.getListOrEmpty("settings").size();
+            }
+        }
+
+        for (Tag value : tag.values()) {
+            if (value != settings && value instanceof ListTag list) total += list.size();
+        }
+
+        return total;
     }
 
     /// Converts a module into an NbtCompound, removing unnecessary tags that will be reset by Meteor on load.
@@ -169,19 +192,19 @@ public class MeteoristConfigManager {
                         try (InputStream inputStream = new FileInputStream(file)) {
                             CompoundTag nbtCompound = NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap());
                             fromTag(module, nbtCompound);
-                            mc.getToastManager().addToast(new SystemToast(
+                            mc.gui.toastManager().addToast(new SystemToast(
                                     SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                                     Component.nullToEmpty("Config successfully loaded"),
-                                    Component.nullToEmpty("Loaded as \"" + file.getName() + "\" with " + nbtCompound.size() + " entries.")
+                                    Component.nullToEmpty("Loaded as \"" + file.getName() + "\" with " + countEntries(nbtCompound) + " entries.")
                             ));
                         } catch (FileNotFoundException e) {
-                            mc.getToastManager().addToast(new SystemToast(
+                            mc.gui.toastManager().addToast(new SystemToast(
                                     SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                                     Component.nullToEmpty("Failed to load config"),
                                     Component.nullToEmpty("File not found. Did you delete/rename it?")
                             ));
                         } catch (Exception e) {
-                            mc.getToastManager().addToast(new SystemToast(
+                            mc.gui.toastManager().addToast(new SystemToast(
                                     SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                                     Component.nullToEmpty("Failed to load config"),
                                     Component.nullToEmpty(e.getMessage())
@@ -231,13 +254,13 @@ public class MeteoristConfigManager {
                 FileOutputStream outputStream = new FileOutputStream(file);
                 NbtIo.writeCompressed(nbtCompound, outputStream);
                 outputStream.close();
-                mc.getToastManager().addToast(new SystemToast(
+                mc.gui.toastManager().addToast(new SystemToast(
                         SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                         Component.nullToEmpty("Config successfully saved"),
-                        Component.nullToEmpty("Saved as \"" + file.getName() + "\" with " + nbtCompound.size() + " entries.")
+                                    Component.nullToEmpty("Saved as \"" + file.getName() + "\" with " + countEntries(nbtCompound) + " entries.")
                 ));
             } catch (Exception e) {
-                mc.getToastManager().addToast(new SystemToast(
+                mc.gui.toastManager().addToast(new SystemToast(
                         SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                         Component.nullToEmpty("Failed to save config"),
                         Component.nullToEmpty(e.getMessage())

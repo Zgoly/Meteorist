@@ -5,7 +5,7 @@ import meteordevelopment.meteorclient.systems.hud.elements.TextHud;
 import zgoly.meteorist.Meteorist;
 
 public class TextPresets {
-    public static final HudElementInfo<TextHud> INFO = new HudElementInfo<>(Meteorist.HUD_GROUP, "meteorist", "Additional presets for Meteor.", TextPresets::create);
+    public static final HudElementInfo<TextHud> INFO = new HudElementInfo<>(Meteorist.HUD_GROUP, "meteorist", "Starscript presets for displaying Meteorist stats.", TextPresets::create);
 
     static {
         addPreset("Fall Distance", "Fall distance: #1{round(meteorist.fall_distance, 1)}");

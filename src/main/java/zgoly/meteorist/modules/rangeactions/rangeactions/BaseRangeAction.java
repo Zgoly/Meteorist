@@ -1,11 +1,12 @@
 package zgoly.meteorist.modules.rangeactions.rangeactions;
 
 import meteordevelopment.meteorclient.settings.*;
-import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
+import meteordevelopment.meteorclient.utils.entity.EntityAgeTest;
 import meteordevelopment.meteorclient.utils.entity.SortPriority;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 import java.util.Set;
 
@@ -32,13 +33,13 @@ public class BaseRangeAction implements ISerializable<BaseRangeAction> {
             .name("entities")
             .description("Entity types to react on.")
             .onlyAttackable()
-            .defaultValue(EntityType.PLAYER)
+            .defaultValue(EntityTypes.PLAYER)
             .build()
     );
-    public final Setting<KillAura.EntityAge> mobAgeFilter = sgBaseRangeAction.add(new EnumSetting.Builder<KillAura.EntityAge>()
+    public final Setting<EntityAgeTest> mobAgeFilter = sgBaseRangeAction.add(new EnumSetting.Builder<EntityAgeTest>()
             .name("mob-age-filter")
             .description("Determines the age of the mobs to react (baby, adult, or both).")
-            .defaultValue(KillAura.EntityAge.Adult)
+            .defaultValue(EntityAgeTest.Adult)
             .build()
     );
     public final Setting<Boolean> ignoreNamed = sgBaseRangeAction.add(new BoolSetting.Builder()

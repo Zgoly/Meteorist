@@ -1,6 +1,5 @@
 package zgoly.meteorist.modules.slotclick;
 
-import com.mojang.serialization.DataResult;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
@@ -15,12 +14,8 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.nbt.*;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +24,7 @@ import zgoly.meteorist.gui.screens.SlotSelectionScreen;
 import zgoly.meteorist.modules.slotclick.selections.*;
 import zgoly.meteorist.utils.config.MeteoristConfigManager;
 import zgoly.meteorist.utils.misc.DebugLogger;
+import zgoly.meteorist.utils.misc.Filterist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -163,7 +159,7 @@ public class SlotClick extends Module {
 
             WButton edit = table.add(theme.button(EDIT)).widget();
             edit.tooltip = "Edit the slot selection.";
-            edit.action = () -> mc.setScreen(new SlotSelectionScreen(theme, slotSelection));
+            edit.action = () -> mc.gui.setScreen(new SlotSelectionScreen(theme, slotSelection));
 
             if (slotSelections.size() > 1) {
                 WContainer moveContainer = table.add(theme.horizontalList()).expandX().widget();
@@ -246,6 +242,8 @@ public class SlotClick extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Pre event) {
+        Filterist.clearNbtCache();
+
         int currentTick = (int) mc.level.getGameTime();
         if (startTick == -1) startTick = currentTick;
 
@@ -275,7 +273,7 @@ public class SlotClick extends Module {
                 for (BaseSlotSelection baseSlotSelection : entry.getValue()) {
                     if (baseSlotSelection instanceof DefaultSlotSelection defaultSlotSelection) {
                         debugLogger.info("Slot selection: (highlight)%s", defaultSlotSelection.getTypeName());
-                        Screen screen = mc.screen;
+                        Screen screen = mc.gui.screen();
                         AbstractContainerMenu screenHandler = mc.player.containerMenu;
 
                         if (defaultSlotSelection.checkContainerType.get()) {
@@ -330,46 +328,22 @@ public class SlotClick extends Module {
                                 }
                             }
 
-                            try {
-                                ItemStack itemStack = screenHandler.getSlot(slot).getItem();
-                                if (!itemStack.isEmpty()) {
-                                    DataResult<Tag> dataResult = ItemStack.CODEC.encodeStart(mc.player.registryAccess().createSerializationContext(NbtOps.INSTANCE), itemStack);
-                                    if (dataResult.result().isPresent()) {
-                                        Tag element = dataResult.result().get();
-                                        debugLogger.info(Component.literal("Item data: ").withStyle(ChatFormatting.GRAY).append(NbtUtils.toPrettyComponent(element)));
-
-                                        boolean matchedAny = false;
-                                        boolean matchedAll = true;
-
-                                        for (Tuple<String, String> pair : defaultSlotSelection.slotItemData.get()) {
-                                            try {
-                                                Pattern pattern = Pattern.compile(pair.getB());
-                                                Tag value = NbtPathArgument.NbtPath.of(pair.getA()).get(element).getFirst();
-                                                debugLogger.info(Component.literal("Found element for path \"" + pair.getA() + "\": ").withStyle(ChatFormatting.GRAY).append(NbtUtils.toPrettyComponent(value)));
-
-                                                if (pattern.matcher(value.toString()).find()) {
-                                                    matchedAny = true;
-                                                    debugLogger.info("Pattern (highlight)%s(default) matched!", pair.getB());
-                                                } else {
-                                                    matchedAll = false;
-                                                    debugLogger.warning("Pattern (highlight)%s(default) not matched!", pair.getB());
-                                                }
-                                            } catch (Exception e) {
-                                                debugLogger.error(e.getMessage());
-                                            }
-                                        }
-
-                                        boolean isAnyMatch = defaultSlotSelection.slotItemMatchMode.get() == DefaultSlotSelection.SlotItemMatchMode.Any;
-                                        if (!(isAnyMatch && matchedAny || !isAnyMatch && matchedAll)) continue;
-                                    } else {
-                                        debugLogger.warning("Cannot find any data for item (highlight)%s(default) in slot (highlight)%s(default)!", itemStack, slot);
-                                    }
-                                } else {
-                                    debugLogger.warning("There is no item in the slot (highlight)%s(default)!", slot);
-                                }
-                            } catch (Exception e) {
-                                debugLogger.error(e.getMessage());
+                            if (slot < 0 || slot >= screenHandler.slots.size()) {
+                                debugLogger.warning("Slot index (highlight)%s(default) is out of range!", slot);
+                                continue;
                             }
+
+                            ItemStack itemStack = screenHandler.getSlot(slot).getItem();
+                            if (itemStack.isEmpty()) {
+                                debugLogger.warning("There is no item in the slot (highlight)%s(default)!", slot);
+                                continue;
+                            }
+
+                            if (!Filterist.evaluate(defaultSlotSelection.slotItemDataExpression.get(), itemStack)) {
+                                debugLogger.warning("Slot item data expression (highlight)%s(default) not matched!", defaultSlotSelection.slotItemDataExpression.get());
+                                continue;
+                            }
+                            debugLogger.info("Slot item data expression matched!");
                         }
 
                         if (mc.gameMode != null) {

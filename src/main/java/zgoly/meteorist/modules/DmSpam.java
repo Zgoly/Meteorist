@@ -141,7 +141,7 @@ public class DmSpam extends Module {
 
     @Override
     public void onActivate() {
-        currentTick = mc.level.getGameTime();
+        currentTick = mc.level != null ? mc.level.getGameTime() : 0;
     }
 
     @EventHandler
@@ -159,7 +159,7 @@ public class DmSpam extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         List<UUID> allPlayerUUIDs = new ArrayList<>(mc.getConnection().getOnlinePlayerIds());
-        if (allPlayerUUIDs.isEmpty() || messageCommand.get().isEmpty()) return;
+        if (allPlayerUUIDs.isEmpty() || messageCommand.get().isEmpty() || spamMessages.get().isEmpty()) return;
 
         List<UUID> unusedPlayerUUIDs = new ArrayList<>(allPlayerUUIDs);
         unusedPlayerUUIDs.removeAll(usedPlayerUUIDs);

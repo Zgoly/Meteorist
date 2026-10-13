@@ -8,6 +8,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.EntityHitResult;
 import zgoly.meteorist.Meteorist;
@@ -28,7 +29,7 @@ public class EntityInteract extends Module {
     private final Setting<Set<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder()
             .name("entities")
             .description("Entities to interact with.")
-            .defaultValue(EntityType.SHEEP)
+            .defaultValue(EntityTypes.SHEEP)
             .onlyAttackable()
             .build()
     );

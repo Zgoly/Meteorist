@@ -6,6 +6,7 @@ import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
+import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
@@ -17,23 +18,31 @@ import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zgoly.meteorist.commands.DataCommand;
+import zgoly.meteorist.commands.FilteristCommand;
 import zgoly.meteorist.commands.InstructionsCommand;
 import zgoly.meteorist.commands.InteractCommand;
 import zgoly.meteorist.commands.PlayersInfoCommand;
+import zgoly.meteorist.commands.WalkeristCommand;
 import zgoly.meteorist.devmodules.DocsGenerator;
+import zgoly.meteorist.devmodules.ItemDataInspector;
+import zgoly.meteorist.gui.tabs.KeybindsTab;
+import zgoly.meteorist.hud.KeybindsHud;
+import zgoly.meteorist.hud.MinescriptHud;
 import zgoly.meteorist.hud.TextPresets;
 import zgoly.meteorist.modules.*;
 import zgoly.meteorist.modules.autocrafter.AutoCrafter;
 import zgoly.meteorist.modules.autologin.AutoLogin;
 import zgoly.meteorist.modules.autotrade.AutoTrade;
 import zgoly.meteorist.modules.instructions.Instructions;
+import zgoly.meteorist.modules.inventoryorganizer.InventoryOrganizer;
 import zgoly.meteorist.modules.minescript.MinescriptIntegration;
 import zgoly.meteorist.modules.placer.Placer;
 import zgoly.meteorist.modules.rangeactions.RangeActions;
 import zgoly.meteorist.modules.slotclick.SlotClick;
+import zgoly.meteorist.modules.walkerist.Walkerist;
 import zgoly.meteorist.settings.ItemsSetting;
-import zgoly.meteorist.settings.StringPairSetting;
-import zgoly.meteorist.utils.config.MeteoristConfigScreen;
+import zgoly.meteorist.utils.config.MeteoristConfig;
+import zgoly.meteorist.utils.misc.Filterist;
 import zgoly.meteorist.utils.misc.MeteoristStarscript;
 import zgoly.meteorist.modules.zaimbot.ZAimbot;
 
@@ -78,21 +87,25 @@ public class Meteorist extends MeteorAddon {
 
         ICON = GuiRenderer.addTexture(identifier("textures/icons/meteorist.png"));
 
-        // Catppuccin-styled category icon
+        // Catppuccin-styled icons
         if (FabricLoader.getInstance().isModLoaded("catppuccin-addon")) {
             CatppuccinIcons.registerCategoryIcon(CATEGORY.name, ICON);
+            CatppuccinIcons.registerTabIcon(KeybindsTab.class, ICON);
         }
 
+        // Keybinds tab in the click GUI
+        Tabs.add(new KeybindsTab());
+
         // Config
-        MeteoristConfigScreen.init();
+        MeteoristConfig.init();
 
         // Factories
         LOG.info("Registering custom factories...");
-        StringPairSetting.register();
         ItemsSetting.register();
 
         // Modules
         LOG.info("Registering modules...");
+        Modules.get().add(new AutoBrush());
         Modules.get().add(new AutoCrafter());
         Modules.get().add(new AutoFeed());
         Modules.get().add(new AutoRepair());
@@ -109,8 +122,10 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new DmSpam());
         Modules.get().add(new DoubleDoorsInteract());
         Modules.get().add(new EntityInteract());
+        Modules.get().add(new FollowTrader());
         Modules.get().add(new Grid());
         Modules.get().add(new Instructions());
+        Modules.get().add(new InventoryOrganizer());
         Modules.get().add(new ItemSucker());
         Modules.get().add(new JumpFlight());
         Modules.get().add(new Jumps());
@@ -127,18 +142,27 @@ public class Meteorist extends MeteorAddon {
 
         // Dev modules
         Modules.get().add(new DocsGenerator());
+        Modules.get().add(new ItemDataInspector());
+        Modules.get().add(new Walkerist());
 
         // Commands
         LOG.info("Registering commands...");
         Commands.add(new DataCommand());
+        Commands.add(new FilteristCommand());
         Commands.add(new InstructionsCommand());
         Commands.add(new InteractCommand());
         Commands.add(new PlayersInfoCommand());
+        Commands.add(new WalkeristCommand());
 
         // HUD text presets
         LOG.info("Registering HUD text presets...");
         MeteoristStarscript.init();
+        Hud.get().register(KeybindsHud.INFO);
+        Hud.get().register(MinescriptHud.INFO);
         Hud.get().register(TextPresets.INFO);
+
+        // Starscript filter addon
+        Filterist.init();
     }
 
     @Override

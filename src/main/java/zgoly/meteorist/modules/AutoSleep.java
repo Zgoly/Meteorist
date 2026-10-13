@@ -103,7 +103,7 @@ public class AutoSleep extends Module {
             }
         } else if (sleepMode.get() == SleepMode.Default) {
             if (++sleepDelayTimer < sleepDelay.get()) return;
-            sleepDelayTimer = sleepDelay.get();
+            sleepDelayTimer = 0;
 
             boolean shouldWait = false;
 

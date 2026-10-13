@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.mixin.TrapdoorBlockAccessor;
 
@@ -74,7 +75,7 @@ public class AutoInteract extends Module {
                 continue;
 
             if (blocks.get().contains(blockState.getBlock())) {
-                boolean shouldOpen = PlayerUtils.distanceTo(blockPos.getCenter()) <= innerRange.get();
+                boolean shouldOpen = PlayerUtils.distanceTo(Vec3.atCenterOf(blockPos)) <= innerRange.get();
                 boolean isOpen = switch (blockState.getBlock()) {
                     case DoorBlock ignored -> blockState.getValue(DoorBlock.OPEN);
                     case FenceGateBlock ignored -> blockState.getValue(FenceGateBlock.OPEN);

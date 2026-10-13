@@ -179,6 +179,8 @@ public class RealMinescriptService implements MinescriptService {
                 jobTickCounts.merge(id, 1, Integer::sum);
             }
 
+            if (job.state() == JobState.KILLED) continue;
+
             if (index < currentJobLabels.size()) {
                 int ticks = jobTickCounts.getOrDefault(id, 0);
                 String timeStr = MeteoristUtils.ticksToTime(ticks, true, false);

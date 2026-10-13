@@ -5,6 +5,7 @@ import meteordevelopment.meteorclient.settings.DoubleSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,10 +32,10 @@ public class DespawnerRangeAction extends BaseRangeAction {
     public DespawnerRangeAction() {
         super();
         Set<EntityType<?>> mutableEntities = new HashSet<>();
-        mutableEntities.add(EntityType.PHANTOM);
+        mutableEntities.add(EntityTypes.PHANTOM);
         entities.set(mutableEntities);
         // Yeah
-        // entities.set(Set.of(EntityType.PHANTOM));
+        // entities.set(Set.of(EntityTypes.PHANTOM));
     }
 
     @Override

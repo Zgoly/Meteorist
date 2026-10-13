@@ -169,11 +169,11 @@ public class AutoSneak extends Module {
 
             Block steppingBlock = mc.player.getBlockStateOn().getBlock();
 
-            boolean shouldSneak = (sneakBlocksMode.get() == SneakBlocksMode.Whitelist)
+            boolean shouldSneak = sneakBlocksMode.get() == SneakBlocksMode.Whitelist
                     ? sneakBlocksWhitelist.get().contains(steppingBlock)
                     : !sneakBlocksBlacklist.get().contains(steppingBlock);
 
-            boolean shouldIgnore = (ignoreBlocksMode.get() == IgnoreBlocksMode.Whitelist)
+            boolean shouldIgnore = ignoreBlocksMode.get() == IgnoreBlocksMode.Whitelist
                     ? ignoreBlocksWhitelist.get().contains(steppingBlock)
                     : !ignoreBlocksBlacklist.get().contains(steppingBlock);
 

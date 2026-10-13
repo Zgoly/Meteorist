@@ -1,5 +1,7 @@
 > [!CAUTION]
-> The only official website for Meteorist is **[https://meteorist.pages.dev/](https://meteorist.pages.dev/)**. Any other websites claiming to be Meteorist are **NOT** controlled by me and may contain malware or malicious content. Always download from the official source only.
+> The only official website for Meteorist is **[meteorist.pages.dev](https://meteorist.pages.dev/)**.
+> Any other websites claiming to be Meteorist are **NOT** controlled by me and may contain malware or malicious content.
+> Always download from the official source only.
 
 <div align="center">
 
@@ -20,9 +22,12 @@
 
 </div>
 
+<a id="about"></a>
+
 ## 📖 About
 
-Add-on for [Meteor Client](https://meteorclient.com) that adds modules, commands, and other useful features for anarchy servers.
+Free and open-source add-on for [Meteor Client](https://meteorclient.com) that adds modules, commands, and other useful
+features for anarchy servers.
 
 <div align="center">
     <a href="https://meteorist.pages.dev" target="_blank">
@@ -30,35 +35,72 @@ Add-on for [Meteor Client](https://meteorclient.com) that adds modules, commands
     </a>
 </div>
 
+## 📑 Table of Contents
+
+- [About](#about)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Building from Source](#building-from-source)
+- [Contributing](#contributing)
+- [License](#license)
+- [Community](#community)
+
+<a id="requirements"></a>
+
 ## 📦 Requirements
 
 ### Required
-- **[Java](https://adoptium.net/temurin/releases)**: 21 or higher
+
+- **[Java](https://adoptium.net/temurin/releases)**: 25 or higher
 - **[Fabric Loader](https://fabricmc.net/use/installer/)**
 - **[Meteor Client](https://meteorclient.com/)**
 
 ### Optional
-- **[Baritone](https://meteorclient.com/api/downloadBaritone)** - required for **ItemSucker** module (pathfinding to items and returning to origin)
-- **[Minescript](https://minescript.net/downloads)** - required for **Minescript Integration** module (custom script execution)
+
+- **[Baritone](https://meteorclient.com/api/downloadBaritone)** - required for **ItemSucker** module (pathfinding to
+  items and returning to origin)
+- **[Minescript](https://minescript.net/downloads)** - required for **Minescript Integration** module (custom script
+  execution)
+
+<a id="installation"></a>
+
+## 📥 Installation
+
+1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for your Minecraft version.
+2. Install [Meteor Client](https://meteorclient.com/) into your `mods` folder.
+3. Download the latest Meteorist release from the [official website](https://meteorist.pages.dev) or
+   the [releases page](https://github.com/Zgoly/Meteorist/releases/latest).
+4. Drop the downloaded JAR into your `.minecraft/mods` folder.
+5. Launch Minecraft using the Fabric profile.
+
+<a id="features"></a>
 
 ## 🧩 Features
 
 ### Modules
+
 A wide variety of modules for automation, combat, movement, rendering, and general quality of life improvements.
 
 [**View all modules**](https://meteorist.pages.dev/#modules)
 
 ### Commands
+
 Custom commands for running scheduled instructions, managing player data, inspecting NBT data, and more.
 
 [**View all commands**](https://meteorist.pages.dev/#commands)
 
-### Presets
-Additional HUD presets for displaying various statistics.
+### HUD elements
 
-[**View all presets**](https://meteorist.pages.dev/#presets)
+Ready-to-use Text HUD presets for displaying various statistics and stuff.
+
+[**View all HUD elements**](https://meteorist.pages.dev/#hud)
+
+<a id="project-structure"></a>
 
 ## 📁 Project Structure
+
 ```
 Meteorist/
 ├── src/
@@ -83,47 +125,64 @@ Meteorist/
 └── website/                   # Website stuff (meteorist.pages.dev)
 ```
 
+<a id="building-from-source"></a>
+
 ## 🛠️ Building from Source
 
 ### Prerequisites
-- **[JDK](https://adoptium.net/temurin/releases)**: 21 or higher
+
+- **[JDK](https://adoptium.net/temurin/releases)**: 25 or higher
 - **[Git](https://git-scm.com/install/)**
 
 ### Steps
+
 ```bash
 # Clone the repository
 git clone https://github.com/Zgoly/Meteorist.git
 cd Meteorist
 
-# Build with Gradle
+# Build with Gradle (Linux/macOS)
 ./gradlew build
+
+# Build with Gradle (Windows)
+gradlew.bat build
 ```
 
 The compiled JAR will be in `build/libs/`.
 
 ### Development Commands
+
 ```bash
 # Run in development environment
 ./gradlew runClient
 
-# Generate module/command/preset info JSON
+# Generate module/command/HUD element info JSON
 ./gradlew generateMeteoristInfo
 
 # Clean build artifacts
 ./gradlew clean
 ```
 
+<a id="contributing"></a>
+
 ## 🤝 Contributing
+
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 - [Report a bug][report-bug]
 - [Suggest a feature][suggest-feature]
 - [Report a crash][report-crash]
 
+<a id="license"></a>
+
 ## 📄 License
-This project is licensed under the [MIT License][repo-license].
+
+This project is licensed under the [GNU General Public License v3.0][repo-license].
+
+<a id="community"></a>
 
 ## 👥 Community
+
 [![Join Discord][shield-discord-server]][discord]
 [![Join Discord][shield-discord-members]][discord]
 
@@ -152,10 +211,7 @@ Join our [Discord server][discord] for support and discussions.
 </div>
 
 [meteorist-banner-download]: website/banner.svg
-[meteorist-button-download]: website/button.svg
 [meteorist-download]: https://meteorist.pages.dev
-[meteor-download]: https://meteorclient.com
-[baritone-download]: https://meteorclient.com/api/downloadBaritone
 
 [shield-repo-license]: https://img.shields.io/github/license/Zgoly/Meteorist?style=flat&labelColor=001932&color=001932
 [repo-license]: https://github.com/Zgoly/Meteorist/blob/main/LICENSE
@@ -170,7 +226,7 @@ Join our [Discord server][discord] for support and discussions.
 [repo-stargazers]: https://github.com/Zgoly/Meteorist/stargazers
 
 [shield-repo-code-size]: https://img.shields.io/github/languages/code-size/Zgoly/Meteorist?labelColor=001932&color=001932
-[repo-code-size]: https://github.com/Zgoly/Meteorist/archive/refs/heads/main.zip
+[repo-code-size]: https://github.com/Zgoly/Meteorist
 
 [shield-repo-issues]: https://img.shields.io/github/issues/Zgoly/Meteorist?labelColor=001932&color=001932
 [repo-issues]: https://github.com/Zgoly/Meteorist/issues
@@ -190,14 +246,6 @@ Join our [Discord server][discord] for support and discussions.
 [shield-discord-server]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Fv9%2Fguilds%2F1035620564133490809%2Fwidget.json&query=name&logo=discord&logoColor=white&label=Server&labelColor=5865F2&color=5865F2
 [shield-discord-members]: https://img.shields.io/discord/1035620564133490809?label=%20&color=5865F2
 
-[shield-contribute]: https://img.shields.io/badge/Contribute-00967d
-[contribute]: https://github.com/Zgoly/Meteorist/pulls
-
-[shield-suggest-feature]: https://img.shields.io/badge/Suggest%20a%20feature-00967d
 [suggest-feature]: https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=enhancement&projects=&template=suggestion.yml
-
-[shield-report-bug]: https://img.shields.io/badge/Report%20a%20bug-ff6600
 [report-bug]: https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=bug&projects=&template=bug.yml
-
-[shield-report-crash]: https://img.shields.io/badge/Report%20a%20crash-c83232
 [report-crash]: https://github.com/Zgoly/Meteorist/issues/new?assignees=&labels=crash&projects=&template=crash.yml

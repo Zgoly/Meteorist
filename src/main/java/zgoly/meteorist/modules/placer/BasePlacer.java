@@ -169,7 +169,7 @@ public class BasePlacer implements ISerializable<BasePlacer> {
     }
 
     public static void reloadParent() {
-        Screen screen = mc.screen;
+        Screen screen = mc.gui.screen();
         if (screen instanceof PlacerScreen placerScreen) {
             if (placerScreen.parent instanceof WindowScreen windowScreen) {
                 windowScreen.reload();
