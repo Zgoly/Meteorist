@@ -585,12 +585,14 @@ function openModuleDialog(module) {
 
   if (groupNames.length || module.customGui) {
     const box = el("div", "dialog-settings");
-    box.appendChild(el("p", "dialog-settings-title", "Settings"));
-    for (const groupName of groupNames) {
-      const group = el("div", "setting-group");
-      if (groupName) group.appendChild(el("div", "setting-group-title", groupName));
-      groups[groupName].forEach((setting) => group.appendChild(renderSetting(setting)));
-      box.appendChild(group);
+    if (groupNames.length) {
+      box.appendChild(el("p", "dialog-settings-title", "Settings"));
+      for (const groupName of groupNames) {
+        const group = el("div", "setting-group");
+        if (groupName) group.appendChild(el("div", "setting-group-title", groupName));
+        groups[groupName].forEach((setting) => group.appendChild(renderSetting(setting)));
+        box.appendChild(group);
+      }
     }
     if (module.customGui) {
       box.appendChild(el("p", "dialog-settings-title", "Custom GUI"));
