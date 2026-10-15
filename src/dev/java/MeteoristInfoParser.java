@@ -1,11 +1,6 @@
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
@@ -40,66 +35,7 @@ public class MeteoristInfoParser {
     private static final Set<String> ENUM_TYPES = new HashSet<>();
     private static final int MAX_FOLD_DEPTH = 8;
 
-    static class ExpressionValue {
-        String value;
-        boolean isCode;
-
-        ExpressionValue(String value, boolean isCode) {
-            this.value = value;
-            this.isCode = isCode;
-        }
-    }
-
-    static class ModuleInfo {
-        String name;
-        String description;
-        String category;
-        String className;
-        String classPath;
-        int lineNumber;
-        boolean customGui;
-        Map<String, List<SettingInfo>> settings = new LinkedHashMap<>();
-    }
-
-    static class SettingInfo {
-        String type;
-        int lineNumber;
-        Map<String, Object> properties = new LinkedHashMap<>();
-    }
-
-    static class CommandInfo {
-        String name;
-        String description;
-        List<String> aliases = new ArrayList<>();
-        String className;
-        String classPath;
-        int lineNumber;
-        List<String> usage = new ArrayList<>();
-        List<ParameterInfo> parameters = new ArrayList<>();
-    }
-
-    static class ParameterInfo {
-        String name;
-        String type;
-    }
-
-    static class PresetInfo {
-        String title;
-        String text;
-        int lineNumber;
-    }
-
-    static class HudElementInfoWrapper {
-        String name;
-        String description;
-        String className;
-        String classPath;
-        int lineNumber;
-        Map<String, List<SettingInfo>> settings = new LinkedHashMap<>();
-        List<PresetInfo> presets = new ArrayList<>();
-    }
-
-    public static void main(String[] args) {
+    static void main(String[] args) {
         String sourceDir = args.length > 0 ? args[0] : "src/main/java";
         String outputFile = args.length > 1 ? args[1] : "build/info/meteorist-info.json";
 
@@ -128,9 +64,7 @@ public class MeteoristInfoParser {
                 boolean isCommand = !isModule && cu.findAll(ClassOrInterfaceDeclaration.class).stream()
                         .anyMatch(cls -> extendsClass(cls, "Command"));
 
-                if (className.equals("Meteorist")) {
-                    collectRegistrations(cu, registeredModules, registeredCommands, registeredHudElements);
-                }
+                collectRegistrations(cu, registeredModules, registeredCommands, registeredHudElements);
                 if (isModule) {
                     ModuleInfo moduleInfo = extractModuleInfo(cu, className, classPath);
                     if (moduleInfo != null) {
@@ -166,6 +100,8 @@ public class MeteoristInfoParser {
                 System.exit(1);
             }
 
+            sortResults(allModules, allCommands, allHudElements);
+
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("modules", allModules);
             result.put("commands", allCommands);
@@ -178,6 +114,32 @@ public class MeteoristInfoParser {
             System.err.println("Error processing files: " + e);
             System.exit(1);
         }
+    }
+
+    /// Sorts the extracted metadata.
+    private static void sortResults(List<ModuleInfo> modules, List<CommandInfo> commands,
+                                    List<HudElementInfoWrapper> hudElements) {
+        modules.sort(Comparator
+                .comparing((ModuleInfo module) -> isDevCategory(module.category) ? 1 : 0)
+                .thenComparing(module -> module.name, String.CASE_INSENSITIVE_ORDER));
+        commands.sort(Comparator.comparing((CommandInfo command) -> command.name, String.CASE_INSENSITIVE_ORDER));
+        hudElements.sort(Comparator.comparing((HudElementInfoWrapper element) -> element.name, String.CASE_INSENSITIVE_ORDER));
+    }
+
+    /// Detection of a "development" category by convention.
+    private static boolean isDevCategory(String categoryName) {
+        if (categoryName == null) return false;
+        if (hasDevToken(categoryName)) return true;
+        return CATEGORY_NAME_CACHE.entrySet().stream()
+                .anyMatch(entry -> entry.getValue().equals(categoryName) && hasDevToken(entry.getKey()));
+    }
+
+    private static boolean hasDevToken(String identifier) {
+        String[] tokens = identifier.split("[^A-Za-z0-9]+|(?<=[a-z0-9])(?=[A-Z])");
+        for (String token : tokens) {
+            if (token.equalsIgnoreCase("dev")) return true;
+        }
+        return false;
     }
 
     /// Fails the run if the parsed metadata does not match what onInitialize
@@ -202,11 +164,11 @@ public class MeteoristInfoParser {
         registeredHudElements.stream().filter(name -> !foundHudElements.contains(name))
                 .forEach(name -> problems.add("registered HUD element " + name + " is missing from the generated metadata"));
         foundModules.stream().filter(name -> !registeredModules.contains(name))
-                .forEach(name -> problems.add("module " + name + " extends Module but is never registered in Meteorist.onInitialize()"));
+                .forEach(name -> problems.add("module " + name + " extends Module but is never registered via Modules.get().add(...)"));
         foundCommands.stream().filter(name -> !registeredCommands.contains(name))
-                .forEach(name -> problems.add("command " + name + " extends Command but is never registered in Meteorist.onInitialize()"));
+                .forEach(name -> problems.add("command " + name + " extends Command but is never registered via Commands.add(...)"));
         foundHudElements.stream().filter(name -> !registeredHudElements.contains(name))
-                .forEach(name -> problems.add("HUD element " + name + " is never registered in Meteorist.onInitialize()"));
+                .forEach(name -> problems.add("HUD element " + name + " is never registered via Hud.get().register(...)"));
         return problems;
     }
 
@@ -290,7 +252,7 @@ public class MeteoristInfoParser {
             try (FileInputStream in = new FileInputStream(file)) {
                 CompilationUnit cu = JAVA_PARSER.parse(in).getResult().orElse(null);
                 if (cu != null && cu.getPrimaryTypeName().isPresent()) {
-                    cu.getPackageDeclaration().ifPresent(pkg -> FILE_TO_CU_CACHE.put(file, cu));
+                    cu.getPackageDeclaration().ifPresent(_ -> FILE_TO_CU_CACHE.put(file, cu));
                 }
             } catch (Exception e) {
                 System.err.println("Failed to parse for cache: " + file.getName());
@@ -477,8 +439,10 @@ public class MeteoristInfoParser {
         if (depth > MAX_FOLD_DEPTH) return code(expr);
 
         if (expr instanceof StringLiteralExpr literal) return new ExpressionValue(literal.getValue(), false);
-        if (expr instanceof BooleanLiteralExpr literal) return new ExpressionValue(String.valueOf(literal.getValue()), false);
-        if (expr instanceof CharLiteralExpr literal) return new ExpressionValue(String.valueOf(literal.asChar()), false);
+        if (expr instanceof BooleanLiteralExpr literal)
+            return new ExpressionValue(String.valueOf(literal.getValue()), false);
+        if (expr instanceof CharLiteralExpr literal)
+            return new ExpressionValue(String.valueOf(literal.asChar()), false);
         if (expr instanceof NullLiteralExpr) return new ExpressionValue("null", false);
         if (expr instanceof LiteralExpr) return new ExpressionValue(expr.toString(), false);
 
@@ -585,14 +549,6 @@ public class MeteoristInfoParser {
                 .orElse(null);
     }
 
-    static class ArgNode {
-        String name;
-        boolean argument;
-        String type;
-        boolean executable;
-        List<ArgNode> children = new ArrayList<>();
-    }
-
     private static void extractCommandParameters(CompilationUnit cu, CommandInfo cmd) {
         cu.findFirst(MethodDeclaration.class, method -> "build".equals(method.getNameAsString()) && !method.getParameters().isEmpty())
                 .ifPresent(build -> {
@@ -613,7 +569,7 @@ public class MeteoristInfoParser {
             if (call.getArguments().isEmpty()) continue;
 
             if (!scope.equals("builder")) {
-                if (!call.getScope().isEmpty()) continue;
+                if (call.getScope().isPresent()) continue;
                 StringBuilder helperKey = new StringBuilder(callName);
                 for (int i = 1; i < call.getArguments().size(); i++) {
                     Expression arg = call.getArgument(i);
@@ -624,7 +580,10 @@ public class MeteoristInfoParser {
                         .filter(m -> m.getNameAsString().equals(callName))
                         .findFirst().orElse(null);
                 if (helper == null || helper.getParameters().isEmpty()) continue;
-                if (!helper.getParameters().get(0).getTypeAsString().contains("LiteralArgumentBuilder")) continue;
+                var firstParamOpt = helper.getParameters().getFirst();
+                if (firstParamOpt.isEmpty() || !firstParamOpt.get().getTypeAsString().contains("LiteralArgumentBuilder")) {
+                    continue;
+                }
                 Map<String, String> newBindings = new HashMap<>(bindings);
                 for (int i = 1; i < helper.getParameters().size() && i < call.getArguments().size(); i++) {
                     Expression arg = call.getArgument(i);
@@ -781,10 +740,78 @@ public class MeteoristInfoParser {
             Path parent = path.getParent();
             if (parent != null) Files.createDirectories(parent);
             try (FileWriter writer = new FileWriter(path.toFile())) {
-                new GsonBuilder().setPrettyPrinting().create().toJson(data, writer);
+                new GsonBuilder().create().toJson(data, writer);
+                writer.write('\n');
             }
         } catch (IOException e) {
             System.err.println("Failed to write JSON file: " + e.getMessage());
         }
+    }
+
+    static class ExpressionValue {
+        String value;
+        boolean isCode;
+
+        ExpressionValue(String value, boolean isCode) {
+            this.value = value;
+            this.isCode = isCode;
+        }
+    }
+
+    static class ModuleInfo {
+        String name;
+        String description;
+        String category;
+        String className;
+        String classPath;
+        int lineNumber;
+        boolean customGui;
+        Map<String, List<SettingInfo>> settings = new LinkedHashMap<>();
+    }
+
+    static class SettingInfo {
+        String type;
+        int lineNumber;
+        Map<String, Object> properties = new LinkedHashMap<>();
+    }
+
+    static class CommandInfo {
+        String name;
+        String description;
+        List<String> aliases = new ArrayList<>();
+        String className;
+        String classPath;
+        int lineNumber;
+        List<String> usage = new ArrayList<>();
+        List<ParameterInfo> parameters = new ArrayList<>();
+    }
+
+    static class ParameterInfo {
+        String name;
+        String type;
+    }
+
+    static class PresetInfo {
+        String title;
+        String text;
+        int lineNumber;
+    }
+
+    static class HudElementInfoWrapper {
+        String name;
+        String description;
+        String className;
+        String classPath;
+        int lineNumber;
+        Map<String, List<SettingInfo>> settings = new LinkedHashMap<>();
+        List<PresetInfo> presets = new ArrayList<>();
+    }
+
+    static class ArgNode {
+        String name;
+        boolean argument;
+        String type;
+        boolean executable;
+        List<ArgNode> children = new ArrayList<>();
     }
 }
