@@ -25,7 +25,7 @@ jobs:
           cat > /tmp/release.json << 'EOF'
           ${{ toJSON(github.event.release) }}
           EOF
-          jq '{
+          jq -c '{
             name: .name,
             body: .body,
             tag_name: .tag_name

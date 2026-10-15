@@ -1568,6 +1568,12 @@ dialog.module-dialog {
   font-size: 0.85rem;
   gap: 0.25rem;
   margin-bottom: 1.2rem;
+  text-decoration: none;
+}
+
+.dialog-source-label {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .dialog-settings {

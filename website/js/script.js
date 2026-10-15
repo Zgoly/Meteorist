@@ -565,7 +565,7 @@ function openModuleDialog(module) {
     const srcIcon = el("span", "material-symbols-rounded small-icon", "code");
     srcIcon.setAttribute("aria-hidden", "true");
     src.appendChild(srcIcon);
-    src.appendChild(document.createTextNode("View source on GitHub"));
+    src.appendChild(el("span", "dialog-source-label", "View source on GitHub"));
     moduleDialog.appendChild(src);
   }
 
@@ -679,10 +679,7 @@ document.addEventListener("keydown", (e) => {
 
 function renderModuleBrowser(data) {
   const grid = $("#modules-grid");
-  const modules = [...data.modules].sort((a, b) => {
-    if (a.category !== b.category) return a.category === "MeteoristDev" ? 1 : -1;
-    return humanize(a.name).localeCompare(humanize(b.name));
-  });
+  const modules = data.modules;
 
   const frag = document.createDocumentFragment();
 
@@ -925,7 +922,7 @@ function openCommandDialog(cmd) {
     const srcIcon = el("span", "material-symbols-rounded small-icon", "code");
     srcIcon.setAttribute("aria-hidden", "true");
     src.appendChild(srcIcon);
-    src.appendChild(document.createTextNode("View source on GitHub"));
+    src.appendChild(el("span", "dialog-source-label", "View source on GitHub"));
     moduleDialog.appendChild(src);
   }
 
