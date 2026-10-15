@@ -114,6 +114,8 @@ document.addEventListener("keydown", (e) => {
 const progressBar = $("#scroll-progress");
 const toTopBtn = $("#to-top");
 const navAnchors = $$('#nav-links a[href^="#"]');
+const modulesToolbar = $("#modules-toolbar");
+const toolbarStickyTop = modulesToolbar ? parseFloat(getComputedStyle(modulesToolbar).top) || 0 : 0;
 let scrollQueued = false;
 
 function onScrollFrame() {
@@ -125,6 +127,14 @@ function onScrollFrame() {
     progressBar.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
   }
   toTopBtn?.classList.toggle("visible", y > 700);
+
+  // Give the module toolbar a shadow while it is pinned below the header
+  if (modulesToolbar) {
+    modulesToolbar.classList.toggle(
+      "is-stuck",
+      modulesToolbar.getBoundingClientRect().top <= toolbarStickyTop + 1,
+    );
+  }
 
   // Active nav link: last section above the header line
   let activeId = null;

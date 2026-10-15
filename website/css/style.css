@@ -4,7 +4,7 @@
   --primary: rgb(0, 128, 255);
   --primary-bright: #4da3ff;
   --shadow-primary: rgba(0, 128, 255, 0.5);
-  --shadow-secondary: rgba(0, 0, 0, 0.2);
+  --shadow-secondary: rgba(0, 0, 0, 0.25);
   --surface-0: rgb(0, 15, 30);
   --surface-1: rgb(0, 25, 50);
   --surface-2: rgb(0, 30, 60);
@@ -1192,13 +1192,19 @@ a.req-name {
   background: var(--surface-2);
   border: 2px solid var(--stroke);
   border-radius: 1.5em;
+  box-shadow: 0 6px 25px transparent;
   display: grid;
   gap: 0.8rem;
   margin-bottom: 1.8rem;
   padding: 1rem;
   position: sticky;
   top: calc(var(--header-h) + 0.5rem);
+  transition: box-shadow 0.3s ease;
   z-index: 30;
+}
+
+.modules-toolbar.is-stuck {
+  box-shadow: 0 6px 25px var(--shadow-secondary);
 }
 
 .search-wrap {
@@ -2652,6 +2658,10 @@ footer {
     background-color 0.3s ease;
   width: 48px;
   z-index: 90;
+}
+
+.to-top:hover {
+  background: var(--primary);
 }
 
 .to-top.visible {
