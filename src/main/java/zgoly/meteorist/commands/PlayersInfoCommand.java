@@ -3,13 +3,17 @@ package zgoly.meteorist.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import meteordevelopment.meteorclient.commands.Command;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.core.ClientAsset;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.util.tinyfd.TinyFileDialogs;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import zgoly.meteorist.commands.arguments.PlayerPropertiesArgumentType;
+import zgoly.meteorist.utils.SdlFileDialog;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -31,21 +35,28 @@ public class PlayersInfoCommand extends Command {
     }
 
     private int savePlayersInfo(CommandContext<ClientSuggestionProvider> context) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            PointerBuffer filterBuffer = stack.mallocPointer(1);
-            filterBuffer.put(stack.UTF8("*.csv"));
-            filterBuffer.flip();
-            String result = TinyFileDialogs.tinyfd_saveFileDialog("Save Players Info", "players_info.csv", filterBuffer, "CSV File (*.csv)");
-            if (result != null) {
-                try (FileOutputStream outputStream = new FileOutputStream(result)) {
-                    outputStream.write(getPlayersInfo(context).getBytes());
-                    info("Players info was saved to (highlight)%s(default)", result);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        String playersInfo = getPlayersInfo(context);
+
+        SdlFileDialog.save("players_info.csv", "CSV File", "csv", path -> {
+            try (FileOutputStream outputStream = new FileOutputStream(path)) {
+                outputStream.write(playersInfo.getBytes());
+                info(savedMessage(path));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
+        });
+
         return SINGLE_SUCCESS;
+    }
+
+    private Component savedMessage(String path) {
+        Style style = Style.EMPTY
+                .applyFormats(ChatFormatting.WHITE, ChatFormatting.UNDERLINE)
+                .withClickEvent(new ClickEvent.OpenFile(path))
+                .withHoverEvent(new HoverEvent.ShowText(Component.literal("Open file").withStyle(ChatFormatting.GRAY)));
+
+        MutableComponent file = Component.literal(path).withStyle(style);
+        return Component.literal("Players info was saved to ").withStyle(ChatFormatting.GRAY).append(file);
     }
 
     private int copyPlayersInfo(CommandContext<ClientSuggestionProvider> context) {

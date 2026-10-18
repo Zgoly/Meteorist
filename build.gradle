@@ -55,7 +55,7 @@ dependencies {
     compileOnly "maven.modrinth:minescript:${project.minescript_version}-fabric-${project.minecraft_version}"
     
     // Catppuccin theme
-    compileOnly "maven.modrinth:catppuccin-theme-addon:${project.catppuccin_version}+mc${project.minecraft_version}"
+    compileOnly "maven.modrinth:catppuccin-theme-addon:${project.catppuccin_version}"
 
     // JavaParser
     devImplementation "com.github.javaparser:javaparser-core:${project.javaparser_version}"

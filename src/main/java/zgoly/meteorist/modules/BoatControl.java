@@ -289,7 +289,7 @@ public class BoatControl extends Module {
     }
 
     private List<BlockPos> getBlockPos(AABB box) {
-        return BlockPos.betweenClosedStream(box).map(BlockPos::new)
+        return BlockPos.betweenClosedStream(box).map(BlockPos::immutable)
                 .filter(blockPos -> !mc.level.getBlockState(blockPos).getCollisionShape(mc.level, blockPos).isEmpty())
                 .filter(blockPos -> !(mc.level.getBlockState(blockPos).getBlock() instanceof LilyPadBlock))
                 .toList();

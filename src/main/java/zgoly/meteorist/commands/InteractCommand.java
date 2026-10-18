@@ -39,7 +39,7 @@ public class InteractCommand extends Command {
 
     public BlockPos findClosestBlock(Block block) {
         int reach = (int) mc.player.blockInteractionRange();
-        for (BlockPos pos : BlockPos.withinManhattan(mc.player.blockPosition(), reach, reach, reach)) {
+        for (BlockPos pos : BlockPos.withinManhattan(mc.player.blockPosition(), reach)) {
             if (mc.level.getBlockState(pos).getBlock() == block) {
                 return pos;
             }

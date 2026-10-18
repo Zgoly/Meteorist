@@ -20,7 +20,7 @@ import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
+import com.mojang.blaze3d.Blaze3D;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -87,7 +87,7 @@ public class MeteoristConfigManager {
         WButton openFolder = buttons.add(theme.button("Open Folder")).expandX().widget();
         openFolder.action = () -> {
             if (!folderPath.exists() && !folderPath.mkdirs()) return;
-            Util.getPlatform().openFile(folderPath);
+            Blaze3D.openPath(folderPath.toPath());
         };
 
         control.row();

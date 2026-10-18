@@ -4,6 +4,7 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
+import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.DoubleSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
@@ -44,6 +45,8 @@ public class DisconnectSound extends Module {
             .build()
     );
 
+    private boolean pending;
+
     public DisconnectSound() {
         super(Meteorist.CATEGORY, "disconnect-sound", "Plays a sound when the Disconnected Screen appears (e.g., when kicked).");
         MeteorClient.EVENT_BUS.subscribe(this);
@@ -60,8 +63,18 @@ public class DisconnectSound extends Module {
         return button;
     }
 
+    // The disconnect screen is shown before the level teardown calls SoundManager.stop(), which kills anything playing,
+    // so the sound is played on the next tick instead.
     @EventHandler
     private void onDisconnectedScreen(DisconnectedScreenEvent event) {
-        if (this.isActive()) playSound();
+        if (this.isActive()) pending = true;
+    }
+
+    @EventHandler
+    private void onTick(TickEvent.Post event) {
+        if (pending) {
+            pending = false;
+            playSound();
+        }
     }
 }

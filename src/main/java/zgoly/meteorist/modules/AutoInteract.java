@@ -64,7 +64,7 @@ public class AutoInteract extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition().offset(rangePosOffset.get()), outerRange.get(), outerRange.get(), outerRange.get())) {
+        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition().offset(rangePosOffset.get()), outerRange.get())) {
             BlockState blockState = mc.level.getBlockState(blockPos);
 
             if (blockState.getBlock() instanceof DoorBlock && blockState.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER)

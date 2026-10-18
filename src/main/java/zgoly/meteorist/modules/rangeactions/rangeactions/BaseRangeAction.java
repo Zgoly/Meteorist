@@ -36,10 +36,16 @@ public class BaseRangeAction implements ISerializable<BaseRangeAction> {
             .defaultValue(EntityTypes.PLAYER)
             .build()
     );
-    public final Setting<EntityAgeTest> mobAgeFilter = sgBaseRangeAction.add(new EnumSetting.Builder<EntityAgeTest>()
-            .name("mob-age-filter")
-            .description("Determines the age of the mobs to react (baby, adult, or both).")
+    public final Setting<EntityAgeTest> passiveMobAgeFilter = sgBaseRangeAction.add(new EnumSetting.Builder<EntityAgeTest>()
+            .name("passive-mob-age-filter")
+            .description("Determines the age of passive mobs to react (animals, villagers).")
             .defaultValue(EntityAgeTest.Adult)
+            .build()
+    );
+    public final Setting<EntityAgeTest> hostileMobAgeFilter = sgBaseRangeAction.add(new EnumSetting.Builder<EntityAgeTest>()
+            .name("hostile-mob-age-filter")
+            .description("Determines the age of hostile mobs to react (zombies, piglins, hoglins, zoglins).")
+            .defaultValue(EntityAgeTest.Both)
             .build()
     );
     public final Setting<Boolean> ignoreNamed = sgBaseRangeAction.add(new BoolSetting.Builder()

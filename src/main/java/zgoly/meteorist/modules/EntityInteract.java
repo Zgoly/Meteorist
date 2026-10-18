@@ -93,7 +93,7 @@ public class EntityInteract extends Module {
                     || ignoreBabies.get() && ((LivingEntity) entity).isBaby()) continue;
 
             if (rotate.get()) Rotations.rotate(Rotations.getYaw(entity), Rotations.getPitch(entity), 10, null);
-            if (swingHand.get()) mc.player.swing(hand.get());
+            if (swingHand.get()) mc.player.swing(hand.get(), mc.player.getItemInHand(hand.get()).getInteractAnimation(), false);
             if (oneTime.get()) used.add(entity);
 
             EntityHitResult location = new EntityHitResult(entity, entity.getBoundingBox().getCenter());

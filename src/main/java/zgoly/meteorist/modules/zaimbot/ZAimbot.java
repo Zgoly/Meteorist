@@ -22,14 +22,20 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.frog.Frog;
+import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.animal.wolf.Wolf;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.Zoglin;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -65,10 +71,16 @@ public class ZAimbot extends Module {
             .sliderMax(6)
             .build()
     );
-    private final Setting<EntityAgeTest> mobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
-            .name("mob-age-filter")
-            .description("Determines the age of the mobs to target (baby, adult, or both).")
+    private final Setting<EntityAgeTest> passiveMobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
+            .name("passive-mob-age-filter")
+            .description("Determines the age of passive mobs to target (animals, villagers).")
             .defaultValue(EntityAgeTest.Adult)
+            .build()
+    );
+    private final Setting<EntityAgeTest> hostileMobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
+            .name("hostile-mob-age-filter")
+            .description("Determines the age of hostile mobs to target (zombies, piglins, hoglins, zoglins).")
+            .defaultValue(EntityAgeTest.Both)
             .build()
     );
     private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
@@ -373,12 +385,16 @@ public class ZAimbot extends Module {
             if (ignoreShield.get() && player.isBlocking()) return false;
         }
 
-        if (entity instanceof Animal animal) {
-            return switch (mobAgeFilter.get()) {
-                case Baby -> animal.isBaby();
-                case Adult -> !animal.isBaby();
-                case Both -> true;
-            };
+        if (entity instanceof LivingEntity livingEntity) {
+            // Hostile mobs with baby variants (zombies, piglins, hoglins, zoglins)
+            if (entity instanceof Zombie || entity instanceof Piglin
+                    || entity instanceof Hoglin || entity instanceof Zoglin) {
+                return hostileMobAgeFilter.get().test(livingEntity);
+            }
+            // Passive mobs with baby variants (animals, villagers)
+            if (entity instanceof AgeableMob && (!(entity instanceof Frog || entity instanceof Parrot))) {
+                return passiveMobAgeFilter.get().test(livingEntity);
+            }
         }
 
         if (useFovRange.get() && calculateFov(mc.player, entity) > fovRange.get()) return false;
@@ -387,7 +403,7 @@ public class ZAimbot extends Module {
 
     private boolean isPassive(Entity entity) {
         return switch (entity) {
-            case EnderMan enderman -> !enderman.isCreepy();
+            case Enderman enderman -> !enderman.isCreepy();
             case ZombifiedPiglin piglin -> !piglin.isAggressive();
             case Wolf wolf -> !wolf.isAggressive();
             default -> false;

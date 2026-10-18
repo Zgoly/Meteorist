@@ -206,7 +206,7 @@ public class AutoBrush extends Module {
         BlockPos best = null;
         double bestDist = Double.MAX_VALUE;
 
-        for (BlockPos pos : BlockPos.withinManhattan(mc.player.blockPosition(), r, r, r)) {
+        for (BlockPos pos : BlockPos.withinManhattan(mc.player.blockPosition(), r)) {
             if (!isBrushable(pos)) continue;
             if (!allowed(pos)) {
                 rejected.add(pos.immutable());

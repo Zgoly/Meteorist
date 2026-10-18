@@ -132,7 +132,7 @@ public class Grid extends Module {
     }
 
     private BlockPos findNearest() {
-        Iterable<BlockPos> blockPosIterable = BlockPos.withinManhattan(mc.player.blockPosition(), switchRange.get(), switchRange.get(), switchRange.get());
+        Iterable<BlockPos> blockPosIterable = BlockPos.withinManhattan(mc.player.blockPosition(), switchRange.get());
         for (BlockPos blockPos : blockPosIterable) {
             if (blocks.get().contains(mc.level.getBlockState(blockPos).getBlock())) return blockPos;
         }

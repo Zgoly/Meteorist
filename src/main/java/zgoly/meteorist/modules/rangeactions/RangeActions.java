@@ -22,12 +22,18 @@ import meteordevelopment.orbit.EventPriority;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.frog.Frog;
+import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.animal.wolf.Wolf;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.Zoglin;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import zgoly.meteorist.Meteorist;
@@ -275,7 +281,7 @@ public class RangeActions extends Module {
 
         if (rangeAction.ignorePassive.get()) {
             switch (entity) {
-                case EnderMan enderman when !enderman.isCreepy() -> {
+                case Enderman enderman when !enderman.isCreepy() -> {
                     return false;
                 }
                 case ZombifiedPiglin piglin when !piglin.isAggressive() -> {
@@ -295,12 +301,16 @@ public class RangeActions extends Module {
             if (rangeAction.ignoreShield.get() && player.isBlocking()) return false;
         }
 
-        if (entity instanceof Animal animal) {
-            return switch (rangeAction.mobAgeFilter.get()) {
-                case Baby -> animal.isBaby();
-                case Adult -> !animal.isBaby();
-                case Both -> true;
-            };
+        if (entity instanceof LivingEntity livingEntity) {
+            // Hostile mobs with baby variants (zombies, piglins, hoglins, zoglins)
+            if (entity instanceof Zombie || entity instanceof Piglin
+                    || entity instanceof Hoglin || entity instanceof Zoglin) {
+                return rangeAction.hostileMobAgeFilter.get().test(livingEntity);
+            }
+            // Passive mobs with baby variants (animals, villagers)
+            if (entity instanceof AgeableMob && (!(entity instanceof Frog || entity instanceof Parrot))) {
+                return rangeAction.passiveMobAgeFilter.get().test(livingEntity);
+            }
         }
 
         if (rangeAction.useFovRange.get() && calculateFov(mc.player, entity) > rangeAction.fovRange.get()) return false;

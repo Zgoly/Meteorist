@@ -4,7 +4,9 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
-import net.minecraft.util.Util;
+import com.mojang.blaze3d.Blaze3D;
+
+import java.net.URI;
 
 public class StubMinescriptService implements MinescriptService {
     @Override
@@ -15,10 +17,10 @@ public class StubMinescriptService implements MinescriptService {
         list.add(theme.label("This module requires the Minescript mod to function.")).center().alignWidget();
 
         WButton downloadBtn = list.add(theme.button("Minescript website")).center().widget();
-        downloadBtn.action = () -> Util.getPlatform().openUri("https://minescript.net/");
+        downloadBtn.action = () -> Blaze3D.openUri(URI.create("https://minescript.net/"));
 
         WButton downloadsBtn = list.add(theme.button("Go to Downloads")).center().widget();
-        downloadsBtn.action = () -> Util.getPlatform().openUri("https://minescript.net/downloads/");
+        downloadsBtn.action = () -> Blaze3D.openUri(URI.create("https://minescript.net/downloads/"));
 
         return list;
     }

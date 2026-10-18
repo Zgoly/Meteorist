@@ -122,7 +122,7 @@ public class AutoSleep extends Module {
     }
 
     private boolean sleepInNearestBed(int radius) {
-        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition(), radius, radius, radius)) {
+        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition(), radius)) {
             if (mc.level.getBlockState(blockPos).getBlock() instanceof BedBlock) {
                 sleepTimer = 0;
                 BlockUtils.interact(new BlockHitResult(Vec3.atCenterOf(blockPos), Direction.UP, blockPos, true), InteractionHand.MAIN_HAND, false);

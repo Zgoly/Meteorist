@@ -60,7 +60,7 @@ public class AutoMud extends Module {
     }
 
     private BlockPos findBlockPos(Predicate<BlockState> predicate) {
-        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition(), range.get(), range.get(), range.get())) {
+        for (BlockPos blockPos : BlockPos.withinManhattan(mc.player.blockPosition(), range.get())) {
             BlockState blockState = mc.level.getBlockState(blockPos);
             if (predicate.test(blockState)) {
                 return blockPos;
@@ -75,7 +75,7 @@ public class AutoMud extends Module {
         FindItemResult emptyBottle = InvUtils.findInHotbar(Items.GLASS_BOTTLE);
 
         if (waterBottle.found()) {
-            BlockPos target = findBlockPos(blockState -> blockState.is(BlockTags.CONVERTABLE_TO_MUD));
+            BlockPos target = findBlockPos(blockState -> blockState.is(BlockTags.CONVERTIBLE_TO_MUD));
             if (target == null) return;
 
             InvUtils.swap(waterBottle.slot(), swapBack.get());

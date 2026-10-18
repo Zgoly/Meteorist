@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.block.entity.SignTextSlot;
 import zgoly.meteorist.Meteorist;
 import zgoly.meteorist.utils.misc.DebugLogger;
 
@@ -145,12 +146,12 @@ public class SignSearch extends Module {
                 table.add(currentTheme.label(String.format(pos.getX() + ", " + pos.getY() + ", " + pos.getZ()))).expandX();
 
                 WVerticalList frontTextList = table.add(currentTheme.verticalList()).expandX().widget();
-                for (Component message : signBlockEntity.getFrontText().getMessages(false)) {
+                for (Component message : signBlockEntity.getText(SignTextSlot.FRONT).getMessages(false)) {
                     frontTextList.add(currentTheme.label(message.getString())).expandX();
                 }
 
                 WVerticalList backTextList = table.add(currentTheme.verticalList()).expandX().widget();
-                for (Component message : signBlockEntity.getBackText().getMessages(false)) {
+                for (Component message : signBlockEntity.getText(SignTextSlot.BACK).getMessages(false)) {
                     backTextList.add(currentTheme.label(message.getString())).expandX();
                 }
 
@@ -187,10 +188,10 @@ public class SignSearch extends Module {
             boolean matches = false;
 
             switch (searchSide.get()) {
-                case Front -> matches = matchesText(pattern, sign.getFrontText());
-                case Back -> matches = matchesText(pattern, sign.getBackText());
+                case Front -> matches = matchesText(pattern, sign.getText(SignTextSlot.FRONT));
+                case Back -> matches = matchesText(pattern, sign.getText(SignTextSlot.BACK));
                 case Both ->
-                        matches = matchesText(pattern, sign.getFrontText()) || matchesText(pattern, sign.getBackText());
+                        matches = matchesText(pattern, sign.getText(SignTextSlot.FRONT)) || matchesText(pattern, sign.getText(SignTextSlot.BACK));
             }
 
             if (matches) foundSigns.add(sign);
@@ -200,7 +201,7 @@ public class SignSearch extends Module {
     private boolean matchesText(Pattern pattern, SignText signText) {
         if (signText == null) return false;
         for (int i = 0; i < 4; i++) {
-            String line = signText.getMessage(i, false).getString();
+            String line = signText.getMessages(false).get(i).getString();
             if (pattern.matcher(line).find()) {
                 return true;
             }

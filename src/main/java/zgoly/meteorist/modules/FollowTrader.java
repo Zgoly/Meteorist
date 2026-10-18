@@ -28,7 +28,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.phys.EntityHitResult;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import zgoly.meteorist.Meteorist;
 
 public class FollowTrader extends Module {
@@ -146,14 +146,14 @@ public class FollowTrader extends Module {
     private final Setting<Keybind> interactKeybind = sgKeybinds.add(new KeybindSetting.Builder()
             .name("interact-keybind")
             .description("Starts a hidden trade with the selected trader. Pressing it again declines the current trade.")
-            .defaultValue(Keybind.fromKey(GLFW.GLFW_KEY_G))
+            .defaultValue(Keybind.fromKey(InputConstants.KEY_G))
             .action(this::interact)
             .build()
     );
     private final Setting<Keybind> showTradesKeybind = sgKeybinds.add(new KeybindSetting.Builder()
             .name("show-trades-keybind")
             .description("Shows the real trade screen of the current hidden trade.")
-            .defaultValue(Keybind.fromKeys(GLFW.GLFW_KEY_G, GLFW.GLFW_MOD_SHIFT))
+            .defaultValue(Keybind.fromKeys(InputConstants.KEY_G, InputConstants.MOD_SHIFT))
             .action(this::showTrades)
             .build()
     );
@@ -320,7 +320,7 @@ public class FollowTrader extends Module {
         Runnable action = () -> {
             EntityHitResult hitResult = new EntityHitResult(target);
             mc.gameMode.interact(mc.player, target, hitResult, InteractionHand.MAIN_HAND);
-            if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND);
+            if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND, mc.player.getMainHandItem().getInteractAnimation(), false);
         };
 
         if (rotate.get()) Rotations.rotate(Rotations.getYaw(target), Rotations.getPitch(target), 100, action);

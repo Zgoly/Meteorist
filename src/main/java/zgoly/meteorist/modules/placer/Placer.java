@@ -416,7 +416,7 @@ public class Placer extends Module {
                     Tuple<BlockPos, BlockPos> finalPos = getPlacePos(placer);
                     BlockPos.betweenClosedStream(finalPos.getA(), finalPos.getB()).filter(blockPos ->
                             (!limitRange.get() || !(Vec3.atCenterOf(blockPos).distanceTo(mc.player.getEyePosition()) > maxRange.get()))
-                    ).forEach(blockPos -> blockPosList.add(new BlockPos(blockPos)));
+                    ).forEach(blockPos -> blockPosList.add(blockPos.immutable()));
                     blockPosList.sort(Comparator.comparingDouble(blockPos -> Vec3.atCenterOf(blockPos).distanceTo(mc.player.getEyePosition())));
 
                     for (BlockPos blockPos : blockPosList) {

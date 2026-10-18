@@ -8,18 +8,24 @@ import meteordevelopment.meteorclient.utils.entity.EntityAgeTest;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.frog.Frog;
+import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.animal.wolf.Wolf;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.Zoglin;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.EntityHitResult;
@@ -52,10 +58,16 @@ public class ZKillaura extends Module {
             .sliderMax(6)
             .build()
     );
-    private final Setting<EntityAgeTest> mobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
-            .name("mob-age-filter")
-            .description("Determines the age of the mobs to target (baby, adult, or both).")
+    private final Setting<EntityAgeTest> passiveMobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
+            .name("passive-mob-age-filter")
+            .description("Determines the age of passive mobs to target (animals, villagers).")
             .defaultValue(EntityAgeTest.Adult)
+            .build()
+    );
+    private final Setting<EntityAgeTest> hostileMobAgeFilter = sgFilter.add(new EnumSetting.Builder<EntityAgeTest>()
+            .name("hostile-mob-age-filter")
+            .description("Determines the age of hostile mobs to target (zombies, piglins, hoglins, zoglins).")
+            .defaultValue(EntityAgeTest.Both)
             .build()
     );
     private final Setting<Boolean> ignoreNamed = sgFilter.add(new BoolSetting.Builder()
@@ -324,7 +336,7 @@ public class ZKillaura extends Module {
         // Using labeled breaks instead of returns so the code can run in one tick, but I think there should be a simpler way to do this
         if (shieldMode.get() == ShieldMode.Break && livingEntity != null) {
             if (shieldState == ShieldState.Idle && livingEntity.isBlocking()) {
-                FindItemResult axe = InvUtils.findInHotbar(stack -> stack.getItem() instanceof AxeItem);
+                FindItemResult axe = InvUtils.findInHotbar(stack -> stack.is(ItemTags.AXES));
                 if (axe.found()) {
                     shieldState = ShieldState.SwapAxe;
                     swapTimer = calculateDelay(swapDelayMode.get(), swapDelayValue.get(),
@@ -336,7 +348,7 @@ public class ZKillaura extends Module {
             if (shieldState == ShieldState.SwapAxe) {
                 if (swapTimer-- > 0) break swapAxeState;
 
-                FindItemResult axe = InvUtils.findInHotbar(stack -> stack.getItem() instanceof AxeItem);
+                FindItemResult axe = InvUtils.findInHotbar(stack -> stack.is(ItemTags.AXES));
                 if (axe.found() && livingEntity.isBlocking()) {
                     originalSlot = mc.player.getInventory().getSelectedSlot();
                     InvUtils.swap(axe.slot(), false);
@@ -355,7 +367,7 @@ public class ZKillaura extends Module {
 
                 if (livingEntity.isBlocking()) {
                     mc.gameMode.attack(mc.player, livingEntity);
-                    if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND);
+                    if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND, mc.player.getMainHandItem().getAttackAnimation(), false);
 
                     shieldState = ShieldState.SwapBack;
                     swapBackTimer = calculateDelay(swapBackDelayMode.get(), swapBackDelayValue.get(),
@@ -392,7 +404,7 @@ public class ZKillaura extends Module {
             return;
 
         mc.gameMode.attack(mc.player, entity);
-        if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND);
+        if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND, mc.player.getMainHandItem().getAttackAnimation(), false);
 
         if (currOnFallMode == OnFallMode.RandomValue) {
             float min = Math.min(onFallMinRandomValue.get().floatValue(), onFallMaxRandomValue.get().floatValue());
@@ -441,12 +453,16 @@ public class ZKillaura extends Module {
             if (shieldMode.get() == ShieldMode.Ignore && player.isBlocking()) return false;
         }
 
-        if (entity instanceof Animal animal) {
-            return switch (mobAgeFilter.get()) {
-                case Baby -> animal.isBaby();
-                case Adult -> !animal.isBaby();
-                case Both -> true;
-            };
+        if (entity instanceof LivingEntity livingEntity) {
+            // Hostile mobs with baby variants (zombies, piglins, hoglins, zoglins)
+            if (entity instanceof Zombie || entity instanceof Piglin
+                    || entity instanceof Hoglin || entity instanceof Zoglin) {
+                return hostileMobAgeFilter.get().test(livingEntity);
+            }
+            // Passive mobs with baby variants (animals, villagers)
+            if (entity instanceof AgeableMob && (!(entity instanceof Frog || entity instanceof Parrot))) {
+                return passiveMobAgeFilter.get().test(livingEntity);
+            }
         }
 
         return true;
@@ -454,7 +470,7 @@ public class ZKillaura extends Module {
 
     private boolean isPassive(Entity entity) {
         return switch (entity) {
-            case EnderMan enderman -> !enderman.isCreepy();
+            case Enderman enderman -> !enderman.isCreepy();
             case ZombifiedPiglin piglin -> !piglin.isAggressive();
             case Wolf wolf -> !wolf.isAggressive();
             default -> false;

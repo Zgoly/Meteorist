@@ -26,7 +26,9 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import org.jspecify.annotations.NonNull;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLMouse;
+import org.lwjgl.sdl.SDLScancode;
+import org.lwjgl.system.MemoryStack;
 import zgoly.meteorist.utils.KeybindUtils;
 
 import java.util.ArrayList;
@@ -351,7 +353,7 @@ public class KeybindsScreen extends WindowTabScreen {
         Runnable action = binding != null ? () -> applyBinding(key)
                 : meteorBinding != null || off ? null
                 : () -> selectKey(key);
-        return new KeyWidget(truncate(name, width - theme.pad() * 2), key, off, selected, height, off ? "[" + name + "]" : tooltip(name, binds), action);
+        return new KeyWidget(fitLabel(name, width - theme.pad() * 2), key, off, selected, height, off ? "[" + name + "]" : tooltip(name, binds), action);
     }
 
     private static class KeyWidget extends WWidget {
@@ -427,9 +429,15 @@ public class KeybindsScreen extends WindowTabScreen {
 
         private static boolean isPhysicallyPressed(InputConstants.Key key) {
             if (key.getType() == InputConstants.Type.MOUSE) {
-                return GLFW.glfwGetMouseButton(mc.getWindow().handle(), key.getValue()) != InputConstants.RELEASE;
+                int button = key.getValue();
+                if (button < InputConstants.MOUSE_BUTTON_LEFT || button > InputConstants.MOUSE_BUTTON_5) return false;
+
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    int mask = 1 << button - 1;
+                    return (SDLMouse.SDL_GetMouseState(stack.mallocFloat(1), stack.mallocFloat(1)) & mask) != 0;
+                }
             }
-            return InputConstants.isKeyDown(mc.getWindow(), key.getValue());
+            return InputConstants.isKeyDown(key.getValue());
         }
 
         private static boolean rounded(GuiTheme theme) {
@@ -472,6 +480,24 @@ public class KeybindsScreen extends WindowTabScreen {
         return String.join("\n\n", sections);
     }
 
+    private String fitLabel(String text, double maxWidth) {
+        if (theme.textWidth(text) <= maxWidth) return text;
+
+        String shortened = shorten(text);
+        if (shortened.isEmpty()) return truncate(text, maxWidth);
+
+        return theme.textWidth(shortened) <= maxWidth ? shortened : truncate(shortened, maxWidth);
+    }
+
+    private String shorten(String text) {
+        StringBuilder builder = new StringBuilder(text.length());
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (!Character.isLowerCase(c) && !Character.isWhitespace(c)) builder.append(c);
+        }
+        return builder.toString();
+    }
+
     private String truncate(String text, double maxWidth) {
         if (theme.textWidth(text) <= maxWidth) return text;
         while (text.length() > 1 && theme.textWidth(text + "…") > maxWidth) {
@@ -489,7 +515,7 @@ public class KeybindsScreen extends WindowTabScreen {
     }
 
     private void key(List<KeySpec> row, int keyCode, double x, double w, boolean tall) {
-        row.add(new KeySpec(InputConstants.Type.KEYSYM.getOrCreate(keyCode), x, w, tall));
+        row.add(new KeySpec(InputConstants.Type.KEYBOARD.getOrCreate(keyCode), x, w, tall));
     }
 
     private void mouseKey(List<KeySpec> row, int button, double x, double w) {
@@ -525,9 +551,9 @@ public class KeybindsScreen extends WindowTabScreen {
         key(row1, InputConstants.KEY_HOME, step * (NAV_COLUMN + 1), 1);
         key(row1, InputConstants.KEY_PAGEUP, step * (NAV_COLUMN + 2), 1);
         key(row1, InputConstants.KEY_NUMLOCK, step * NUMPAD_COLUMN, 1);
-        key(row1, GLFW.GLFW_KEY_KP_DIVIDE, step * (NUMPAD_COLUMN + 1), 1);
+        key(row1, SDLScancode.SDL_SCANCODE_KP_DIVIDE, step * (NUMPAD_COLUMN + 1), 1);
         key(row1, InputConstants.KEY_MULTIPLY, step * (NUMPAD_COLUMN + 2), 1);
-        key(row1, GLFW.GLFW_KEY_KP_SUBTRACT, step * (NUMPAD_COLUMN + 3), 1);
+        key(row1, SDLScancode.SDL_SCANCODE_KP_MINUS, step * (NUMPAD_COLUMN + 3), 1);
         rows.add(row1);
 
         List<KeySpec> row2 = new ArrayList<>();
@@ -573,7 +599,7 @@ public class KeybindsScreen extends WindowTabScreen {
         double x = 0;
         key(row5, InputConstants.KEY_LCONTROL, x, MODIFIER_WIDTH);
         x += widthOf(MODIFIER_WIDTH, unit, gap) + gap;
-        key(row5, InputConstants.KEY_LSUPER, x, MODIFIER_WIDTH);
+        key(row5, InputConstants.KEY_LGUI, x, MODIFIER_WIDTH);
         x += widthOf(MODIFIER_WIDTH, unit, gap) + gap;
         key(row5, InputConstants.KEY_LALT, x, MODIFIER_WIDTH);
         x += widthOf(MODIFIER_WIDTH, unit, gap) + gap;
@@ -581,26 +607,26 @@ public class KeybindsScreen extends WindowTabScreen {
         x += widthOf(SPACE_WIDTH, unit, gap) + gap;
         key(row5, InputConstants.KEY_RALT, x, MODIFIER_WIDTH);
         x += widthOf(MODIFIER_WIDTH, unit, gap) + gap;
-        key(row5, InputConstants.KEY_RSUPER, x, MODIFIER_WIDTH);
+        key(row5, InputConstants.KEY_RGUI, x, MODIFIER_WIDTH);
         x += widthOf(MODIFIER_WIDTH, unit, gap) + gap;
-        key(row5, GLFW.GLFW_KEY_MENU, x, MODIFIER_WIDTH);
+        key(row5, SDLScancode.SDL_SCANCODE_APPLICATION, x, MODIFIER_WIDTH);
         x += widthOf(MODIFIER_WIDTH, unit, gap) + gap;
         key(row5, InputConstants.KEY_RCONTROL, x, MODIFIER_WIDTH);
         key(row5, InputConstants.KEY_LEFT, step * NAV_COLUMN, 1);
         key(row5, InputConstants.KEY_DOWN, step * (NAV_COLUMN + 1), 1);
         key(row5, InputConstants.KEY_RIGHT, step * (NAV_COLUMN + 2), 1);
         key(row5, InputConstants.KEY_NUMPAD0, step * NUMPAD_COLUMN, 2);
-        key(row5, InputConstants.KEY_NUMPADCOMMA, step * (NUMPAD_COLUMN + 2), 1);
+        key(row5, SDLScancode.SDL_SCANCODE_KP_PERIOD, step * (NUMPAD_COLUMN + 2), 1);
         rows.add(row5);
 
         List<KeySpec> mouse1 = new ArrayList<>();
-        mouseKey(mouse1, 0, step * MOUSE_LEFT_COLUMN, MOUSE_LEFT_WIDTH);
-        mouseKey(mouse1, 2, step * MOUSE_MIDDLE_COLUMN, MOUSE_MIDDLE_WIDTH);
-        mouseKey(mouse1, 1, step * MOUSE_RIGHT_COLUMN, MOUSE_RIGHT_WIDTH);
+        mouseKey(mouse1, InputConstants.MOUSE_BUTTON_LEFT, step * MOUSE_LEFT_COLUMN, MOUSE_LEFT_WIDTH);
+        mouseKey(mouse1, InputConstants.MOUSE_BUTTON_MIDDLE, step * MOUSE_MIDDLE_COLUMN, MOUSE_MIDDLE_WIDTH);
+        mouseKey(mouse1, InputConstants.MOUSE_BUTTON_RIGHT, step * MOUSE_RIGHT_COLUMN, MOUSE_RIGHT_WIDTH);
         rows.add(mouse1);
 
-        rows.add(mouseSideRow(step, 4));
-        rows.add(mouseSideRow(step, 3));
+        rows.add(mouseSideRow(step, InputConstants.MOUSE_BUTTON_5));
+        rows.add(mouseSideRow(step, InputConstants.MOUSE_BUTTON_4));
 
         return rows;
     }
