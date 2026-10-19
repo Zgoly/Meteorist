@@ -193,19 +193,38 @@ $$('#install-popover a[href^="#"]').forEach((a) => {
 
 let releaseData = null;
 
+function mcVersionFromTag(tag) {
+  return tag.replace(/^v/, '').replace(/-\d+$/, '');
+}
+
+function fileNameFromUrl(url) {
+  try {
+    const path = new URL(url, window.location.href).pathname;
+    return decodeURIComponent(path.slice(path.lastIndexOf("/") + 1)) || null;
+  } catch {
+    return null;
+  }
+}
+
 function setMcVersion(tag) {
-  // Tag scheme: v<mcVersion>-<revision>, e.g. v26.1.2-1 or v1.21.11-2
-  const m = /^v?(\d+\.\d+\.\d+)-\d+$/.exec(tag || "");
-  if (!m) return;
+  const version = mcVersionFromTag(tag);
   $$(".js-mc-version").forEach((node) => {
-    node.textContent = `Minecraft ${m[1]}`;
+    node.textContent = `Minecraft ${version}`;
     node.hidden = false;
   });
   $$(".js-mc-dot").forEach((node) => {
     node.hidden = false;
   });
   $$(".js-mc-version-inline").forEach((node) => {
-    node.textContent = `Minecraft ${m[1]}`;
+    node.textContent = `Minecraft ${version}`;
+  });
+}
+
+function setJarName(url) {
+  const name = fileNameFromUrl(url);
+  if (!name) return;
+  $$(".js-jar-name").forEach((node) => {
+    node.textContent = name;
   });
 }
 
@@ -227,6 +246,7 @@ async function setupReleaseInfo() {
       node.title = formatDate(releaseData.updated_at);
     });
     setMcVersion(releaseData.tag_name);
+    setJarName(releaseData.url);
 
     // Keep the SEO schema fresh too
     const schemaNode = $("#schema-jsonld");
