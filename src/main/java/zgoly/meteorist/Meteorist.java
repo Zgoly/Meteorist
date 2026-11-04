@@ -118,6 +118,7 @@ public class Meteorist extends MeteorAddon {
         Modules.get().add(new AutoSneak());
         Modules.get().add(new AutoTrade());
         Modules.get().add(new BoatControl());
+        Modules.get().add(new CushionHop());
         Modules.get().add(new DisconnectSound());
         Modules.get().add(new DmSpam());
         Modules.get().add(new DoubleDoorsInteract());
