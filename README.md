@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This project is archived. Details: https://dsc.gg/zgoly
+
 > [!CAUTION]
 > The only official website for Meteorist is **[meteorist.pages.dev](https://meteorist.pages.dev/)**.
 > Any other websites claiming to be Meteorist are **NOT** controlled by me and may contain malware or malicious content.
